@@ -1,5 +1,4 @@
 import {defineStore} from "pinia";
-import axios from 'axios'
 import {ApiService} from "../api/ApiService.ts";
 
 export interface Prompt {
@@ -25,6 +24,9 @@ export const usePromptStore = defineStore({
     actions: {
         async loadAll() {
             this.prompts = await ApiService.get<Prompt[]>('/api/prompts/load_all')
+        },
+        async savePrompt(prompt: Prompt) {
+            this.prompts = await ApiService.post('/api/prompts/save', prompt)
         }
     }
 })

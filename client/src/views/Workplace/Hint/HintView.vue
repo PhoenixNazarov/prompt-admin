@@ -1,6 +1,6 @@
 <script lang="ts">
 import {defineComponent, PropType} from 'vue'
-import {Prompt} from "../../../stores/prompt.store.ts";
+import {Prompt, usePromptStore} from "../../../stores/prompt.store.ts";
 import {Mapping, useMappingStore} from "../../../stores/config/mapping.store.ts";
 import {useMappingEntityStore} from "../../../stores/config/mappingEntity.store.ts";
 import {Macro} from "../../../stores/config/macro.store.ts";
@@ -16,9 +16,11 @@ export default defineComponent({
   setup() {
     const mappingStore = useMappingStore()
     const mappingEntityStore = useMappingEntityStore()
+    const promptStore = usePromptStore()
     return {
       mappingStore,
-      mappingEntityStore
+      mappingEntityStore,
+      promptStore
     }
   },
   methods: {
@@ -29,6 +31,9 @@ export default defineComponent({
       const mapping = this.mapping()
       if (mapping) return this.mappingEntityStore.getInputsByFilter(mapping, this.prompt)
       return []
+    },
+    save() {
+      this.promptStore.savePrompt(this.prompt)
     }
   }
 })
@@ -36,7 +41,9 @@ export default defineComponent({
 
 <template>
   <div class="hint outer-y">
-
+    <h1>
+      <button @click.prevent="save">Save</button>
+    </h1>
     <h1> {{ mapping()?.table }}.{{ mapping()?.field }}</h1>
     <h2><b>connection_name: </b> {{ mapping()?.connection_name }}</h2>
     <h2><b>field_name: </b> {{ mapping()?.field_name }}</h2>

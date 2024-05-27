@@ -31,3 +31,5 @@ for k, v in os.environ.items():
     if k.startswith('PA_CONNECTION_'):
         name = k.removeprefix('PA_CONNECTION_').lower()
         SETTINGS.connections[name] = v
+
+print(SETTINGS.connections)

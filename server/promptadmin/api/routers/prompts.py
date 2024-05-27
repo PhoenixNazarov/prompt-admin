@@ -59,4 +59,4 @@ async def save(prompt: Prompt, request: Request):
     mapping = await mapping_service.find_by_table_field(prompt.table, prompt.field)
     conn = await asyncpg.connect(SETTINGS.connections[mapping.connection_name])
     sql = f"UPDATE {prompt.table} SET {prompt.field} = $1 WHERE id = $2"
-    conn.execute(sql, prompt.value, prompt.id)
+    await conn.execute(sql, prompt.value, prompt.id)

@@ -35,7 +35,7 @@ export default defineComponent({
     <div v-if="loading">
       Loading...
     </div>
-    <Authorization v-if="!accountStore.logged"/>
+    <Authorization v-else-if="!accountStore.logged"/>
     <WorkplaceView v-else/>
   </div>
 </template>
