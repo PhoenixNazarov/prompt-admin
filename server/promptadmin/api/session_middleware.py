@@ -17,7 +17,7 @@ class SessionMiddleware:
                  session_cookie: str = 'session'):
         self.app = app
         self.path = '/'
-        self.security_flags = 'Secure; HttpOnly; SameSite=None'
+        self.security_flags = 'HttpOnly; SameSite=None'
         self.signer = TimestampSigner(secret_key, salt='cookie-session', digest_method=hashlib.sha1,
                                       key_derivation='hmac')
         self.session_cookie = session_cookie
