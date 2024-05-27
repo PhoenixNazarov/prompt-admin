@@ -1,4 +1,4 @@
-import axios from "axios";
+import {ApiService} from "../../api/ApiService.ts";
 
 export interface BaseEntity {
     id: number
@@ -8,10 +8,7 @@ export interface BaseEntity {
 export function abstractStoreFactory(name: string) {
     return {
         async getAll() {
-            const out = await axios.get(
-                '/api/config/' + name + '/get/all'
-            )
-            this.entity = out.data
+            this.entity = await ApiService.get('/api/config/' + name + '/get/all')
         }
     }
 }

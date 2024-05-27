@@ -1,5 +1,5 @@
 import {defineStore} from "pinia";
-import axios from 'axios'
+import {ApiService} from "../api/ApiService.ts";
 
 
 export const useAccountStore = defineStore({
@@ -14,14 +14,11 @@ export const useAccountStore = defineStore({
     },
     actions: {
         async loadMe() {
-            const out = await axios.get<{ login: string } | null>(
-                '/api/auth/me'
-            )
-            this.auth = out.data != null
+            this.auth = await ApiService.get<{ login: string } | null>('/api/auth/me') != null
         },
         async login(login: string, password: string) {
             try {
-                await axios.post<{ login: string } | null>(
+                await ApiService.post<{ login: string } | null>(
                     '/api/auth/login',
                     {
                         login: login,
