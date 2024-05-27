@@ -1,0 +1,60 @@
+:root {
+    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    font-weight: 400;
+
+    color-scheme: light dark;
+    color: rgba(255, 255, 255, 0.87);
+    background-color: #ffffff;
+
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    /*--color-1: #caf0f8;*/
+    /*--color-2: #90e0ef;*/
+    /*--color-3: #00b4d8;*/
+    /*--color-4: #0077b6;*/
+    /*--color-5: #03045e;*/
+    --color-1: #d90429;
+    --color-2: #ef233c;
+    --color-3: #edf2f4;
+    --color-4: #8d99ae;
+    --color-5: #2b2d42;
+}
+
+body {
+    margin: 0;
+    min-width: 320px;
+    min-height: 100vh;
+}
+
+
+.pointer {
+    cursor: pointer;
+}
+
+
+.outer-y {
+    overflow-y: auto;
+}
+
+.outer-y::-webkit-scrollbar {
+    width: 3px;
+    margin-right: 0.5rem;
+    color: #48464C;
+}
+
+.outer-y::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.outer-y::-webkit-scrollbar-thumb {
+    border-radius: 2rem;
+    background: #48464C;
+}
+
+.outer-y::-webkit-scrollbar-thumb:hover {
+    border-radius: 25px;
+}
