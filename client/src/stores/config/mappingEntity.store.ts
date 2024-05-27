@@ -36,14 +36,14 @@ export const useMappingEntityStore = defineStore({
     getters: {
         getInputsByFilter: state => {
             return (mapping: Mapping, prompt: Prompt) => {
-                const supportEntity = getByFilter( state, mapping.connection_name, mapping.table, mapping.field, prompt.name, mapping.id, 'input')
+                const supportEntity = getByFilter(state, mapping.connection_name, mapping.table, mapping.field, prompt.name, mapping.id, 'input')
                 const macroStore = useMacroStore()
                 return macroStore.getByIds(supportEntity.map(se => se.entity_id))
             }
         },
         getOutputByFilter: state => {
             return (mapping: Mapping, prompt: Prompt) => {
-                const supportEntity = getByFilter( state, mapping.connection_name, mapping.table, mapping.field, prompt.name, mapping.id, 'output')
+                const supportEntity = getByFilter(state, mapping.connection_name, mapping.table, mapping.field, prompt.name, mapping.id, 'output')
                 const outputStore = useOutputStore()
                 if (supportEntity.length <= 0) return
                 return outputStore.getById(supportEntity[0].entity_id)

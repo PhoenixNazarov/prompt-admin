@@ -2,7 +2,6 @@ import {defineStore} from "pinia";
 import {abstractStoreFactory, BaseEntity} from "./abstractStoreFactory.ts";
 
 export interface Macro extends BaseEntity{
-    name: string
     macro: string
     macro_value: string
     description: string

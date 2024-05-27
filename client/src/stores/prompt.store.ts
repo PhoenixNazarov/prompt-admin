@@ -26,7 +26,7 @@ export const usePromptStore = defineStore({
             this.prompts = await ApiService.get<Prompt[]>('/api/prompts/load_all')
         },
         async savePrompt(prompt: Prompt) {
-            this.prompts = await ApiService.post('/api/prompts/save', prompt)
+            await ApiService.post('/api/prompts/save', prompt)
         }
     }
 })

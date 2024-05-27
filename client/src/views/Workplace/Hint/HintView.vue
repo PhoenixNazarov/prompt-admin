@@ -30,7 +30,7 @@ export default defineComponent({
     },
     inputs(): Macro[] {
       const mapping = this.mapping()
-      if (mapping) return this.mappingEntityStore.getInputsByFilter(mapping, this.prompt)
+      if (mapping) return this.mappingEntityStore.getInputsByFilter(mapping, this.prompt).sort((one, two) => one.macro > two.macro ? -1 : 1)
       return []
     },
     output(): Output | undefined {
