@@ -11,7 +11,11 @@ export const useOutputStore = defineStore({
     state: () => ({
         entity: [] as Output[]
     }),
-    getters: {},
+    getters: {
+        getById: state => {
+            return (id: number) => state.entity.find(e => e.id == id)
+        }
+    },
     actions: {
         ...abstractStoreFactory('output')
     }

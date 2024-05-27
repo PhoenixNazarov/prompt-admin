@@ -8,7 +8,6 @@ export interface Mapping extends BaseEntity{
     description: string
     field_name: string
     connection_name: string
-    output?: string
 }
 
 

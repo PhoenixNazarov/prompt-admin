@@ -4,6 +4,7 @@ import {Prompt, usePromptStore} from "../../../stores/prompt.store.ts";
 import {Mapping, useMappingStore} from "../../../stores/config/mapping.store.ts";
 import {useMappingEntityStore} from "../../../stores/config/mappingEntity.store.ts";
 import {Macro} from "../../../stores/config/macro.store.ts";
+import {Output} from "../../../stores/config/output.store.ts";
 
 export default defineComponent({
   name: "HintView",
@@ -31,6 +32,11 @@ export default defineComponent({
       const mapping = this.mapping()
       if (mapping) return this.mappingEntityStore.getInputsByFilter(mapping, this.prompt)
       return []
+    },
+    output(): Output | undefined {
+      const mapping = this.mapping()
+      if (mapping) return this.mappingEntityStore.getOutputByFilter(mapping, this.prompt)
+      return undefined
     },
     save() {
       this.promptStore.savePrompt(this.prompt)
@@ -60,7 +66,7 @@ export default defineComponent({
     </div>
 
     <h1>Output</h1>
-    <h2>{{ mapping()?.output }}</h2>
+    <h2>{{ output()?.output }}</h2>
 
   </div>
 </template>

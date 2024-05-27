@@ -3,6 +3,7 @@ import {abstractStoreFactory, BaseEntity} from "./abstractStoreFactory.ts";
 import {useMacroStore} from "./macro.store.ts";
 import {Mapping} from "./mapping.store.ts";
 import {Prompt} from "../prompt.store.ts";
+import {useOutputStore} from "./output.store.ts";
 
 export interface MappingEntity extends BaseEntity {
     connection_name?: string
@@ -38,6 +39,14 @@ export const useMappingEntityStore = defineStore({
                 const supportEntity = getByFilter( state, mapping.connection_name, mapping.table, mapping.field, prompt.name, mapping.id, 'input')
                 const macroStore = useMacroStore()
                 return macroStore.getByIds(supportEntity.map(se => se.entity_id))
+            }
+        },
+        getOutputByFilter: state => {
+            return (mapping: Mapping, prompt: Prompt) => {
+                const supportEntity = getByFilter( state, mapping.connection_name, mapping.table, mapping.field, prompt.name, mapping.id, 'output')
+                const outputStore = useOutputStore()
+                if (supportEntity.length <= 0) return
+                return outputStore.getById(supportEntity[0].entity_id)
             }
         }
     },
