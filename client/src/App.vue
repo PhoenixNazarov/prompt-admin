@@ -13,14 +13,28 @@ export default defineComponent({
       accountStore
     }
   },
-  mounted() {
-    this.accountStore.loadMe()
+  data() {
+    return {
+      loading: true
+    }
+  },
+  async mounted() {
+    this.loading = true
+    try {
+      await this.accountStore.loadMe()
+    } catch (e) {
+    }
+    this.loading = false
+
   },
 })
 </script>
 
 <template>
   <div>
+    <div v-if="loading">
+      Loading...
+    </div>
     <Authorization v-if="!accountStore.logged"/>
     <WorkplaceView v-else/>
   </div>
