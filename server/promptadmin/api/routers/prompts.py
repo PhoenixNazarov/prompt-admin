@@ -4,6 +4,7 @@ import asyncpg
 from fastapi import APIRouter, Request
 
 from promptadmin.api.dto.prompt import Prompt
+from promptadmin.api.service.preview_template_service import PreviewTemplateService
 from promptadmin.api.service.user_data import UserData
 from promptadmin.data.entity.mapping import Mapping
 from promptadmin.data.service.mapping_service import MappingService
@@ -13,6 +14,7 @@ from settings import SETTINGS
 router = APIRouter()
 
 mapping_service = MappingService()
+preview_template_service = PreviewTemplateService()
 
 
 @router.get('/load_all')
@@ -60,3 +62,11 @@ async def save(prompt: Prompt, request: Request):
     conn = await asyncpg.connect(SETTINGS.connections[mapping.connection_name])
     sql = f"UPDATE {prompt.table} SET {prompt.field} = $1 WHERE id = $2"
     await conn.execute(sql, prompt.value, prompt.id)
+
+
+@router.post('/preview')
+async def preview(prompt: Prompt, request: Request):
+    user_data: UserData = request.scope['user_data']
+    if user_data.account is None:
+        raise ValueError()
+    return await preview_template_service.preview_prompt(prompt)

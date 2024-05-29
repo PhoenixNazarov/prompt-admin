@@ -9,6 +9,7 @@ import HintView from "./Hint/HintView.vue";
 import {useMacroStore} from "../../stores/config/macro.store.ts";
 import {useMappingEntityStore} from "../../stores/config/mappingEntity.store.ts";
 import {useOutputStore} from "../../stores/config/output.store.ts";
+import {useInputStore} from "../../stores/config/input.store.ts";
 
 export default defineComponent({
   name: "WorkplaceView",
@@ -19,17 +20,19 @@ export default defineComponent({
     const macroStore = useMacroStore()
     const mappingEntityStore = useMappingEntityStore()
     const outputStore = useOutputStore()
+    const inputStore = useInputStore()
     return {
       promptStore,
       mappingStore,
       macroStore,
       mappingEntityStore,
-      outputStore
+      outputStore,
+      inputStore
     }
   },
   data() {
     return {
-      prompt: null as Prompt | null
+      prompt: null as Prompt | null,
     }
   },
   methods: {
@@ -43,6 +46,7 @@ export default defineComponent({
     this.macroStore.getAll()
     this.mappingEntityStore.getAll()
     this.outputStore.getAll()
+    this.inputStore.getAll()
   },
 })
 </script>
@@ -60,7 +64,7 @@ export default defineComponent({
         </div>
       </div>
       <div class="hint outer-y">
-        <HintView :prompt="prompt" v-if="prompt"/>
+        <HintView :prompt="prompt" v-if="prompt" @preview="selectPrompt"/>
       </div>
     </div>
   </MainLayout>

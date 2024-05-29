@@ -9,6 +9,20 @@ create table pa_macro
     description varchar(1000) not null default ''
 );
 
+create table pa_input
+(
+    id           serial
+        constraint pa_input_pk
+            primary key,
+    time_create  timestamp              default now(),
+    macro        varchar(120)  not null,
+    macro_value  varchar(500)  not null,
+    description  varchar(1000) not null default '',
+
+    default_type varchar(20)   not null default 'str',
+    "default"    varchar(1000) not null default 'str'
+);
+
 create table pa_mapping
 (
     id              serial
@@ -67,16 +81,15 @@ create table pa_output
 );
 
 
-
 -- PA_ACCOUNT
 create table pa_account
 (
-    id               serial
+    id          serial
         constraint pa_account_pk
             primary key,
-    time_create      timestamp   default now(),
-    login            varchar(45) not null,
-    password         varchar(64)
+    time_create timestamp default now(),
+    login       varchar(45) not null,
+    password    varchar(64)
 );
 
 

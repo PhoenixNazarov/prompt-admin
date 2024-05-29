@@ -38,8 +38,21 @@ export default defineComponent({
       if (mapping) return this.mappingEntityStore.getOutputByFilter(mapping, this.prompt)
       return undefined
     },
+    macros(): Macro[] {
+      const mapping = this.mapping()
+      if (mapping) return this.mappingEntityStore.getMacroByFilter(mapping, this.prompt).sort((one, two) => one.macro > two.macro ? -1 : 1)
+      return []
+    },
     save() {
       this.promptStore.savePrompt(this.prompt)
+    },
+    async preview() {
+      try {
+        const previewPrompt = await this.promptStore.previewPrompt(this.prompt)
+        this.$emit('preview', previewPrompt)
+      } catch (e) {
+        alert('Cant preview this prompt. Dont use unsupported jinja fields')
+      }
     }
   }
 })
@@ -47,9 +60,11 @@ export default defineComponent({
 
 <template>
   <div class="hint outer-y">
-    <h1>
-      <button @click.prevent="save">Save</button>
+    <h1 v-if="prompt.preview != true">
+      <button class="pointer" @click.prevent="save">Save</button>
+      <button class="pointer" @click.prevent="preview">Preview</button>
     </h1>
+    <h1 v-if="prompt.preview == true">Preview</h1>
     <h1> {{ mapping()?.table }}.{{ mapping()?.field }}</h1>
     <h2><b>connection_name: </b> {{ mapping()?.connection_name }}</h2>
     <h2><b>field_name: </b> {{ mapping()?.field_name }}</h2>
@@ -59,13 +74,19 @@ export default defineComponent({
     <h2>{{ mapping()?.description }}</h2>
 
 
-    <h1>Inputs</h1>
+    <h1 v-if="inputs().length > 0">Inputs</h1>
     <div v-for="mappingVariable in inputs()">
       <h2><b>{{ mappingVariable.macro }}</b>: </h2>
       <h2>{{ mappingVariable.description }}</h2>
     </div>
 
-    <h1>Output</h1>
+    <h1 v-if="macros().length > 0">Macros</h1>
+    <div v-for="mappingVariable in macros()">
+      <h2><b>{{ mappingVariable.macro }}</b>: </h2>
+      <h2>{{ mappingVariable.description }}</h2>
+    </div>
+
+    <h1 v-if="output()">Output</h1>
     <h2>{{ output()?.output }}</h2>
 
   </div>
