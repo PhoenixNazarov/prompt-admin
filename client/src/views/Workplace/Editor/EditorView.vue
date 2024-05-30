@@ -7,6 +7,7 @@ import {Codemirror} from 'vue-codemirror'
 import {Prompt} from "../../../stores/prompt.store.ts";
 import {Mapping, useMappingStore} from "../../../stores/config/mapping.store.ts";
 import {useMappingEntityStore} from "../../../stores/config/mappingEntity.store.ts";
+import { EditorView } from '@codemirror/view'
 
 function createCompetions(mapping: Mapping, prompt: Prompt) {
   const mappingEntityStore = useMappingEntityStore()
@@ -43,7 +44,7 @@ export default defineComponent({
   },
   computed: {
     extensions() {
-      const ext = [xml(), json()]
+      const ext = [xml(), json(), EditorView.lineWrapping]
       const mapping = this.mappingStore.getByTableField(this.prompt.table, this.prompt.field)
       if (mapping) {
         ext.push(autocompletion({override: [createCompetions(mapping, this.prompt)]}))
