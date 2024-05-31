@@ -44,7 +44,7 @@ export default defineComponent({
   },
   computed: {
     extensions() {
-      const ext = [xml(), json(), EditorView.lineWrapping]
+      const ext = [EditorView.lineWrapping, xml(), json()]
       const mapping = this.mappingStore.getByTableField(this.prompt.table, this.prompt.field)
       if (mapping) {
         ext.push(autocompletion({override: [createCompetions(mapping, this.prompt)]}))
