@@ -16,6 +16,10 @@ function createCompetions(mapping: Mapping, prompt: Prompt) {
     options.push({label: v.macro, type: "text", apply: v.macro_value, detail: v.description})
   })
 
+  mappingEntityStore.getMacroByFilter(mapping, prompt).forEach(v => {
+    options.push({label: v.macro, type: "text", apply: v.macro_value, detail: v.description})
+  })
+
   function myCompletions(context: CompletionContext) {
     let word = context.matchBefore(/\w*/)
     if (!word) return
