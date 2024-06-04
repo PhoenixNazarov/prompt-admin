@@ -107,3 +107,27 @@ create table pa_access_token
         constraint pa_authentication_account_id__fk
             references pa_account
 );
+
+
+-- PA_PROMPT_AUDIT
+create table pa_prompt_audit
+(
+    id          serial
+        constraint pa_prompt_audit_pk
+            primary key,
+    time_create timestamp default now(),
+
+    "table"     varchar(128)   not null,
+    field       varchar(128)   not null,
+    "name"      varchar(128),
+    mapping_id  integer
+        constraint pa_prompt_audit_mapping_id_fk
+            references pa_mapping
+            on delete SET NULL,
+    prompt_id   integer        not null,
+    "value"     varchar(20000) not null,
+    account_id  integer
+        constraint pa_prompt_audit_account_id_fk
+            references pa_account
+            on delete SET NULL
+);

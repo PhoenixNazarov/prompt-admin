@@ -1,5 +1,6 @@
 import {defineStore} from "pinia";
 import {ApiService} from "../api/ApiService.ts";
+import {PromptAudit} from "./config/promptAudit.store.ts";
 
 export interface Prompt {
     mapping_id: number
@@ -9,6 +10,8 @@ export interface Prompt {
     value: string
     name?: string
     preview?: boolean
+
+    audit?: PromptAudit
 }
 
 

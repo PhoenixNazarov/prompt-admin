@@ -58,3 +58,7 @@ body {
 .outer-y::-webkit-scrollbar-thumb:hover {
     border-radius: 25px;
 }
+
+.vue-diff-viewer {
+    font-size: 12px !important;
+}

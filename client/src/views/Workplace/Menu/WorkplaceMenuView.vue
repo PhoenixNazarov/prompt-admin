@@ -3,10 +3,11 @@ import {defineComponent} from 'vue'
 import {usePromptStore} from "../../../stores/prompt.store.ts";
 import MenuGroup from "./MenuGroup.vue";
 import {useMappingStore} from "../../../stores/config/mapping.store.ts";
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 export default defineComponent({
   name: "WorkplaceMenuView",
-  components: {MenuGroup},
+  components: {MenuGroup, FontAwesomeIcon},
   setup() {
     const promptStore = usePromptStore()
     const mappingStore = useMappingStore()
@@ -20,8 +21,8 @@ export default defineComponent({
 
 <template>
   <div class="menu">
-    <MenuGroup :bold="true" :name="connection" v-for="[connection, mappingsTable] in mappingStore.getConnections">
-      <MenuGroup :name="mappingTable" v-for="[mappingTable, mappings] in mappingsTable"
+    <MenuGroup icon="diagram-project" :bold="true" :name="connection" v-for="[connection, mappingsTable] in mappingStore.getConnections">
+      <MenuGroup icon="table" :name="mappingTable" v-for="[mappingTable, mappings] in mappingsTable"
                  style="margin-left: 1rem">
         <MenuGroup :start-open="false" :name="mapping.field" v-for="mapping in mappings"
                    style="margin-left: 1rem">

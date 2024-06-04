@@ -1,9 +1,11 @@
 <script lang="ts">
 import {defineComponent} from 'vue'
 import logoExpand from '../../../assets/expand_more.svg'
+import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 
 export default defineComponent({
   name: 'MenuGroup',
+  components: {FontAwesomeIcon},
   props: {
     name: {
       type: String,
@@ -24,6 +26,9 @@ export default defineComponent({
     center: {
       type: Boolean,
       default: false
+    },
+    icon: {
+      type: String,
     }
   },
   data() {
@@ -45,10 +50,10 @@ export default defineComponent({
       if (content) {
         if (this.open && !this.disabled) {
           content.style.height = `${contentHeight.scrollHeight}px`
-          button.style.transform = 'rotate(0deg)'
+          if (!this.icon) button.style.transform = 'rotate(0deg)'
         } else {
           content.style.height = '0'
-          button.style.transform = 'rotate(-90deg)'
+          if (!this.icon) button.style.transform = 'rotate(-90deg)'
         }
       }
     }
@@ -70,11 +75,13 @@ export default defineComponent({
     <div class="group-name">
       <div class="title" :class="disabled ? '' : 'pointer'" :style="center ? '    align-items: flex-start;' : ''"
            @click.prevent="openCloseGroup">
+        <fontAwesomeIcon :icon="icon" v-if="icon" class="expand-image"/>
         <img
             class="expand-image"
             :class="disabled ? 'disable' : ''"
             :src="logoExpand"
             ref="close-button"
+            v-if="!icon"
         />
         <div
             class="group-title"
@@ -101,7 +108,6 @@ export default defineComponent({
 
 .expand-image {
   width: 2rem;
-  transition: 500ms;
 }
 
 .group-title {
@@ -112,7 +118,6 @@ export default defineComponent({
 
 .group-content {
   overflow: hidden;
-  transition: height 500ms;
 }
 
 .title {

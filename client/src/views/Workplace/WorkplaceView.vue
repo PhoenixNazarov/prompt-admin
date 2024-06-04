@@ -10,10 +10,13 @@ import {useMacroStore} from "../../stores/config/macro.store.ts";
 import {useMappingEntityStore} from "../../stores/config/mappingEntity.store.ts";
 import {useOutputStore} from "../../stores/config/output.store.ts";
 import {useInputStore} from "../../stores/config/input.store.ts";
+import {usePromptAuditStore} from "../../stores/config/promptAudit.store.ts";
+import {useAccountStore} from "../../stores/user.store.ts";
+import CompareView from "./Editor/CompareView.vue";
 
 export default defineComponent({
   name: "WorkplaceView",
-  components: {HintView, WorkplaceMenuView, EditorView, MainLayout},
+  components: {CompareView, HintView, WorkplaceMenuView, EditorView, MainLayout},
   setup() {
     const promptStore = usePromptStore()
     const mappingStore = useMappingStore()
@@ -21,13 +24,17 @@ export default defineComponent({
     const mappingEntityStore = useMappingEntityStore()
     const outputStore = useOutputStore()
     const inputStore = useInputStore()
+    const promptAuditStore = usePromptAuditStore()
+    const accountStore = useAccountStore()
     return {
       promptStore,
       mappingStore,
       macroStore,
       mappingEntityStore,
       outputStore,
-      inputStore
+      inputStore,
+      promptAuditStore,
+      accountStore
     }
   },
   data() {
@@ -38,6 +45,7 @@ export default defineComponent({
   methods: {
     selectPrompt(prompt: Prompt) {
       this.prompt = prompt
+      this.promptAuditStore.loadForPrompt(this.prompt)
     }
   },
   mounted() {
@@ -47,6 +55,7 @@ export default defineComponent({
     this.mappingEntityStore.getAll()
     this.outputStore.getAll()
     this.inputStore.getAll()
+    this.accountStore.getAll()
   },
 })
 </script>
@@ -58,7 +67,8 @@ export default defineComponent({
         <WorkplaceMenuView @selectPrompt="selectPrompt"/>
       </div>
       <div class="editor">
-        <EditorView :prompt='prompt' v-if="prompt"/>
+        <CompareView :prompt='prompt' v-if="prompt && prompt.audit"/>
+        <EditorView :prompt='prompt' v-else-if="prompt && !prompt.audit"/>
         <div style="color: var(--color-5); padding: 1rem" v-else>
           Select need prompt...
         </div>

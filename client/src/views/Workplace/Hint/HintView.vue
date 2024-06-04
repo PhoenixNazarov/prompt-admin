@@ -5,6 +5,10 @@ import {Mapping, useMappingStore} from "../../../stores/config/mapping.store.ts"
 import {useMappingEntityStore} from "../../../stores/config/mappingEntity.store.ts";
 import {Macro} from "../../../stores/config/macro.store.ts";
 import {Output} from "../../../stores/config/output.store.ts";
+import {PromptAudit, usePromptAuditStore} from "../../../stores/config/promptAudit.store.ts";
+import moment from 'moment';
+import {useAccountStore} from "../../../stores/user.store.ts";
+
 
 export default defineComponent({
   name: "HintView",
@@ -18,10 +22,14 @@ export default defineComponent({
     const mappingStore = useMappingStore()
     const mappingEntityStore = useMappingEntityStore()
     const promptStore = usePromptStore()
+    const promptAuditStore = usePromptAuditStore()
+    const accountStore = useAccountStore()
     return {
       mappingStore,
       mappingEntityStore,
-      promptStore
+      promptStore,
+      promptAuditStore,
+      accountStore
     }
   },
   methods: {
@@ -45,6 +53,32 @@ export default defineComponent({
     },
     save() {
       this.promptStore.savePrompt(this.prompt)
+      this.promptAuditStore.loadForPrompt(this.prompt)
+    },
+    changes(): PromptAudit[] | undefined {
+      return this.promptAuditStore.getByPrompt(this.prompt)
+    },
+    dateFormat(input: Date): String {
+      return moment(input).format('MM/DD/YYYY HH:mm')
+    },
+    getAccountLogin(id: number | undefined): String {
+      if (id != undefined) {
+        const account = this.accountStore.getById(id)
+        if (account) return account.login
+      }
+      return 'undefined'
+    },
+    previewPromptAudit(promptAudit: PromptAudit) {
+      const prompt: Prompt = {
+        mapping_id: this.prompt.mapping_id,
+        table: this.prompt.table,
+        field: this.prompt.field,
+        id: this.prompt.id,
+        value: this.prompt.value,
+        name: this.prompt.name,
+        audit: promptAudit
+      }
+      this.$emit('preview', prompt)
     },
     async preview() {
       try {
@@ -54,20 +88,25 @@ export default defineComponent({
         alert('Cant preview this prompt. Dont use unsupported jinja fields')
       }
     }
-  }
+  },
 })
 </script>
 
 <template>
   <div class="hint outer-y">
-    <h1 v-if="prompt.preview != true">
+    <h1 v-if="prompt.preview != true && !prompt.audit">
       <button class="pointer" @click.prevent="save">Save</button>
-      <button class="pointer" @click.prevent="preview">Preview</button>
+      <button class="pointer" @click.prevent="preview" style="margin-left: 1rem">Preview</button>
     </h1>
     <h1 v-if="prompt.preview == true">Preview</h1>
+    <h1 v-if="prompt.audit">Change history</h1>
+    <h2 v-if="prompt.audit"><b>Time change: </b> {{ dateFormat(new Date(prompt.audit.time_create)) }}</h2>
+    <h2 v-if="prompt.audit"><b>Account: </b> {{ getAccountLogin(prompt.audit.account_id) }}</h2>
+
     <h1> {{ mapping()?.table }}.{{ mapping()?.field }}</h1>
     <h2><b>connection_name: </b> {{ mapping()?.connection_name }}</h2>
     <h2><b>field_name: </b> {{ mapping()?.field_name }}</h2>
+    <h2><b>prompt_id: </b> {{ prompt.id }}</h2>
 
 
     <h1> {{ prompt.name }}</h1>
@@ -86,8 +125,15 @@ export default defineComponent({
       <h2>{{ mappingVariable.description }}</h2>
     </div>
 
-    <h1 v-if="output()">Output</h1>
-    <h2>{{ output()?.output }}</h2>
+    <h1 v-if="output()">Required output format</h1>
+    <h2 class="program">{{ output()?.output }}</h2>
+
+
+    <h1>Changes History</h1>
+    <h2 v-if="changes() != undefined && changes()?.length == 0">Not changed</h2>
+    <h2 v-for="promptAudit in changes()" class="pointer" @click.prevent="previewPromptAudit(promptAudit)">
+      {{ dateFormat(new Date(promptAudit.time_create)) }}: {{ getAccountLogin(promptAudit.account_id) }}
+    </h2>
 
   </div>
 </template>
@@ -120,5 +166,10 @@ table, th, td {
   border-collapse: collapse;
 }
 
+.program {
+  font-family: 'JetBrains Mono', serif;
+  color: var(--color-4);
+  background-color: var(--color-5);
+}
 
 </style>

@@ -1,16 +1,27 @@
 import {defineStore} from "pinia";
 import {ApiService} from "../api/ApiService.ts";
+import {BaseEntity} from "./config/abstractStoreFactory.ts";
 
+
+export interface Account extends BaseEntity {
+    login: string
+}
 
 export const useAccountStore = defineStore({
     id: 'account',
     state: () => ({
-        auth: false
+        auth: false,
+        entity: [] as Account[]
     }),
     getters: {
         logged(state) {
             return state.auth
-        }
+        },
+        getById: state => {
+            return (id: number) => {
+                return state.entity.find(e => e.id == id)
+            }
+        },
     },
     actions: {
         async loadMe() {
@@ -29,6 +40,9 @@ export const useAccountStore = defineStore({
             } catch (e) {
                 this.auth = false
             }
+        },
+        async getAll() {
+            this.entity = await ApiService.get('/api/config/account/get/all')
         }
     }
 })
