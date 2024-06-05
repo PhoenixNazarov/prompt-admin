@@ -11,7 +11,10 @@ export interface Prompt {
     name?: string
     preview?: boolean
 
-    audit?: PromptAudit
+    auditData?: {
+        audit: PromptAudit,
+        prevAudit?: PromptAudit
+    }
 }
 
 

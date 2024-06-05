@@ -67,14 +67,14 @@ export default defineComponent({
         <WorkplaceMenuView @selectPrompt="selectPrompt"/>
       </div>
       <div class="editor">
-        <CompareView :prompt='prompt' v-if="prompt && prompt.audit"/>
-        <EditorView :prompt='prompt' v-else-if="prompt && !prompt.audit"/>
+        <CompareView :prompt='prompt' v-if="prompt && prompt.auditData"/>
+        <EditorView :prompt='prompt' v-else-if="prompt && !prompt.auditData"/>
         <div style="color: var(--color-5); padding: 1rem" v-else>
           Select need prompt...
         </div>
       </div>
       <div class="hint outer-y">
-        <HintView :prompt="prompt" v-if="prompt" @preview="selectPrompt"/>
+        <HintView :prompt="prompt" @preview="selectPrompt"/>
       </div>
     </div>
   </MainLayout>

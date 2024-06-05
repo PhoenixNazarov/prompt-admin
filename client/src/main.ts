@@ -6,8 +6,10 @@ import { faDiagramProject, faTable, faTerminal } from '@fortawesome/free-solid-s
 import { library } from '@fortawesome/fontawesome-svg-core'
 import VueDiff from 'vue-diff';
 import 'vue-diff/dist/index.css';
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 
 const pinia = createPinia()
+pinia.use(piniaPluginPersistedstate)
 
 const app = createApp(App)
 
