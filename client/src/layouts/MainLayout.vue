@@ -1,15 +1,26 @@
 <script lang="ts">
 import {defineComponent} from 'vue'
+import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 
 export default defineComponent({
-  name: "MainLayout"
+  name: "MainLayout",
+  components: {FontAwesomeIcon}
 })
 </script>
 
 <template>
   <div>
     <div class="header">
-      <div class="name">Prompt Admin</div>
+      <div class="name case" @click.prevent="$emit('setView', 'workplace')">Prompt Admin</div>
+      <div class="case" @click.prevent="$emit('setView', 'workplace')">
+        <FontAwesomeIcon icon="pen"/>
+        Editor
+      </div>
+
+      <div class="case" @click.prevent="$emit('setView', 'format')">
+        <FontAwesomeIcon icon="calculator"/>
+        Format
+      </div>
     </div>
     <div class="inner">
       <slot/>
@@ -21,6 +32,8 @@ export default defineComponent({
 .header {
   height: 3rem;
   background-color: var(--color-5);
+  display: flex;
+  align-items: center;
 }
 
 .name {
@@ -34,6 +47,11 @@ export default defineComponent({
 .inner {
   height: calc(100vh - 3rem);
   background-color: var(--color-3);
+}
+
+.case {
+  margin-right: 2rem;
+  cursor: pointer;
 }
 
 </style>

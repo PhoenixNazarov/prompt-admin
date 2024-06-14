@@ -61,7 +61,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <MainLayout>
+  <MainLayout @setView="$emit">
     <div class="workplace">
       <div class="menu outer-y">
         <WorkplaceMenuView @selectPrompt="selectPrompt"/>

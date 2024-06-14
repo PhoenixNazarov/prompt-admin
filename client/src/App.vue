@@ -3,10 +3,11 @@ import {defineComponent} from 'vue'
 import WorkplaceView from "./views/Workplace/WorkplaceView.vue";
 import {useAccountStore} from "./stores/user.store.ts";
 import Authorization from "./views/Authorization.vue";
+import FormatView from "./views/Format/FormatView.vue";
 
 export default defineComponent({
   name: "App",
-  components: {Authorization, WorkplaceView},
+  components: {FormatView, Authorization, WorkplaceView},
   setup() {
     const accountStore = useAccountStore()
     return {
@@ -15,7 +16,8 @@ export default defineComponent({
   },
   data() {
     return {
-      loading: true
+      loading: true,
+      view: 'workplace'
     }
   },
   async mounted() {
@@ -36,7 +38,8 @@ export default defineComponent({
       Loading...
     </div>
     <Authorization v-else-if="!accountStore.logged"/>
-    <WorkplaceView v-else/>
+    <WorkplaceView v-else-if="view == 'workplace'" @setView="(v: string) => view=v"/>
+    <FormatView v-else-if="view == 'format'" @setView="(v: string) => view=v"/>
   </div>
 </template>
 

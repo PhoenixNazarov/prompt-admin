@@ -2,8 +2,16 @@ import {createApp} from 'vue'
 import './style.css'
 import App from './App.vue'
 import {createPinia} from "pinia";
-import { faDiagramProject, faTable, faTerminal } from '@fortawesome/free-solid-svg-icons'
-import { library } from '@fortawesome/fontawesome-svg-core'
+import {
+    faCalculator,
+    faCheck,
+    faDiagramProject,
+    faPen,
+    faTable,
+    faTerminal,
+    faXmark
+} from '@fortawesome/free-solid-svg-icons'
+import {library} from '@fortawesome/fontawesome-svg-core'
 import VueDiff from 'vue-diff';
 import 'vue-diff/dist/index.css';
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
@@ -21,7 +29,11 @@ app.use(VueDiff);
 library.add(
     faDiagramProject,
     faTable,
-    faTerminal
+    faTerminal,
+    faPen,
+    faCalculator,
+    faCheck,
+    faXmark
 )
 
 // Pinia Store

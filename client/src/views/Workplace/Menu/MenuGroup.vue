@@ -75,7 +75,7 @@ export default defineComponent({
     <div class="group-name">
       <div class="title" :class="disabled ? '' : 'pointer'" :style="center ? '    align-items: flex-start;' : ''"
            @click.prevent="openCloseGroup">
-        <fontAwesomeIcon :icon="icon" v-if="icon" class="expand-image"/>
+        <FontAwesomeIcon :icon="icon" v-if="icon" class="expand-image"/>
         <img
             class="expand-image"
             :class="disabled ? 'disable' : ''"
