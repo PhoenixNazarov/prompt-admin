@@ -70,7 +70,7 @@ export default defineComponent({
       </h1>
       <h2>
         <input type="radio" v-model="mode" value="load"/> Load schema from json
-        <input type="radio" v-model="mode" value="generate"/> Generate schema from object
+        <input type="radio" v-model="mode" value="generate"/> Generate schema for object
       </h2>
 
       <div v-if="mode == 'load'">
