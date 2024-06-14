@@ -15,9 +15,9 @@ class SchemaTestCase(BaseModel):
 
 cases = [
     SchemaTestCase(
-        dict_schema={'value_type': 'object', 'object_schema': {'fields': [
-            {'name': 'id', 'value_schema': {'value_type': 'integer', 'schema_type': 'value'},
-             'schema_type': 'field'}], 'schema_type': 'object'}, 'schema_type': 'value'},
+        dict_schema={'value_type': 'object',
+                     'object_schema': {'fields': {'id': {'value_type': 'integer', 'schema_type': 'value'}},
+                                       'schema_type': 'object'}, 'schema_type': 'value'},
         generated_from_obj={"id": 123},
         valid_obj=[
             ({'id': 1}, {'id': 1}),
@@ -34,24 +34,16 @@ cases = [
     ),
     SchemaTestCase(
         dict_schema={
-            'value_type': 'object', 'object_schema':
-                {'fields': [{'name': 'id',
-                             'value_schema': {'value_type': 'object',
-                                              'object_schema': {'fields': [
-                                                  {'name': 'qwe',
-                                                   'value_schema': {
-                                                       'value_type': 'integer',
-                                                       'schema_type': 'value'},
-                                                   'schema_type': 'field'},
-                                                  {'name': 'kjwqeh',
-                                                   'value_schema': {
-                                                       'value_type': 'integer',
-                                                       'schema_type': 'value'},
-                                                   'schema_type': 'field'}],
-                                                  'schema_type': 'object'},
+            'value_type': 'object', 'object_schema': {
+                'fields': {'id': {'value_type': 'object',
+                                  'object_schema': {'fields': {
+                                      'qwe': {'value_type': 'integer',
                                               'schema_type': 'value'},
-                             'schema_type': 'field'}], 'schema_type': 'object'},
-            'schema_type': 'value'},
+                                      'kjwqeh': {'value_type': 'integer',
+                                                 'schema_type': 'value'}},
+                                      'schema_type': 'object'},
+                                  'schema_type': 'value'}},
+                'schema_type': 'object'}, 'schema_type': 'value'},
         generated_from_obj={"id": {'qwe': 123, 'kjwqeh': 44312}},
         valid_obj=[
             ({"id": {'qwe': 321, 'kjwqeh': 124214}}, {"id": {'qwe': 321, 'kjwqeh': 124214}}),
@@ -78,10 +70,10 @@ cases = [
         ],
     ),
     SchemaTestCase(
-        dict_schema={'value_type': 'object', 'object_schema': {'fields': [
-            {'name': 'test1', 'value_schema': {'value_type': 'string', 'schema_type': 'value'},
-             'schema_type': 'field'}], 'schema_type': 'object'}, 'array': True, 'schema_type': 'value'},
-        generated_from_obj=[{'test1': '123123'}, {'test1': '123123'}],
+        dict_schema={'value_type': 'object',
+                     'object_schema': {'fields': {'test1': {'value_type': 'string', 'schema_type': 'value'}},
+                                       'schema_type': 'object'}, 'array': True, 'schema_type': 'value'},
+        generated_from_obj=[{'test1': '123qwe123'}, {'test1': '123'}],
         valid_obj=[
             ([{'test1': '1'}, {'test1': '2'}], [{'test1': '1'}, {'test1': '2'}]),
             ([{'test1': '1'}, {'test1': 'qwe'}], [{'test1': '1'}, {'test1': 'qwe'}])
