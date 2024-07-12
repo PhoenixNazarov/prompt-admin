@@ -9,10 +9,12 @@ import {PromptAudit, usePromptAuditStore} from "../../../stores/config/promptAud
 import moment from 'moment';
 import {useAccountStore} from "../../../stores/user.store.ts";
 import {useSettingsStore} from "../../../stores/config/settings.store.ts";
+import CodeText from "../../../components/CodeText.vue";
 
 
 export default defineComponent({
   name: "HintView",
+  components: {CodeText},
   props: {
     prompt: {
       type: Object as PropType<Prompt>
@@ -34,6 +36,14 @@ export default defineComponent({
       settingsStore
     }
   },
+  data() {
+    return {
+      loading: {
+        save: false,
+        preview: false
+      },
+    }
+  },
   methods: {
     mapping(): Mapping | undefined {
       if (this.prompt) return this.mappingStore.getById(this.prompt.mapping_id)
@@ -53,9 +63,11 @@ export default defineComponent({
       if (mapping && this.prompt) return this.mappingEntityStore.getMacroByFilter(mapping, this.prompt).sort((one, two) => one.macro > two.macro ? -1 : 1)
       return []
     },
-    save() {
-      if (this.prompt) this.promptStore.savePrompt(this.prompt)
-      if (this.prompt) this.promptAuditStore.loadForPrompt(this.prompt)
+    async save() {
+      this.loading.save = true
+      if (this.prompt) await this.promptStore.savePrompt(this.prompt)
+      if (this.prompt) await this.promptAuditStore.loadForPrompt(this.prompt)
+      this.loading.save = false
     },
     changes(): PromptAudit[] | undefined {
       if (this.prompt) return this.promptAuditStore.getByPrompt(this.prompt)
@@ -93,12 +105,14 @@ export default defineComponent({
     },
     async preview() {
       if (!this.prompt) return
+      this.loading.preview = true
       try {
         const previewPrompt = await this.promptStore.previewPrompt(this.prompt)
         this.$emit('preview', previewPrompt)
       } catch (e) {
         alert('Cant preview this prompt. Dont use unsupported jinja fields')
       }
+      this.loading.preview = false
     }
   },
 })
@@ -109,8 +123,10 @@ export default defineComponent({
     <div v-if="prompt">
 
       <h1 v-if="prompt.preview != true && !prompt.auditData?.audit">
-        <button class="pointer" @click.prevent="save">Save</button>
-        <button class="pointer" @click.prevent="preview" style="margin-left: 1rem">Preview</button>
+        <VBtn variant="tonal" density="comfortable" @click.prevent="save" :loading="loading.save">Save</VBtn>
+        <VBtn variant="tonal" density="comfortable" @click.prevent="preview" :loading="loading.preview"
+              style="margin-left: 1rem">Preview
+        </VBtn>
       </h1>
       <h1 v-if="prompt.preview == true">Preview</h1>
       <h1 v-if="prompt.auditData?.audit">Change history</h1>
@@ -140,8 +156,11 @@ export default defineComponent({
         <h2>{{ mappingVariable.description }}</h2>
       </div>
 
-      <h1 v-if="output()">Required output format</h1>
-      <h2 class="program">{{ output()?.output }}</h2>
+      <CodeText
+          v-if="output()"
+          title="Required output format"
+          :code="output()?.output"
+      />
 
 
       <h1>Changes History</h1>

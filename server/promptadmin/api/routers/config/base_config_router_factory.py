@@ -34,11 +34,12 @@ class IdsDto(BaseModel):
     ids: list[int]
 
 
-def bind_view(router: APIRouter,
-              entity_data: type(BaseModel),
-              entity: type(BaseEntity),
-              service: AsyncBaseService):
-
+def bind_view(
+        router: APIRouter,
+        entity_data: type(BaseModel),
+        entity: type(BaseEntity),
+        service: AsyncBaseService
+):
     @router.get('/get/all', summary=f"Admin find page: {entity.__name__}", response_model=list[entity])
     async def get_all(request: Request):
         user_data: UserData = request.scope['user_data']

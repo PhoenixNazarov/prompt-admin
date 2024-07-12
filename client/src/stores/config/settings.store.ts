@@ -6,7 +6,8 @@ export const useSettingsStore = defineStore({
     state: () => ({
         changelog_folding: false,
         changelog_different_current: false,
-        changelog_mode: 'split' as 'split' | 'unified'
+        changelog_mode: 'split' as 'split' | 'unified',
+        menuOpenedItems: [] as string[]
     }),
     getters: {},
     actions: {},

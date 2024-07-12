@@ -1,46 +1,94 @@
 <script lang="ts">
 import {defineComponent} from 'vue'
 import {usePromptStore} from "../../../stores/prompt.store.ts";
-import MenuGroup from "./MenuGroup.vue";
 import {useMappingStore} from "../../../stores/config/mapping.store.ts";
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
+import {useSettingsStore} from "../../../stores/config/settings.store.ts";
 
 export default defineComponent({
   name: "WorkplaceMenuView",
-  components: {MenuGroup, FontAwesomeIcon},
+  components: {FontAwesomeIcon},
   setup() {
     const promptStore = usePromptStore()
     const mappingStore = useMappingStore()
+    const settingsStore = useSettingsStore()
     return {
       promptStore,
-      mappingStore
+      mappingStore,
+      settingsStore
+    }
+  },
+  data() {
+    const settingsStore = useSettingsStore()
+    return {
+      opened: settingsStore.menuOpenedItems
+    }
+  },
+  watch: {
+    opened(newVal) {
+      this.settingsStore.menuOpenedItems = newVal
     }
   }
 })
 </script>
 
 <template>
-  <div class="menu">
-    <MenuGroup icon="diagram-project" :bold="true" :name="connection" v-for="[connection, mappingsTable] in mappingStore.getConnections">
-      <MenuGroup icon="table" :name="mappingTable" v-for="[mappingTable, mappings] in mappingsTable"
-                 style="margin-left: 1rem">
-        <MenuGroup :start-open="false" :name="mapping.field" v-for="mapping in mappings"
-                   style="margin-left: 1rem">
-          <ol style="margin: 0">
-            <li class="pointer" v-for="prompt in promptStore.promptsByMapping(mapping.id)"
-                @click.prevent="$emit('selectPrompt', prompt)">
-              {{ prompt.name }}
-            </li>
-          </ol>
-        </MenuGroup>
-      </MenuGroup>
-    </MenuGroup>
-  </div>
+  <VList
+      bg-color="var(--color-4)"
+      density="compact"
+      v-model:opened="opened"
+  >
+    <VSkeletonLoader
+        color="transparent"
+        type="list-item"
+        v-if="mappingStore.loadings.getAll"
+    ></VSkeletonLoader>
+    <VListGroup :value="connection" v-for="[connection, mappingsTable] in mappingStore.getConnections">
+      <template v-slot:activator="{ props }">
+        <VListItem
+            v-bind="props"
+        >
+          <FontAwesomeIcon icon="diagram-project"/>
+          {{ connection }}
+        </VListItem>
+      </template>
+      <VListGroup :value="mappingTable" v-for="[mappingTable, mappings] in mappingsTable">
+        <template v-slot:activator="{ props }">
+          <VListItem
+              v-bind="props"
+          >
+            <FontAwesomeIcon icon="table"/>
+            {{ mappingTable }}
+          </VListItem>
+        </template>
+        <VListGroup :value="mapping.field + mapping.id" v-for="mapping in mappings">
+          <template v-slot:activator="{ props }">
+            <VListItem
+                v-bind="props"
+            >
+              {{ mapping.field }}
+            </VListItem>
+          </template>
+          <VSkeletonLoader
+              color="transparent"
+              type="list-item"
+              v-if="promptStore.loadings.loadAll"
+          ></VSkeletonLoader>
+          <VListItem
+              v-for="prompt in promptStore.promptsByMapping(mapping.id)"
+              @click.prevent="$emit('selectPrompt', prompt)"
+          >
+            {{ prompt.name }}
+          </VListItem>
+        </VListGroup>
+      </VListGroup>
+    </VListGroup>
+  </VList>
 </template>
 
 <style scoped>
-.menu {
-  color: var(--color-5);
-  padding-top: 1rem;
+
+.v-list-item--density-compact.v-list-item--one-line {
+  min-height: unset;
 }
 </style>

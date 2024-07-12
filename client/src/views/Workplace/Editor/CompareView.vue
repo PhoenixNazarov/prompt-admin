@@ -21,7 +21,7 @@ export default defineComponent({
   },
   data() {
     return {
-      height: (window.innerHeight - 5 * parseFloat(getComputedStyle(document.documentElement).fontSize))
+      height: (window.innerHeight - 6 * parseFloat(getComputedStyle(document.documentElement).fontSize))
     }
   }
 })
@@ -40,7 +40,7 @@ export default defineComponent({
         prompt.auditData?.audit.value :
         prompt.value"
         :folding="settingsStore.changelog_folding"
-        :virtual-scroll="{ height: height, 'asd': '123' }"
+        :virtual-scroll="{ height: height }"
         style="    font-size: 0.5rem;"
     />
   </div>

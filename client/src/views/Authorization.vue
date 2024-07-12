@@ -1,11 +1,9 @@
 <script lang="ts">
 import {defineComponent} from 'vue'
 import {useAccountStore} from "../stores/user.store.ts";
-import PaButton from "../components/PaButton.vue";
 
 export default defineComponent({
   name: "Authorization",
-  components: {PaButton},
   setup() {
     const accountStore = useAccountStore()
     return {
@@ -17,29 +15,44 @@ export default defineComponent({
       form: {
         login: '',
         password: ''
-      }
+      },
+      formValid: false,
+      loading: false
     }
   },
   methods: {
-    login() {
-      this.accountStore.login(this.form.login, this.form.password)
+    async login() {
+      this.loading = true
+      await this.accountStore.login(this.form.login, this.form.password)
+      this.loading = false
     }
   }
 })
 </script>
 
 <template>
-  <div class="form">
-    <div>
-      Login
-      <input v-model="form.login" type="text"/>
-    </div>
-    <div>
-      Password
-      <input v-model="form.password" type="password"/>
-    </div>
-    <PaButton text="Login" @click.prevent="login"/>
-  </div>
+  <VSheet class="mx-auto" max-width="300">
+    <VForm>
+      <VTextField
+          v-model="form.login"
+          type="login"
+          label="Login"
+      ></VTextField>
+      <VTextField
+          v-model="form.password"
+          type="password"
+          label="Password"
+      ></VTextField>
+
+      <v-btn
+          :loading="loading"
+          text="Submit"
+          type="submit"
+          @click.prevent="login"
+          block
+      ></v-btn>
+    </VForm>
+  </VSheet>
 </template>
 
 <style scoped>

@@ -1,5 +1,5 @@
 import {defineStore} from "pinia";
-import {abstractStoreFactory, BaseEntity} from "./abstractStoreFactory.ts";
+import {abstractStoreFactory, abstractStoreFactoryState, BaseEntity} from "./abstractStoreFactory.ts";
 import {useMacroStore} from "./macro.store.ts";
 import {Mapping} from "./mapping.store.ts";
 import {Prompt} from "../prompt.store.ts";
@@ -32,7 +32,7 @@ function getByFilter(state, connectionName: string, table: string, field: string
 export const useMappingEntityStore = defineStore({
     id: 'mappingEntity',
     state: () => ({
-        entity: [] as MappingEntity[]
+        ...abstractStoreFactoryState<MappingEntity>()
     }),
     getters: {
         getInputsByFilter: state => {

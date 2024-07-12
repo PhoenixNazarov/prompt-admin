@@ -1,5 +1,5 @@
 import {defineStore} from "pinia";
-import {abstractStoreFactory} from "./abstractStoreFactory.ts";
+import {abstractStoreFactory, abstractStoreFactoryState} from "./abstractStoreFactory.ts";
 
 export interface Variable {
     id: number
@@ -14,7 +14,7 @@ export interface Variable {
 export const useVariableStore = defineStore({
     id: 'variable',
     state: () => ({
-        entity: [] as Variable[]
+        ...abstractStoreFactoryState<Variable>()
     }),
     getters: {},
     actions: {

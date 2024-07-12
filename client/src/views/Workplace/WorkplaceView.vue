@@ -13,10 +13,11 @@ import {useInputStore} from "../../stores/config/input.store.ts";
 import {usePromptAuditStore} from "../../stores/config/promptAudit.store.ts";
 import {useAccountStore} from "../../stores/user.store.ts";
 import CompareView from "./Editor/CompareView.vue";
+import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 
 export default defineComponent({
   name: "WorkplaceView",
-  components: {CompareView, HintView, WorkplaceMenuView, EditorView, MainLayout},
+  components: {FontAwesomeIcon, CompareView, HintView, WorkplaceMenuView, EditorView, MainLayout},
   setup() {
     const promptStore = usePromptStore()
     const mappingStore = useMappingStore()
@@ -39,13 +40,27 @@ export default defineComponent({
   },
   data() {
     return {
-      prompt: null as Prompt | null,
+      openPrompts: [] as Prompt[],
+      selectedPrompt: null as Prompt | null,
     }
   },
   methods: {
     selectPrompt(prompt: Prompt) {
-      this.prompt = prompt
-      this.promptAuditStore.loadForPrompt(this.prompt)
+      if (!this.openPrompts.includes(prompt)) this.openPrompts.push(prompt)
+      this.selectedPrompt = prompt
+      this.promptAuditStore.loadForPrompt(prompt)
+    },
+    closePrompt(prompt: Prompt) {
+      const index = this.openPrompts.indexOf(prompt)
+      if (index > -1) {
+        this.openPrompts.splice(index, 1)
+      }
+      if (this.selectedPrompt == prompt) {
+        setTimeout(() => this.selectedPrompt = this.openPrompts[index - 1], 10)
+      } else {
+        const needSelect = this.selectedPrompt
+        setTimeout(() => this.selectedPrompt = needSelect, 10)
+      }
     }
   },
   mounted() {
@@ -67,14 +82,31 @@ export default defineComponent({
         <WorkplaceMenuView @selectPrompt="selectPrompt"/>
       </div>
       <div class="editor">
-        <CompareView :prompt='prompt' v-if="prompt && prompt.auditData"/>
-        <EditorView :prompt='prompt' v-else-if="prompt && !prompt.auditData"/>
+
+        <VTabs
+            bg-color="var(--color-5)"
+            slider-color="var(--color-4)"
+            v-model="selectedPrompt"
+            show-arrows
+        >
+          <VTab
+              v-for="i in openPrompts"
+              :key="i.id"
+              :text="i.name"
+              :value="i"
+          >
+            {{ i.name }}
+            <FontAwesomeIcon icon="fa-xmark" style="margin-left: 1rem" @click.prevent="closePrompt(i)"/>
+          </VTab>
+        </VTabs>
+        <CompareView :prompt='selectedPrompt' v-if="selectedPrompt && selectedPrompt.auditData"/>
+        <EditorView :prompt='selectedPrompt' v-else-if="selectedPrompt && !selectedPrompt.auditData"/>
         <div style="color: var(--color-5); padding: 1rem" v-else>
           Select need prompt...
         </div>
       </div>
       <div class="hint outer-y">
-        <HintView :prompt="prompt" @preview="selectPrompt"/>
+        <HintView v-if="selectedPrompt" :prompt="selectedPrompt" @preview="selectPrompt"/>
       </div>
     </div>
   </MainLayout>

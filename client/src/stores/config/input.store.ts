@@ -1,5 +1,5 @@
 import {defineStore} from "pinia";
-import {abstractStoreFactory, BaseEntity} from "./abstractStoreFactory.ts";
+import {abstractStoreFactory, abstractStoreFactoryState, BaseEntity} from "./abstractStoreFactory.ts";
 
 export interface Input extends BaseEntity{
     macro: string
@@ -11,7 +11,7 @@ export interface Input extends BaseEntity{
 export const useInputStore = defineStore({
     id: 'input',
     state: () => ({
-        entity: [] as Input[]
+        ...abstractStoreFactoryState<Input>()
     }),
     getters: {
         getById: state => {

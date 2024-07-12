@@ -15,13 +15,20 @@ export interface Prompt {
         audit: PromptAudit,
         prevAudit?: PromptAudit
     }
+
+    llmData?: {
+        response: string
+    }
 }
 
 
 export const usePromptStore = defineStore({
     id: 'prompt',
     state: () => ({
-        prompts: [] as Prompt[]
+        prompts: [] as Prompt[],
+        loadings: {
+            loadAll: false
+        }
     }),
     getters: {
         promptsByMapping: state => {
@@ -30,7 +37,9 @@ export const usePromptStore = defineStore({
     },
     actions: {
         async loadAll() {
+            this.loadings.loadAll = true
             this.prompts = await ApiService.get<Prompt[]>('/api/prompts/load_all')
+            this.loadings.loadAll = false
         },
         async savePrompt(prompt: Prompt) {
             await ApiService.post('/api/prompts/save', prompt)

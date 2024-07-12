@@ -1,5 +1,5 @@
 import {defineStore} from "pinia";
-import {abstractStoreFactory, BaseEntity} from "./abstractStoreFactory.ts";
+import {abstractStoreFactory, abstractStoreFactoryState, BaseEntity} from "./abstractStoreFactory.ts";
 
 export interface Mapping extends BaseEntity{
     table: string
@@ -14,7 +14,7 @@ export interface Mapping extends BaseEntity{
 export const useMappingStore = defineStore({
     id: 'mapping',
     state: () => ({
-        entity: [] as Mapping[]
+        ...abstractStoreFactoryState<Mapping>()
     }),
     getters: {
         getConnections(state) {

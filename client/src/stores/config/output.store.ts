@@ -1,5 +1,5 @@
 import {defineStore} from "pinia";
-import {abstractStoreFactory, BaseEntity} from "./abstractStoreFactory.ts";
+import {abstractStoreFactory, abstractStoreFactoryState, BaseEntity} from "./abstractStoreFactory.ts";
 
 export interface Output extends BaseEntity{
     output: string
@@ -9,7 +9,7 @@ export interface Output extends BaseEntity{
 export const useOutputStore = defineStore({
     id: 'output',
     state: () => ({
-        entity: [] as Output[]
+        ...abstractStoreFactoryState<Output>()
     }),
     getters: {
         getById: state => {

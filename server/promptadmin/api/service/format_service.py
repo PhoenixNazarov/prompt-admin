@@ -1,3 +1,5 @@
+import json
+
 from pydantic import BaseModel
 
 from promptadmin.format.dto import ConsistentFormatReport
@@ -23,6 +25,14 @@ class ValidateOutput(BaseModel):
     cant_load_schema_error: str | None = None
     cant_validate_value_error: str | None = None
     validate_value: str | None = None
+
+
+def parse_json_garbage(s):
+    s = s[next(idx for idx, c in enumerate(s) if c in "{["):]
+    try:
+        return json.loads(s)
+    except json.JSONDecodeError as e:
+        return json.loads(s[:e.pos])
 
 
 class FormatService:

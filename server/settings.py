@@ -24,6 +24,9 @@ class _Settings(BaseSettings):
 
     connections: dict[str, str] = {}
 
+    anthropic_key: str = os.environ['ANTHROPIC_KEY']
+    openai_key: str = os.environ['OPENAI_KEY']
+
 
 SETTINGS = _Settings()
 
