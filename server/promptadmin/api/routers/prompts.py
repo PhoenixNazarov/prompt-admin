@@ -1,4 +1,5 @@
 import asyncio
+import logging
 
 import asyncpg
 from fastapi import APIRouter, Request
@@ -12,6 +13,8 @@ from promptadmin.data.service.mapping_service import MappingService
 from promptadmin.data.service.prompt_audit_service import PromptAuditService
 
 from settings import SETTINGS
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -27,7 +30,12 @@ async def load_all(request: Request):
         raise ValueError()
 
     async def load_mapping(mapping: Mapping) -> list[Prompt]:
-        conn = await asyncpg.connect(SETTINGS.connections[mapping.connection_name])
+        try:
+            conn = await asyncpg.connect(SETTINGS.connections[mapping.connection_name])
+        except Exception as e:
+            logger.error('Error connection database', exc_info=e)
+            return []
+
         mapping_name = f', {mapping.field_name}' if mapping.field_name else ''
 
         row = await conn.fetch(f'SELECT id, {mapping.field} {mapping_name} FROM {mapping.table}')

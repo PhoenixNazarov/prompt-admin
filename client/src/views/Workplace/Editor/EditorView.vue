@@ -8,6 +8,7 @@ import {useMappingStore} from "../../../stores/config/mapping.store.ts";
 import {useMappingEntityStore} from "../../../stores/config/mappingEntity.store.ts";
 import {EditorView} from '@codemirror/view'
 import {createCompletions} from "./completion.ts";
+import {buildJinjaListLinter, buildJinjaVarLinter} from "./linter.ts";
 
 export default defineComponent({
   name: "EditorView",
@@ -23,6 +24,8 @@ export default defineComponent({
     extensions() {
       const ext = [EditorView.lineWrapping, xml(), json()]
       const mapping = this.mappingStore.getByTableField(this.prompt.table, this.prompt.field)
+      ext.push(buildJinjaVarLinter())
+      ext.push(buildJinjaListLinter())
       if (mapping) {
         ext.push(createCompletions(mapping, this.prompt))
       }
