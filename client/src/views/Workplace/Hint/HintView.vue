@@ -5,16 +5,17 @@ import {Mapping, useMappingStore} from "../../../stores/config/mapping.store.ts"
 import {useMappingEntityStore} from "../../../stores/config/mappingEntity.store.ts";
 import {Macro} from "../../../stores/config/macro.store.ts";
 import {Output} from "../../../stores/config/output.store.ts";
-import {PromptAudit, usePromptAuditStore} from "../../../stores/config/promptAudit.store.ts";
-import moment from 'moment';
+import {usePromptAuditStore} from "../../../stores/config/promptAudit.store.ts";
 import {useAccountStore} from "../../../stores/user.store.ts";
 import {useSettingsStore} from "../../../stores/config/settings.store.ts";
 import CodeText from "../../../components/CodeText.vue";
+import ChangesHistory from "./ChangesHistory.vue";
+import {dateFormat} from "../../Utils.ts";
 
 
 export default defineComponent({
   name: "HintView",
-  components: {CodeText},
+  components: {ChangesHistory, CodeText},
   props: {
     prompt: {
       type: Object as PropType<Prompt>
@@ -45,6 +46,7 @@ export default defineComponent({
     }
   },
   methods: {
+    dateFormat,
     mapping(): Mapping | undefined {
       if (this.prompt) return this.mappingStore.getById(this.prompt.mapping_id)
     },
@@ -66,42 +68,8 @@ export default defineComponent({
     async save() {
       this.loading.save = true
       if (this.prompt) await this.promptStore.savePrompt(this.prompt)
-      if (this.prompt) await this.promptAuditStore.loadForPrompt(this.prompt)
+      if (this.prompt) await this.promptAuditStore.loadForPrompt(this.prompt, 5, 0)
       this.loading.save = false
-    },
-    changes(): PromptAudit[] | undefined {
-      if (this.prompt) return this.promptAuditStore.getByPrompt(this.prompt)
-    },
-    dateFormat(input: Date): String {
-      return moment(input).format('MM/DD/YYYY HH:mm')
-    },
-    getAccountLogin(id: number | undefined): String {
-      if (id != undefined) {
-        const account = this.accountStore.getById(id)
-        if (account) return account.login
-      }
-      return 'undefined'
-    },
-    getPrevChanges(ind: number): PromptAudit | undefined {
-      const changes = this.changes()
-      if (!changes || ind >= changes.length) return
-      return changes[ind + 1]
-    },
-    previewPromptAudit(promptAudit: PromptAudit, prevPromptAudit: PromptAudit | undefined) {
-      if (!this.prompt) return
-      const prompt: Prompt = {
-        mapping_id: this.prompt.mapping_id,
-        table: this.prompt.table,
-        field: this.prompt.field,
-        id: this.prompt.id,
-        value: this.prompt.value,
-        name: this.prompt.name,
-        auditData: {
-          audit: promptAudit,
-          prevAudit: prevPromptAudit
-        }
-      }
-      this.$emit('preview', prompt)
     },
     async preview() {
       if (!this.prompt) return
@@ -122,39 +90,51 @@ export default defineComponent({
   <div class="hint outer-y">
     <div v-if="prompt">
 
-      <h1 v-if="prompt.preview != true && !prompt.auditData?.audit">
+      <div v-if="prompt.preview != true && !prompt.auditData?.audit">
         <VBtn variant="tonal" density="comfortable" @click.prevent="save" :loading="loading.save">Save</VBtn>
         <VBtn variant="tonal" density="comfortable" @click.prevent="preview" :loading="loading.preview"
               style="margin-left: 1rem">Preview
         </VBtn>
-      </h1>
+      </div>
       <h1 v-if="prompt.preview == true">Preview</h1>
       <h1 v-if="prompt.auditData?.audit">Change history</h1>
       <h2 v-if="prompt.auditData?.audit"><b>Time change: </b>
         {{ dateFormat(new Date(prompt.auditData?.audit.time_create)) }}</h2>
-      <h2 v-if="prompt.auditData?.audit"><b>Account: </b> {{ getAccountLogin(prompt.auditData?.audit.account_id) }}</h2>
-
-      <h1> {{ mapping()?.table }}.{{ mapping()?.field }}</h1>
-      <h2><b>connection_name: </b> {{ mapping()?.connection_name }}</h2>
-      <h2><b>field_name: </b> {{ mapping()?.field_name }}</h2>
-      <h2><b>prompt_id: </b> {{ prompt.id }}</h2>
+      <h2 v-if="prompt.auditData?.audit"><b>Account: </b> {{ accountStore.getLoginById(prompt.auditData?.audit.account_id) }}</h2>
 
 
-      <h1> {{ prompt.name }}</h1>
-      <h2>{{ mapping()?.description }}</h2>
+      <VCard class="mt-4" :title="mapping()?.table + '.' + mapping()?.field" variant="tonal">
+        <VCardText>
+          <b>connection_name: </b> {{ mapping()?.connection_name }}<br>
+          <b>field_name: </b> {{ mapping()?.field_name }}<br>
+          <b>prompt_id: </b> {{ prompt.id }}<br>
+        </VCardText>
+      </VCard>
 
+      <VCard class="mt-4" :title="prompt.name" variant="tonal">
+        <VCardText>
+          {{ mapping()?.description }}
+        </VCardText>
+      </VCard>
 
-      <h1 v-if="inputs().length > 0">Inputs</h1>
-      <div v-for="mappingVariable in inputs()">
-        <h2><b>{{ mappingVariable.macro }}</b>: </h2>
-        <h2>{{ mappingVariable.description }}</h2>
-      </div>
+      <VCard class="mt-4" v-if="inputs().length > 0" title="Inputs" variant="tonal">
+        <VCardText>
+          <div v-for="mappingVariable in inputs()">
+            <b>{{ mappingVariable.macro }}</b>:
+            {{ mappingVariable.description }}<br>
+          </div>
+        </VCardText>
+      </VCard>
 
-      <h1 v-if="macros().length > 0">Macros</h1>
-      <div v-for="mappingVariable in macros()">
-        <h2><b>{{ mappingVariable.macro }}</b>: </h2>
-        <h2>{{ mappingVariable.description }}</h2>
-      </div>
+      <VCard class="mt-4" v-if="macros().length > 0" title="Macros" variant="tonal">
+        <VCardText>
+          <div v-for="mappingVariable in macros()">
+            <b>{{ mappingVariable.macro }}</b>:
+            {{ mappingVariable.description }} <br>
+          </div>
+        </VCardText>
+      </VCard>
+
 
       <CodeText
           v-if="output()"
@@ -162,13 +142,7 @@ export default defineComponent({
           :code="output()?.output"
       />
 
-
-      <h1>Changes History</h1>
-      <h2 v-if="changes() != undefined && changes()?.length == 0">Not changed</h2>
-      <h2 v-for="(promptAudit, ind) in changes()" class="pointer"
-          @click.prevent="previewPromptAudit(promptAudit, getPrevChanges(ind))">
-        {{ dateFormat(new Date(promptAudit.time_create)) }}: {{ getAccountLogin(promptAudit.account_id) }}
-      </h2>
+      <ChangesHistory class="mt-4" :prompt="prompt" @preview="prompt => $emit('preview', prompt)"/>
     </div>
 
     <h1>Settings</h1>
@@ -186,6 +160,7 @@ export default defineComponent({
 @import '/src/styles/hint.css';
 
 .hint {
+  padding: 1rem;
   color: var(--color-5);
 }
 </style>

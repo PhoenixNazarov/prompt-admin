@@ -48,7 +48,6 @@ export default defineComponent({
     selectPrompt(prompt: Prompt) {
       if (!this.openPrompts.includes(prompt)) this.openPrompts.push(prompt)
       this.selectedPrompt = prompt
-      this.promptAuditStore.loadForPrompt(prompt)
     },
     closePrompt(prompt: Prompt) {
       const index = this.openPrompts.indexOf(prompt)

@@ -22,6 +22,11 @@ export const useAccountStore = defineStore({
                 return state.entity.find(e => e.id == id)
             }
         },
+        getLoginById: state => {
+            return (id: number | undefined) => {
+                return state.entity.find(e => e.id == id)?.login
+            }
+        }
     },
     actions: {
         async loadMe() {
