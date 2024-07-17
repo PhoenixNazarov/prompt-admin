@@ -11,11 +11,22 @@ import {useSettingsStore} from "../../../stores/config/settings.store.ts";
 import CodeText from "../../../components/CodeText.vue";
 import ChangesHistory from "./ChangesHistory.vue";
 import {dateFormat} from "../../Utils.ts";
+import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
+import {RouterService} from "../../../plugins/router.ts";
+import SettingsEditView from "../../Account/SettingsEditView.vue";
+import InputList from "../../Tables/Edit/InputList.vue";
+import MacroList from "../../Tables/Edit/MacroList.vue";
+import OutputList from "../../Tables/Edit/OutputList.vue";
 
 
 export default defineComponent({
   name: "HintView",
-  components: {ChangesHistory, CodeText},
+  computed: {
+    RouterService() {
+      return RouterService
+    }
+  },
+  components: {OutputList, MacroList, InputList, SettingsEditView, FontAwesomeIcon, ChangesHistory, CodeText},
   props: {
     prompt: {
       type: Object as PropType<Prompt>
@@ -81,6 +92,16 @@ export default defineComponent({
         alert('Cant preview this prompt. Dont use unsupported jinja fields')
       }
       this.loading.preview = false
+    },
+    async createMappingEntity(entity: string, entity_id: number) {
+      await RouterService.goToTableItem('mapping-entity', -1, {
+        connection_name: this.mapping()?.connection_name,
+        table: this.prompt?.table,
+        field: this.prompt?.field,
+        name: this.prompt?.name,
+        entity: entity,
+        entity_id: entity_id
+      })
     }
   },
 })
@@ -100,10 +121,16 @@ export default defineComponent({
       <h1 v-if="prompt.auditData?.audit">Change history</h1>
       <h2 v-if="prompt.auditData?.audit"><b>Time change: </b>
         {{ dateFormat(new Date(prompt.auditData?.audit.time_create)) }}</h2>
-      <h2 v-if="prompt.auditData?.audit"><b>Account: </b> {{ accountStore.getLoginById(prompt.auditData?.audit.account_id) }}</h2>
+      <h2 v-if="prompt.auditData?.audit"><b>Account: </b>
+        {{ accountStore.getLoginById(prompt.auditData?.audit.account_id) }}</h2>
 
 
-      <VCard class="mt-4" :title="mapping()?.table + '.' + mapping()?.field" variant="tonal">
+      <VCard class="mt-4" variant="tonal">
+        <VCardTitle>
+          {{ mapping()?.table + '.' + mapping()?.field }}
+          <FontAwesomeIcon icon="circle-info" class="pointer"
+                           @click.prevent="RouterService.goToTableItem('mapping', mapping()?.id)"/>
+        </VCardTitle>
         <VCardText>
           <b>connection_name: </b> {{ mapping()?.connection_name }}<br>
           <b>field_name: </b> {{ mapping()?.field_name }}<br>
@@ -117,47 +144,92 @@ export default defineComponent({
         </VCardText>
       </VCard>
 
-      <VCard class="mt-4" v-if="inputs().length > 0" title="Inputs" variant="tonal">
+      <VCard class="mt-4" variant="tonal">
+        <VCardTitle>
+          Inputs
+          <VDialog>
+            <template v-slot:activator="{ props: activatorProps }">
+              <FontAwesomeIcon icon="circle-plus" class="pointer" v-bind="activatorProps"/>
+            </template>
+            <template v-slot:default="{ isActive }">
+              <VCard>
+                <InputList :create="false" @clickRow="e => createMappingEntity('input', e.id)"/>
+              </VCard>
+            </template>
+          </VDialog>
+        </VCardTitle>
         <VCardText>
           <div v-for="mappingVariable in inputs()">
+            <FontAwesomeIcon icon="circle-info" class="pointer circle-info"
+                             @click.prevent="RouterService.goToTableItem('input', mappingVariable.id)"/>
             <b>{{ mappingVariable.macro }}</b>:
             {{ mappingVariable.description }}<br>
           </div>
         </VCardText>
       </VCard>
 
-      <VCard class="mt-4" v-if="macros().length > 0" title="Macros" variant="tonal">
+      <VCard class="mt-4" variant="tonal">
+        <VCardTitle>
+          Macros
+          <VDialog>
+            <template v-slot:activator="{ props: activatorProps }">
+              <FontAwesomeIcon icon="circle-plus" class="pointer" v-bind="activatorProps"/>
+            </template>
+            <template v-slot:default="{ isActive }">
+              <VCard>
+                <MacroList :create="false" @clickRow="e => createMappingEntity('macro', e.id)"/>
+              </VCard>
+            </template>
+          </VDialog>
+        </VCardTitle>
         <VCardText>
           <div v-for="mappingVariable in macros()">
+            <FontAwesomeIcon icon="circle-info" class="pointer circle-info"
+                             @click.prevent="RouterService.goToTableItem('macro', mappingVariable.id)"/>
             <b>{{ mappingVariable.macro }}</b>:
             {{ mappingVariable.description }} <br>
           </div>
         </VCardText>
       </VCard>
 
-
+      <VCard variant="plain" title="Output" v-if="!output()">
+        <VCardText>
+          <VDialog>
+            <template v-slot:activator="{ props: activatorProps }">
+              <div class="pointer" v-bind="activatorProps">
+                Bind output
+                <FontAwesomeIcon icon="circle-plus" class="pointer"/>
+              </div>
+            </template>
+            <template v-slot:default="{ isActive }">
+              <VCard>
+                <OutputList :create="false" @clickRow="e => createMappingEntity('output', e.id)"/>
+              </VCard>
+            </template>
+          </VDialog>
+        </VCardText>
+      </VCard>
       <CodeText
           v-if="output()"
           title="Required output format"
           :code="output()?.output"
+          :info-icon="true"
+          @info="RouterService.goToTableItem('output', output()?.id)"
       />
 
       <ChangesHistory class="mt-4" :prompt="prompt" @preview="prompt => $emit('preview', prompt)"/>
     </div>
 
-    <h1>Settings</h1>
-    <h2>changelog_folding <input type="checkbox" v-model="settingsStore.changelog_folding"/></h2>
-    <h2>changelog_different_current <input type="checkbox" v-model="settingsStore.changelog_different_current"/></h2>
-    <h2>changelog_different_current
-      <input type="radio" v-model="settingsStore.changelog_mode" value="split"/> Split
-      <input type="radio" v-model="settingsStore.changelog_mode" value="unified"/> Unfilled
-    </h2>
-
+    <SettingsEditView/>
   </div>
 </template>
 
 <style scoped>
 @import '/src/styles/hint.css';
+
+.circle-info {
+  margin-right: 0.25rem
+}
 
 .hint {
   padding: 1rem;

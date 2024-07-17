@@ -54,6 +54,7 @@ export default defineComponent({
       density="compact"
       variant="outlined"
       :loading="macroStore.loadings.loadAll"
+      @click:row="(event, row) => $emit('clickRow', row.item)"
   >
     <template v-slot:top>
       <VToolbar

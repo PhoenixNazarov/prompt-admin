@@ -1,8 +1,10 @@
 <script lang="ts">
 import {defineComponent} from 'vue'
+import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 
 export default defineComponent({
   name: "CodeText",
+  components: {FontAwesomeIcon},
   props: {
     title: {
       type: String
@@ -12,13 +14,21 @@ export default defineComponent({
     },
     error: {
       type: String
+    },
+    infoIcon: {
+      type: Boolean,
+      default: false
     }
   }
 })
 </script>
 
 <template>
-  <VCard :title="title" variant="text">
+  <VCard variant="text">
+    <VCardTitle>
+      {{ title }}
+      <FontAwesomeIcon v-if="infoIcon" icon="circle-info" class="pointer" @click.prevent="$emit('info')"/>
+    </VCardTitle>
     <VCardText>
       <div class="program-general" :class="{'program-error': code != undefined}" v-if="error">
         {{ error }}

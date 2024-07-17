@@ -127,7 +127,13 @@ const router = createRouter({
                                             path: ':id',
                                             component: () => import('../views/Tables/Edit/MappingEntityItem.vue'),
                                             props: route => {
-                                                return {id: tableIdProp(route.params.id as string)}
+                                                let args = {}
+                                                try {
+                                                    args = JSON.parse(route.hash.substring(1))
+                                                } catch (e) {
+
+                                                }
+                                                return {id: tableIdProp(route.params.id as string), ...args}
                                             }
                                         }
                                     ]
@@ -239,8 +245,8 @@ export class RouterService {
         await router.push('/account')
     }
 
-    static async goToTableItem(name = 'mapping', id = -1) {
-        await router.push(`/table/${name}/${id}`)
+    static async goToTableItem(name = 'mapping', id = -1, preSet: Object = {}) {
+        await router.push(`/table/${name}/${id}#${JSON.stringify(preSet)}`)
     }
 
 }

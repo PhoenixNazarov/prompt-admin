@@ -2,9 +2,11 @@
 import {defineComponent} from 'vue'
 import {useAccountStore} from "../../stores/user.store.ts";
 import {RouterService} from "../../plugins/router.ts";
+import SettingsEditView from "./SettingsEditView.vue";
 
 export default defineComponent({
   name: "AccountView",
+  components: {SettingsEditView},
   setup() {
     const accountStore = useAccountStore()
     return {
@@ -39,12 +41,17 @@ export default defineComponent({
       <VCardText>
         <VRow>
           <VCol>
-            <VTextField v-model="login" label="Login" disabled variant="outlined"/>
+            <VTextField hide-details v-model="login" label="Login" disabled variant="outlined"/>
           </VCol>
         </VRow>
         <VRow>
           <VCol>
             <VBtn text="Logout" :loading="loadingLogout" @click.prevent="logout"/>
+          </VCol>
+        </VRow>
+        <VRow>
+          <VCol>
+            <SettingsEditView/>
           </VCol>
         </VRow>
       </VCardText>

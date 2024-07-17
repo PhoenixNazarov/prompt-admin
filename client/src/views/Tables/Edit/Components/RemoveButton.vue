@@ -1,5 +1,5 @@
 <script lang="ts">
-import {defineComponent, PropType} from 'vue'
+import {defineComponent} from 'vue'
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {RouterService} from "../../../../plugins/router.ts";
 import CodeText from "../../../../components/CodeText.vue";
@@ -16,10 +16,10 @@ export default defineComponent({
       type: String
     },
     text: {
-      type: Object as PropType<object | string>
+      type: String
     },
     remove: {
-      type: Object as PropType<() => Promise<void>>,
+      type: Function,
       required: true
     },
     listName: {

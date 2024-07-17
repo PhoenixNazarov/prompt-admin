@@ -60,6 +60,11 @@ export default defineComponent({
         const needSelect = this.selectedPrompt
         setTimeout(() => this.selectedPrompt = needSelect, 10)
       }
+    },
+    name(prompt: Prompt) {
+      if (prompt.preview) return `PREVIEW: ${prompt.name}`
+      if (prompt.auditData) return `COMPARE: ${prompt.name}`
+      return prompt.name
     }
   },
   mounted() {
@@ -90,10 +95,9 @@ export default defineComponent({
         <VTab
             v-for="i in openPrompts"
             :key="i.id"
-            :text="i.name"
             :value="i"
         >
-          {{ i.name }}
+          {{ name(i) }}
           <FontAwesomeIcon icon="fa-xmark" style="margin-left: 1rem" @click.prevent="closePrompt(i)"/>
         </VTab>
       </VTabs>
