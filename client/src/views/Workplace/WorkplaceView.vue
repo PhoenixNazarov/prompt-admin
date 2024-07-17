@@ -64,51 +64,49 @@ export default defineComponent({
   },
   mounted() {
     this.promptStore.loadAll()
-    this.mappingStore.getAll()
-    this.macroStore.getAll()
-    this.mappingEntityStore.getAll()
-    this.outputStore.getAll()
-    this.inputStore.getAll()
-    this.accountStore.getAll()
+    this.mappingStore.loadAll()
+    this.macroStore.loadAll()
+    this.mappingEntityStore.loadAll()
+    this.outputStore.loadAll()
+    this.inputStore.loadAll()
+    this.accountStore.loadAll()
   },
 })
 </script>
 
 <template>
-  <MainLayout @setView="$emit">
-    <div class="workplace">
-      <div class="menu outer-y">
-        <WorkplaceMenuView @selectPrompt="selectPrompt"/>
-      </div>
-      <div class="editor">
+  <div class="workplace">
+    <div class="menu outer-y">
+      <WorkplaceMenuView @selectPrompt="selectPrompt"/>
+    </div>
+    <div class="editor">
 
-        <VTabs
-            bg-color="var(--color-5)"
-            slider-color="var(--color-4)"
-            v-model="selectedPrompt"
-            show-arrows
+      <VTabs
+          bg-color="var(--color-5)"
+          slider-color="var(--color-4)"
+          v-model="selectedPrompt"
+          show-arrows
+      >
+        <VTab
+            v-for="i in openPrompts"
+            :key="i.id"
+            :text="i.name"
+            :value="i"
         >
-          <VTab
-              v-for="i in openPrompts"
-              :key="i.id"
-              :text="i.name"
-              :value="i"
-          >
-            {{ i.name }}
-            <FontAwesomeIcon icon="fa-xmark" style="margin-left: 1rem" @click.prevent="closePrompt(i)"/>
-          </VTab>
-        </VTabs>
-        <CompareView :prompt='selectedPrompt' v-if="selectedPrompt && selectedPrompt.auditData"/>
-        <EditorView :prompt='selectedPrompt' v-else-if="selectedPrompt && !selectedPrompt.auditData"/>
-        <div style="color: var(--color-5); padding: 1rem" v-else>
-          Select need prompt...
-        </div>
-      </div>
-      <div class="hint outer-y">
-        <HintView v-if="selectedPrompt" :prompt="selectedPrompt" @preview="selectPrompt"/>
+          {{ i.name }}
+          <FontAwesomeIcon icon="fa-xmark" style="margin-left: 1rem" @click.prevent="closePrompt(i)"/>
+        </VTab>
+      </VTabs>
+      <CompareView :prompt='selectedPrompt' v-if="selectedPrompt && selectedPrompt.auditData"/>
+      <EditorView :prompt='selectedPrompt' v-else-if="selectedPrompt && !selectedPrompt.auditData"/>
+      <div style="color: var(--color-5); padding: 1rem" v-else>
+        Select need prompt...
       </div>
     </div>
-  </MainLayout>
+    <div class="hint outer-y">
+      <HintView v-if="selectedPrompt" :prompt="selectedPrompt" @preview="selectPrompt"/>
+    </div>
+  </div>
 </template>
 
 <style scoped>

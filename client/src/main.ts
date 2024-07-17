@@ -5,6 +5,7 @@ import {installDiff} from "./plugins/diff.ts";
 import {installPinia} from "./plugins/pinia.ts";
 import {installFortAwesome} from "./plugins/fortawesome.ts";
 import {installVuetify} from "./plugins/vuetify.ts";
+import {installRouter} from "./plugins/router.ts";
 
 
 const app = createApp(App)
@@ -14,6 +15,7 @@ installDiff(app)
 installPinia(app)
 installFortAwesome(app)
 installVuetify(app)
+installRouter(app)
 
 // Mount
 app.mount('#app')

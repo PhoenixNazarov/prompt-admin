@@ -1,7 +1,12 @@
 import {defineStore} from "pinia";
-import {abstractStoreFactory, abstractStoreFactoryState, BaseEntity} from "./abstractStoreFactory.ts";
+import {
+    abstractStoreFactory,
+    abstractStoreFactoryGetters,
+    abstractStoreFactoryState,
+    BaseEntity
+} from "./abstractStoreFactory.ts";
 
-export interface Mapping extends BaseEntity{
+export interface Mapping extends BaseEntity {
     table: string
     field: string
 
@@ -43,11 +48,9 @@ export const useMappingStore = defineStore({
         getByTableField: state => {
             return (table: string, field: string) => state.entity.find(e => e.table == table && e.field == field)
         },
-        getById: state => {
-            return (id: number) => state.entity.find(e => e.id == id)
-        }
+        ...abstractStoreFactoryGetters<Mapping>()
     },
     actions: {
-        ...abstractStoreFactory('mapping')
+        ...abstractStoreFactory<Mapping>('mapping')
     }
 })

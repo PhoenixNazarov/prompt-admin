@@ -1,0 +1,242 @@
+import {createRouter, createWebHistory} from "vue-router";
+import type {App} from "vue";
+import {useAccountStore} from "../stores/user.store.ts";
+import {useMappingStore} from "../stores/config/mapping.store.ts";
+import {useMappingEntityStore} from "../stores/config/mappingEntity.store.ts";
+import {useOutputStore} from "../stores/config/output.store.ts";
+import {usePromptStore} from "../stores/prompt.store.ts";
+import {useMacroStore} from "../stores/config/macro.store.ts";
+import {useInputStore} from "../stores/config/input.store.ts";
+
+
+function tableIdProp(id: string) : number | undefined{
+    const number = Number.parseInt(id)
+    return number == -1 ? undefined : number
+}
+
+
+const router = createRouter({
+    history: createWebHistory(),
+    routes: [
+        {
+            name: 'MainGroup',
+            path: '',
+            redirect: '/authorization',
+            children: [
+                {
+                    name: 'NoAuthGroup',
+                    path: '/authorization',
+                    component: () => import('../views/Authorization.vue'),
+                    async beforeEnter(_to, _from, next) {
+                        const accountStore = useAccountStore()
+                        await accountStore.loadMe()
+                        if (accountStore.logged) {
+                            next('/workplace')
+                        } else {
+                            next()
+                        }
+                    },
+                },
+                {
+                    name: 'AuthGroup',
+                    path: '',
+                    component: () => import('../layouts/MainLayout.vue'),
+                    async beforeEnter(_to, _from, next) {
+                        const accountStore = useAccountStore()
+                        await accountStore.loadMe()
+                        if (!accountStore.logged) {
+                            next('/authorization')
+                        } else {
+                            next()
+                        }
+                    },
+                    children: [
+                        {
+                            name: 'Workplace',
+                            path: '/workplace',
+                            component: () => import('../views/Workplace/WorkplaceView.vue')
+                        },
+                        {
+                            name: 'Format',
+                            path: '/format',
+                            component: () => import('../views/Format/FormatView.vue')
+                        },
+                        {
+                            name: 'Table',
+                            path: '/table',
+                            redirect: '/table/mapping',
+                            async beforeEnter() {
+                                const mappingStore = useMappingStore()
+                                const mappingEntityStore = useMappingEntityStore()
+                                const outputStore = useOutputStore()
+                                const promptStore = usePromptStore()
+                                const macroStore = useMacroStore()
+                                const inputStore = useInputStore()
+
+                                await Promise.all([
+                                    mappingStore.loadAll(),
+                                    mappingEntityStore.loadAll(),
+                                    outputStore.loadAll(),
+                                    macroStore.loadAll(),
+                                    inputStore.loadAll()
+                                ])
+                                promptStore.loadAll().then()
+                            },
+                            component: () => import('../views/Tables/Edit/Components/TableLayout.vue'),
+                            props: route => {
+                                return {list: route.meta.list as string}
+                            },
+                            children: [
+                                {
+                                    name: 'MappingTable',
+                                    path: 'mapping',
+                                    meta: {list: 'mapping'},
+                                    children: [
+                                        {
+                                            name: 'MappingList',
+                                            path: '',
+                                            component: () => import('../views/Tables/Edit/MappingList.vue'),
+                                        },
+                                        {
+                                            name: 'MappingItem',
+                                            path: ':id',
+                                            component: () => import('../views/Tables/Edit/MappingItem.vue'),
+                                            props: route => {
+                                                return {id: tableIdProp(route.params.id as string)}
+                                            }
+                                        },
+                                    ]
+                                },
+                                {
+                                    name: 'MappingEntityTable',
+                                    path: 'mapping-entity',
+                                    meta: {list: 'mapping-entity'},
+                                    children: [
+                                        {
+                                            name: 'MappingEntityList',
+                                            path: '',
+                                            component: () => import('../views/Tables/Edit/MappingEntityList.vue'),
+                                        },
+                                        {
+                                            name: 'MappingEntityItem',
+                                            path: ':id',
+                                            component: () => import('../views/Tables/Edit/MappingEntityItem.vue'),
+                                            props: route => {
+                                                return {id: tableIdProp(route.params.id as string)}
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    name: 'MacroTable',
+                                    path: 'macro',
+                                    meta: {list: 'macro'},
+                                    children: [
+                                        {
+                                            name: 'MacroList',
+                                            path: '',
+                                            component: () => import('../views/Tables/Edit/MacroList.vue')
+                                        },
+                                        {
+                                            name: 'MacroItem',
+                                            path: ':id',
+                                            component: () => import('../views/Tables/Edit/MacroItem.vue'),
+                                            props: route => {
+                                                return {id: tableIdProp(route.params.id as string)}
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    name: 'InputTable',
+                                    path: 'input',
+                                    meta: {list: 'input'},
+                                    children: [
+                                        {
+                                            name: 'InputList',
+                                            path: '',
+                                            component: () => import('../views/Tables/Edit/InputList.vue')
+                                        },
+                                        {
+                                            name: 'InputItem',
+                                            path: ':id',
+                                            component: () => import('../views/Tables/Edit/InputItem.vue'),
+                                            props: route => {
+                                                return {id: tableIdProp(route.params.id as string)}
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    name: 'OutputTable',
+                                    path: 'output',
+                                    meta: {list: 'output'},
+                                    children: [
+                                        {
+                                            name: 'OutputList',
+                                            path: '',
+                                            component: () => import('../views/Tables/Edit/OutputList.vue'),
+                                        },
+                                        {
+                                            name: 'OutputItem',
+                                            path: ':id',
+                                            component: () => import('../views/Tables/Edit/OutputItem.vue'),
+                                            props: route => {
+                                                return {id: tableIdProp(route.params.id as string)}
+                                            }
+                                        },
+                                    ]
+                                },
+                                {
+                                    name: 'PromptTable',
+                                    path: 'prompt',
+                                    meta: {list: 'prompt'},
+                                    children: [
+                                        {
+                                            name: 'PromptList',
+                                            path: '',
+                                            component: () => import('../views/Tables/Edit/PromptList.vue'),
+                                        }
+                                    ]
+                                },
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            path: '/:pathMatch(.*)*',
+            name: 'NotFound',
+            redirect: '/authorization'
+        }
+    ]
+});
+
+export class RouterService {
+    static async goToAuthorization() {
+        await router.push('/authorization')
+    }
+
+    static async goToWorkplace() {
+        await router.push('/workplace')
+    }
+
+    static async goToFormat() {
+        await router.push('/format')
+    }
+
+    static async goToTableList(name = 'mapping') {
+        await router.push(`/table/${name}`)
+    }
+
+    static async goToTableItem(name = 'mapping', id = -1) {
+        await router.push(`/table/${name}/${id}`)
+    }
+
+}
+
+
+export function installRouter(app: App) {
+    app.use(router)
+}

@@ -1,9 +1,15 @@
 <script lang="ts">
 import {defineComponent} from 'vue'
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
+import {RouterService} from "../plugins/router.ts";
 
 export default defineComponent({
   name: "MainLayout",
+  computed: {
+    RouterService() {
+      return RouterService
+    }
+  },
   components: {FontAwesomeIcon}
 })
 </script>
@@ -11,19 +17,24 @@ export default defineComponent({
 <template>
   <div>
     <div class="header">
-      <div class="name case" @click.prevent="$emit('setView', 'workplace')">Prompt Admin</div>
-      <div class="case" @click.prevent="$emit('setView', 'workplace')">
+      <div class="name case" @click.prevent="RouterService.goToWorkplace()">Prompt Admin</div>
+      <div class="case" @click.prevent="RouterService.goToWorkplace()">
         <FontAwesomeIcon icon="pen"/>
         Editor
       </div>
 
-      <div class="case" @click.prevent="$emit('setView', 'format')">
+      <div class="case" @click.prevent="RouterService.goToFormat()">
         <FontAwesomeIcon icon="calculator"/>
         Format
       </div>
+
+      <div class="case" @click.prevent="RouterService.goToTableList()">
+        <FontAwesomeIcon icon="table"/>
+        Table
+      </div>
     </div>
     <div class="inner">
-      <slot/>
+      <RouterView/>
     </div>
   </div>
 </template>

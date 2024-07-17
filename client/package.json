@@ -14,6 +14,7 @@
     "@codemirror/lang-xml": "^6.x",
     "@fortawesome/free-solid-svg-icons": "^6.5.2",
     "@fortawesome/vue-fontawesome": "^3.0.8",
+    "@mdi/font": "^7.4.47",
     "axios": "==1.6.0",
     "dedent": "^1.5.3",
     "moment": "^2.30.1",
@@ -22,8 +23,8 @@
     "vue": "^3.4.21",
     "vue-codemirror": "^6.1.1",
     "vue-diff": "^1.2.4",
-    "vuetify": "^3.6.12",
-    "@mdi/font": "^7.4.47"
+    "vue-router": "^4.4.0",
+    "vuetify": "^3.6.12"
   },
   "devDependencies": {
     "@types/node": "^20.10.0",

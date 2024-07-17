@@ -5,6 +5,7 @@ import asyncpg
 from fastapi import APIRouter, Request
 
 from promptadmin.api.dto.prompt import Prompt
+from promptadmin.api.routers.dependency import UserDependsAnnotated
 from promptadmin.api.service.preview_template_service import PreviewTemplateService
 from promptadmin.api.service.user_data import UserData
 from promptadmin.data.entity.mapping import Mapping
@@ -66,10 +67,7 @@ async def load_all(request: Request):
 
 
 @router.post('/save')
-async def save(prompt: Prompt, request: Request):
-    user_data: UserData = request.scope['user_data']
-    if user_data.account is None:
-        raise ValueError()
+async def save(prompt: Prompt, user_data=UserDependsAnnotated):
     mapping = await mapping_service.find_by_table_field(prompt.table, prompt.field)
     conn = await asyncpg.connect(SETTINGS.connections[mapping.connection_name])
     await prompt_audit_service.save(
@@ -88,8 +86,10 @@ async def save(prompt: Prompt, request: Request):
 
 
 @router.post('/preview')
-async def preview(prompt: Prompt, request: Request):
-    user_data: UserData = request.scope['user_data']
-    if user_data.account is None:
-        raise ValueError()
+async def preview(prompt: Prompt):
     return await preview_template_service.preview_prompt(prompt)
+
+
+@router.get('/connections/get_all')
+async def connections_get_all():
+    return list(SETTINGS.connections.keys())

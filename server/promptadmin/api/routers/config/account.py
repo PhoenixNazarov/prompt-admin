@@ -1,9 +1,8 @@
 from datetime import datetime
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter
 from pydantic import BaseModel
 
-from promptadmin.api.service.user_data import UserData
 from promptadmin.data.service.account_service import AccountService
 
 router = APIRouter()
@@ -18,10 +17,7 @@ class AccountData(BaseModel):
 
 
 @router.get('/get/all')
-async def get(request: Request):
-    user_data: UserData = request.scope['user_data']
-    if user_data.account is None:
-        raise ValueError()
+async def get():
     accounts = await account_service.find_all()
 
     return [

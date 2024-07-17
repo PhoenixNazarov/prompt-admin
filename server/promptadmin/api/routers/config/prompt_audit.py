@@ -1,8 +1,7 @@
-from fastapi import APIRouter, Request
+from fastapi import APIRouter
 from pydantic import BaseModel
 
 from promptadmin.api.dto.prompt import Prompt
-from promptadmin.api.service.user_data import UserData
 from promptadmin.commons.dto import ViewParamsBuilder, ViewParamsFilter, ViewParamsOrder
 from promptadmin.data.entity.prompt_audit import PromptAudit
 from promptadmin.data.service.prompt_audit_service import PromptAuditService
@@ -19,10 +18,7 @@ class GetTablePrompt(BaseModel):
 
 
 @router.post('/get')
-async def get(request: Request, get_table_prompt: GetTablePrompt):
-    user_data: UserData = request.scope['user_data']
-    if user_data.account is None:
-        raise ValueError()
+async def get(get_table_prompt: GetTablePrompt):
     prompt = get_table_prompt.prompt
     view_params = (
         ViewParamsBuilder()
@@ -33,7 +29,7 @@ async def get(request: Request, get_table_prompt: GetTablePrompt):
         .filter(ViewParamsFilter(field=PromptAudit.name, value=prompt.name))
         .count(get_table_prompt.item_per_page)
         .page(get_table_prompt.page)
-        .order(ViewParamsOrder(field=PromptAudit.time_create, desc=True))
+        .order(ViewParamsOrder(field=PromptAudit.id, desc=True))
         .build()
     )
 
@@ -41,10 +37,7 @@ async def get(request: Request, get_table_prompt: GetTablePrompt):
 
 
 @router.post('/get/count')
-async def get_count(request: Request, get_table_prompt: GetTablePrompt):
-    user_data: UserData = request.scope['user_data']
-    if user_data.account is None:
-        raise ValueError()
+async def get_count(get_table_prompt: GetTablePrompt):
     prompt = get_table_prompt.prompt
     view_params = (
         ViewParamsBuilder()

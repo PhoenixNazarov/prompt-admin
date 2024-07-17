@@ -46,7 +46,7 @@ export const useAccountStore = defineStore({
                 this.auth = false
             }
         },
-        async getAll() {
+        async loadAll() {
             this.entity = await ApiService.get('/api/config/account/get/all')
         }
     }

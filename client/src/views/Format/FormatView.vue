@@ -36,7 +36,7 @@ export default defineComponent({
       formatObject: {text: startObject},
       validateObject: {text: startObject},
       mode: 'generate',
-      inputFormat: 'json',
+      inputFormat: 'json' as 'json' | 'xml' | 'object' | undefined,
       calculateOutput: null as CalculateOutput | null,
       validateOutput: null as ValidateOutput | null,
       loading: {
@@ -50,7 +50,7 @@ export default defineComponent({
       this.loading.calculate = true
       if (this.mode == 'load') {
         this.calculateOutput = await this.formatStore.load(this.formatObject.text)
-      } else if (this.mode == 'generate') {
+      } else if (this.mode == 'generate' && this.inputFormat) {
         this.calculateOutput = await this.formatStore.generate(this.formatObject.text, this.inputFormat)
       }
       this.loading.calculate = false
@@ -67,103 +67,100 @@ export default defineComponent({
 </script>
 
 <template>
-  <MainLayout @setView="$emit('setView')">
-    <div class="format outer-y">
+  <div class="format outer-y">
+    <h1>Format calculator
+    </h1>
+    <h2>
+      <VBtn variant="tonal" density="comfortable" @click.prevent="calculate" :loading="loading.calculate">Calculate
+      </VBtn>
+    </h2>
 
-      <h1>Format calculator
-      </h1>
-      <h2>
-        <VBtn variant="tonal" density="comfortable" @click.prevent="calculate" :loading="loading.calculate">Calculate
-        </VBtn>
-      </h2>
+    <h1>
+      Mode
+    </h1>
+    <h2>
+      <VRadioGroup v-model="mode" inline>
+        <VRadio label="Load schema from json" value="load"></VRadio>
+        <VRadio label="Generate schema for object" value="generate"></VRadio>
+      </VRadioGroup>
+    </h2>
 
+    <div v-if="mode == 'load'">
       <h1>
-        Mode
+        Schema json
+      </h1>
+      <FormatEditor :input-object="formatObject" mode="json"/>
+    </div>
+
+    <div v-if="mode == 'generate'">
+      <h1>
+        Input object
       </h1>
       <h2>
-        <VRadioGroup v-model="mode" inline>
-          <VRadio label="Load schema from json" value="load"></VRadio>
-          <VRadio label="Generate schema for object" value="generate"></VRadio>
+        <VRadioGroup v-model="inputFormat" inline>
+          <template v-slot:label>
+            <div>Input object format:</div>
+          </template>
+          <VRadio label="Object" value="object"></VRadio>
+          <VRadio label="Json" value="json"></VRadio>
+          <VRadio label="Xml" value="xml"></VRadio>
         </VRadioGroup>
       </h2>
+      <FormatEditor :input-object="formatObject" :mode="inputFormat"/>
+    </div>
+    <h2 class="program-error" v-if="calculateOutput?.cant_load_schema_error">
+      {{ calculateOutput?.cant_load_schema_error }}
+    </h2>
 
-      <div v-if="mode == 'load'">
-        <h1>
-          Schema json
-        </h1>
-        <FormatEditor :input-object="formatObject" mode="json"/>
-      </div>
+    <h2 class="program-error" v-if="calculateOutput?.cant_generate_schema_error">
+      {{ calculateOutput?.cant_generate_schema_error }}
+    </h2>
 
-      <div v-if="mode == 'generate'">
+    <ConsistentReport :report="calculateOutput?.consistent_report"/>
+
+    <div v-if="calculateOutput != null">
+      <CodeText
+          title="Output schema in json"
+          :code="calculateOutput.format_json"
+          :error="calculateOutput.cant_load_schema_error"
+      />
+      <CodeText
+          title="Output schema example in json"
+          :code="calculateOutput.example_json"
+          :error="calculateOutput.cant_make_example_json_error"
+      />
+      <CodeText
+          title="Output schema example in xml"
+          :code="calculateOutput.example_xml"
+          :error="calculateOutput.cant_make_example_xml_error"
+      />
+
+
+      <div v-if="calculateOutput.format_json">
         <h1>
-          Input object
+          Validation
         </h1>
         <h2>
-          <VRadioGroup v-model="inputFormat" inline>
-            <template v-slot:label>
-              <div>Input object format:</div>
-            </template>
-            <VRadio label="Object" value="object"></VRadio>
-            <VRadio label="Json" value="json"></VRadio>
-            <VRadio label="Xml" value="xml"></VRadio>
-          </VRadioGroup>
+          <VBtn variant="tonal" density="comfortable" :loading="loading.validate" @click.prevent="validate">Validate
+          </VBtn>
         </h2>
-        <FormatEditor :input-object="formatObject" :mode="inputFormat"/>
+        <h1>
+          Output string
+        </h1>
+
+        <FormatEditor :input-object="validateObject" mode="object"/>
+
+        <CodeText
+            v-if="validateOutput"
+            title="Validation result in python format"
+            :code="validateOutput.validate_value"
+            :error="validateOutput.cant_validate_value_error"
+        />
       </div>
-      <h2 class="program-error" v-if="calculateOutput?.cant_load_schema_error">
-        {{ calculateOutput?.cant_load_schema_error }}
-      </h2>
-
-      <h2 class="program-error" v-if="calculateOutput?.cant_generate_schema_error">
-        {{ calculateOutput?.cant_generate_schema_error }}
-      </h2>
-
-      <ConsistentReport :report="calculateOutput?.consistent_report"/>
-
-      <div v-if="calculateOutput != null">
-        <CodeText
-            title="Output schema in json"
-            :code="calculateOutput.format_json"
-            :error="calculateOutput.cant_load_schema_error"
-        />
-        <CodeText
-            title="Output schema example in json"
-            :code="calculateOutput.example_json"
-            :error="calculateOutput.cant_make_example_json_error"
-        />
-        <CodeText
-            title="Output schema example in xml"
-            :code="calculateOutput.example_xml"
-            :error="calculateOutput.cant_make_example_xml_error"
-        />
 
 
-        <div v-if="calculateOutput.format_json">
-          <h1>
-            Validation
-          </h1>
-          <h2>
-            <VBtn variant="tonal" density="comfortable" :loading="loading.validate" @click.prevent="validate">Validate
-            </VBtn>
-          </h2>
-          <h1>
-            Output string
-          </h1>
-
-          <FormatEditor :input-object="validateObject" mode="object"/>
-
-          <CodeText
-              v-if="validateOutput"
-              title="Validation result in python format"
-              :code="validateOutput.validate_value"
-              :error="validateOutput.cant_validate_value_error"
-          />
-        </div>
-
-
-      </div>
     </div>
-  </MainLayout>
+  </div>
 </template>
 
 <style scoped>

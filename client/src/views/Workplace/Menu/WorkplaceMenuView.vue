@@ -41,7 +41,7 @@ export default defineComponent({
     <VSkeletonLoader
         color="transparent"
         type="list-item"
-        v-if="mappingStore.loadings.getAll"
+        v-if="mappingStore.loadings.loadAll"
     ></VSkeletonLoader>
     <VListGroup :value="connection" v-for="[connection, mappingsTable] in mappingStore.getConnections">
       <template v-slot:activator="{ props }">

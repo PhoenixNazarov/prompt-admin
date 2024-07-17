@@ -27,8 +27,10 @@ export const usePromptStore = defineStore({
     state: () => ({
         prompts: [] as Prompt[],
         loadings: {
-            loadAll: false
-        }
+            loadAll: false,
+            connectionsLoadAll: false
+        },
+        connections: [] as string[]
     }),
     getters: {
         promptsByMapping: state => {
@@ -50,6 +52,13 @@ export const usePromptStore = defineStore({
             previewPrompt.value = result
             previewPrompt.preview = true
             return previewPrompt
+        },
+        async connectionsLoadAll() {
+            if (this.connections.length > 0) return
+            this.loadings.connectionsLoadAll = true
+            const result = await ApiService.get<string[]>('/api/prompts/connections/get_all')
+            this.loadings.connectionsLoadAll = false
+            this.connections = result
         }
     }
 })

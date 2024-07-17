@@ -24,7 +24,7 @@ export const usePromptAuditStore = defineStore({
     }),
     getters: {
         getByPrompt: state => {
-            return (prompt: Prompt) => state.entity.get(key(prompt))?.sort((a, b) => a.id - b.id)
+            return (prompt: Prompt) => state.entity.get(key(prompt))?.sort((a, b) => b.id - a.id)
         },
         getByPromptCount: state => {
             return (prompt: Prompt) => state.entityCount.get(key(prompt))

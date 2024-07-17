@@ -1,10 +1,18 @@
 import {defineStore} from "pinia";
-import {abstractStoreFactory, abstractStoreFactoryState, BaseEntity} from "./abstractStoreFactory.ts";
+import {
+    abstractStoreFactory,
+    abstractStoreFactoryGetters,
+    abstractStoreFactoryState,
+    BaseEntity
+} from "./abstractStoreFactory.ts";
 
-export interface Input extends BaseEntity{
+export interface Input extends BaseEntity {
     macro: string
     macro_value: string
     description: string
+
+    default_type: string
+    default: string
 }
 
 
@@ -14,18 +22,9 @@ export const useInputStore = defineStore({
         ...abstractStoreFactoryState<Input>()
     }),
     getters: {
-        getById: state => {
-            return (id: number) => {
-                return state.entity.find(e => e.id == id)
-            }
-        },
-        getByIds: state => {
-            return (ids: number[]) => {
-                return state.entity.filter(e => ids.includes(e.id))
-            }
-        }
+        ...abstractStoreFactoryGetters<Input>()
     },
     actions: {
-        ...abstractStoreFactory('input')
+        ...abstractStoreFactory<Input>('input')
     }
 })
