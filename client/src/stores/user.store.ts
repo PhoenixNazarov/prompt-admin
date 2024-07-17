@@ -12,7 +12,10 @@ export const useAccountStore = defineStore({
     state: () => ({
         auth: false,
         account: undefined as undefined | Account,
-        entity: [] as Account[]
+        entity: [] as Account[],
+        loadings: {
+            loadMe: undefined as undefined | Promise<Account | undefined>
+        }
     }),
     getters: {
         logged(state) {
@@ -31,8 +34,12 @@ export const useAccountStore = defineStore({
     },
     actions: {
         async loadMe() {
-            this.account = await ApiService.get<Account | undefined>('/api/auth/me')
+            if (this.loadings.loadMe) return await this.loadings.loadMe
+            this.loadings.loadMe = ApiService.get<Account | undefined>('/api/auth/me')
+            this.account = await this.loadings.loadMe
+            this.loadings.loadMe = undefined
             this.auth = this.account != null
+            return this.account
         },
         async login(login: string, password: string) {
             try {
