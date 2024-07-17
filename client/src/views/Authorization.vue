@@ -1,6 +1,7 @@
 <script lang="ts">
 import {defineComponent} from 'vue'
 import {useAccountStore} from "../stores/user.store.ts";
+import {RouterService} from "../plugins/router.ts";
 
 export default defineComponent({
   name: "Authorization",
@@ -24,6 +25,7 @@ export default defineComponent({
     async login() {
       this.loading = true
       await this.accountStore.login(this.form.login, this.form.password)
+      await RouterService.goToWorkplace()
       this.loading = false
     }
   }

@@ -9,7 +9,7 @@ import {useMacroStore} from "../stores/config/macro.store.ts";
 import {useInputStore} from "../stores/config/input.store.ts";
 
 
-function tableIdProp(id: string) : number | undefined{
+function tableIdProp(id: string): number | undefined {
     const number = Number.parseInt(id)
     return number == -1 ? undefined : number
 }
@@ -60,6 +60,11 @@ const router = createRouter({
                             name: 'Format',
                             path: '/format',
                             component: () => import('../views/Format/FormatView.vue')
+                        },
+                        {
+                            name: 'Account',
+                            path: '/account',
+                            component: () => import('../views/Account/AccountView.vue')
                         },
                         {
                             name: 'Table',
@@ -228,6 +233,10 @@ export class RouterService {
 
     static async goToTableList(name = 'mapping') {
         await router.push(`/table/${name}`)
+    }
+
+    static async goToAccount() {
+        await router.push('/account')
     }
 
     static async goToTableItem(name = 'mapping', id = -1) {

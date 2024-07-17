@@ -32,6 +32,11 @@ export default defineComponent({
         <FontAwesomeIcon icon="table"/>
         Table
       </div>
+
+      <div class="case" @click.prevent="RouterService.goToAccount()">
+        <FontAwesomeIcon icon="user"/>
+        Account
+      </div>
     </div>
     <div class="inner">
       <RouterView/>

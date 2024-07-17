@@ -157,8 +157,6 @@ export default defineComponent({
             :error="validateOutput.cant_validate_value_error"
         />
       </div>
-
-
     </div>
   </div>
 </template>

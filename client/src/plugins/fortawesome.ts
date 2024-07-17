@@ -6,7 +6,8 @@ import {
     faTable,
     faTerminal,
     faXmark,
-    faTrash
+    faTrash,
+    faUser
 } from '@fortawesome/free-solid-svg-icons'
 import {library} from '@fortawesome/fontawesome-svg-core'
 import type {App} from "vue";
@@ -20,6 +21,7 @@ export function installFortAwesome(_: App) {
         faCalculator,
         faCheck,
         faXmark,
-        faTrash
+        faTrash,
+        faUser
     )
 }

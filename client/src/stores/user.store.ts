@@ -11,6 +11,7 @@ export const useAccountStore = defineStore({
     id: 'account',
     state: () => ({
         auth: false,
+        account: undefined as undefined | Account,
         entity: [] as Account[]
     }),
     getters: {
@@ -30,7 +31,8 @@ export const useAccountStore = defineStore({
     },
     actions: {
         async loadMe() {
-            this.auth = await ApiService.get<{ login: string } | null>('/api/auth/me') != null
+            this.account = await ApiService.get<Account | undefined>('/api/auth/me')
+            this.auth = this.account != null
         },
         async login(login: string, password: string) {
             try {
@@ -48,6 +50,9 @@ export const useAccountStore = defineStore({
         },
         async loadAll() {
             this.entity = await ApiService.get('/api/config/account/get/all')
+        },
+        async logout() {
+            await ApiService.get('/api/auth/logout')
         }
     }
 })
