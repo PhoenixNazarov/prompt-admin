@@ -1,9 +1,18 @@
 <script lang="ts">
 import {defineComponent} from 'vue'
-import {usePromptStore} from "../../../stores/prompt.store.ts";
-import {useMappingStore} from "../../../stores/config/mapping.store.ts";
+import {Prompt, usePromptStore} from "../../../stores/prompt.store.ts";
+import {Mapping, useMappingStore} from "../../../stores/config/mapping.store.ts";
 import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
 import {useSettingsStore} from "../../../stores/config/settings.store.ts";
+
+export function hashCode(str: string | number | undefined): number {
+  const newStr = String(str)
+  let h: number = 0;
+  for (let i = 0; i < newStr.length; i++) {
+    h = 31 * h + newStr.charCodeAt(i);
+  }
+  return h & 0xFFFFFFFF
+}
 
 export default defineComponent({
   name: "WorkplaceMenuView",
@@ -27,6 +36,22 @@ export default defineComponent({
   watch: {
     opened(newVal) {
       this.settingsStore.menuOpenedItems = newVal
+    }
+  },
+  methods: {
+    sortPrompts(mapping: Mapping, prompts: Prompt[]) {
+      if (!mapping.field_order) {
+        return prompts.sort((a, b) => {
+          return hashCode(a.name) - hashCode(b.name)
+        })
+      }
+      return prompts.sort((a, b) => {
+        if (mapping.desc) {
+          return hashCode(b.sort_value) - hashCode(a.sort_value)
+        } else {
+          return hashCode(a.sort_value) - hashCode(b.sort_value)
+        }
+      })
     }
   }
 })
@@ -75,7 +100,7 @@ export default defineComponent({
               v-if="promptStore.loadings.loadAll"
           ></VSkeletonLoader>
           <VListItem
-              v-for="prompt in promptStore.promptsByMapping(mapping.id)"
+              v-for="prompt in sortPrompts(mapping, promptStore.promptsByMapping(mapping.id))"
               @click.prevent="$emit('selectPrompt', prompt)"
           >
             {{ prompt.name }}

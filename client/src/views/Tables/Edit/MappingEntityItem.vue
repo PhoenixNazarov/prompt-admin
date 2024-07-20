@@ -79,7 +79,7 @@ export default defineComponent({
         entity_id: this.entity_id_,
         id: this.id,
       })
-      await RouterService.goToTableItem('output', result.id)
+      await RouterService.goToTableItem('mapping-entity', result.id)
       this.loadingSave = false
     }
   }

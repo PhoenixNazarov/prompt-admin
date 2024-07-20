@@ -33,6 +33,8 @@ export default defineComponent({
       description: mapping?.description,
       field_name: mapping?.field_name,
       connection_name: mapping?.connection_name,
+      field_order: mapping?.field_order,
+      desc: mapping?.desc,
 
       loadingSave: false
     }
@@ -47,9 +49,11 @@ export default defineComponent({
         field: this.field,
         description: this.description,
         field_name: this.field_name,
-        connection_name: this.connection_name
+        connection_name: this.connection_name,
+        field_order: this.field_order,
+        desc: this.desc
       })
-      await RouterService.goToTableItem('output', result.id)
+      await RouterService.goToTableItem('mapping', result.id)
       this.loadingSave = false
     }
   }
@@ -85,6 +89,15 @@ export default defineComponent({
         <VCol>
           <VTextarea density="compact" label="Description" v-model="description" variant="outlined"
                      hint="Description of the remote product" persistent-hint/>
+        </VCol>
+      </VRow>
+      <VRow>
+        <VCol>
+          <VTextField density="compact" label="Order Field" v-model="field_order" variant="outlined"
+                      hint="Field for sort" persistent-hint/>
+        </VCol>
+        <VCol>
+          <VSwitch v-model="desc" label="Descending" density="compact"/>
         </VCol>
       </VRow>
       <VRow>

@@ -8,3 +8,4 @@ class Prompt(BaseModel):
     id: int
     value: str
     name: str | None
+    sort_value: str | int | None = None

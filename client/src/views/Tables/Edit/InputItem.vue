@@ -47,7 +47,7 @@ export default defineComponent({
         default_type: this.default_type,
         default: this.default_,
       })
-      await RouterService.goToTableItem('macro', result.id)
+      await RouterService.goToTableItem('input', result.id)
       this.loadingSave = false
     }
   }

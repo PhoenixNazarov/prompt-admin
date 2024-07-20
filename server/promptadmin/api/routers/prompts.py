@@ -38,8 +38,9 @@ async def load_all(request: Request):
             return []
 
         mapping_name = f', {mapping.field_name}' if mapping.field_name else ''
+        order_name = f', {mapping.field_order}' if mapping.field_order else ''
 
-        row = await conn.fetch(f'SELECT id, {mapping.field} {mapping_name} FROM {mapping.table}')
+        row = await conn.fetch(f'SELECT id, {mapping.field} {mapping_name} {order_name} FROM {mapping.table}')
 
         result = []
         for i in row:
@@ -50,7 +51,8 @@ async def load_all(request: Request):
                     field=mapping.field,
                     id=i['id'],
                     value=i[mapping.field],
-                    name=i.get(mapping.field_name)
+                    name=i.get(mapping.field_name),
+                    sort_value=i.get(mapping.field_order)
                 )
             )
         return result

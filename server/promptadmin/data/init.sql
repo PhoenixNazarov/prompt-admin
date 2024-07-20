@@ -33,6 +33,8 @@ create table pa_mapping
     field           varchar(128)  not null,
     description     varchar(1000) not null,
     field_name      varchar(128),
+    field_order     varchar(128),
+    "desc"          boolean   default false,
     connection_name varchar(128)  not null
 );
 

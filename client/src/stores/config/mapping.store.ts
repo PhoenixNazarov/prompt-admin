@@ -12,6 +12,8 @@ export interface Mapping extends BaseEntity {
 
     description: string
     field_name: string
+    field_order?: string
+    desc?: boolean
     connection_name: string
 }
 

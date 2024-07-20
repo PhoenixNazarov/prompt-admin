@@ -10,6 +10,7 @@ export interface Prompt {
     value: string
     name?: string
     preview?: boolean
+    sort_value?: any
 
     auditData?: {
         audit: PromptAudit,
