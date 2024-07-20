@@ -2,6 +2,7 @@
 import {defineComponent} from 'vue'
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {RouterService} from "../plugins/router.ts";
+import {useProjectStore} from "../stores/project/project.store.ts";
 
 export default defineComponent({
   name: "MainLayout",
@@ -10,7 +11,16 @@ export default defineComponent({
       return RouterService
     }
   },
-  components: {FontAwesomeIcon}
+  components: {FontAwesomeIcon},
+  setup() {
+    const projectStore = useProjectStore()
+    return {
+      projectStore
+    }
+  },
+  mounted() {
+    this.projectStore.loadProjects()
+  },
 })
 </script>
 
@@ -37,6 +47,21 @@ export default defineComponent({
         <FontAwesomeIcon icon="user"/>
         Account
       </div>
+
+      <VMenu>
+        <template v-slot:activator="{ props }">
+          <div class="case" v-bind="props">
+            <FontAwesomeIcon icon="diagram-project"/>
+            Project
+          </div>
+        </template>
+        <div style="background-color: var(--color-5); padding:0.25rem; border-radius: 0.2rem">
+          <div class="pointer" v-for="project in projectStore.projects"
+               @click.prevent="RouterService.goToProject(project)">
+            {{ project }}
+          </div>
+        </div>
+      </VMenu>
     </div>
     <div class="inner">
       <RouterView/>

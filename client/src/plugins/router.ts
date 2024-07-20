@@ -52,6 +52,11 @@ const router = createRouter({
                     },
                     children: [
                         {
+                            name: 'AuthGroupDefault',
+                            path: '',
+                            redirect: '/workplace'
+                        },
+                        {
                             name: 'Workplace',
                             path: '/workplace',
                             component: () => import('../views/Workplace/WorkplaceView.vue')
@@ -211,6 +216,35 @@ const router = createRouter({
                                     ]
                                 },
                             ]
+                        },
+                        {
+                            name: 'Project',
+                            path: '/project',
+                            children: [
+                                {
+                                    name: 'ProjectMain',
+                                    path: ':project',
+                                    props: route => {
+                                        return {project: route.params.project as string}
+                                    },
+                                    redirect: to => {
+                                        return {path: `/project/${to.params.project}/group/-1`}
+                                    },
+                                    children: [
+                                        {
+                                            name: 'ProjectBlog',
+                                            path: 'group/:groupId',
+                                            component: () => import('../views/Project/BlogView.vue'),
+                                            props: route => {
+                                                return {
+                                                    project: route.params.project as string,
+                                                    groupId: Number.parseInt(route.params.groupId)
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
                         }
                     ]
                 }
@@ -249,6 +283,13 @@ export class RouterService {
         await router.push(`/table/${name}/${id}#${JSON.stringify(preSet)}`)
     }
 
+    static async goToProject(project: string) {
+        await router.push(`/project/${project}`)
+    }
+
+    static async goToProjectGroup(project: string, groupId: number | undefined) {
+        await router.push(`/project/${project}/group/${groupId == undefined ? -1 : groupId}`)
+    }
 }
 
 

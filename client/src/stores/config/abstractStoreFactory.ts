@@ -31,14 +31,11 @@ export function abstractStoreFactoryGetters<T extends BaseEntity>() {
     }
 }
 
-export function abstractStoreFactory<T extends BaseEntity>(name: string) {
+export function abstractStoreFactory<T extends BaseEntity>(name: string, prefix='config/') {
     return {
-        loadings: abstractStoreFactoryState<T>().loadings,
-        entity: abstractStoreFactoryState<T>().entity,
-
-        async loadAll() {
+        async loadAll(): Promise<T[]> {
             if (this.loadings.loadAll) return await this.loadings.loadAll
-            this.loadings.loadAll = new BaseRouter<T>(`/api/config/${name}`).getAll()
+            this.loadings.loadAll = new BaseRouter<T>(`/api/${prefix}${name}`).getAll()
             const result = await this.loadings.loadAll
             this.entity = result
             this.loadings.loadAll = undefined
@@ -46,7 +43,7 @@ export function abstractStoreFactory<T extends BaseEntity>(name: string) {
         },
 
         async save(entity: T) {
-            const result = await new BaseRouter<T>(`/api/config/${name}`).save(entity)
+            const result = await new BaseRouter<T>(`/api/${prefix}${name}`).save(entity)
             this.entity = this.entity.filter(e => e.id != result.id)
             this.entity.push(result)
             return result
@@ -54,7 +51,7 @@ export function abstractStoreFactory<T extends BaseEntity>(name: string) {
 
         async remove(id?: number) {
             if (id == undefined) return
-            await new BaseRouter<T>(`/api/config/${name}`).remove(id)
+            await new BaseRouter<T>(`/api/${prefix}${name}`).remove(id)
             this.entity = this.entity.filter(e => e.id != id)
         }
     }

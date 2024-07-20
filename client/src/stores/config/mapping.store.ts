@@ -24,7 +24,6 @@ export const useMappingStore = defineStore({
     getters: {
         getConnections(state) {
             const result = new Map<string, Map<string, Mapping[]>>
-
             state.entity.forEach(
                 e => {
                     const connection = e.connection_name

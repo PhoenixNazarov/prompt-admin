@@ -131,3 +131,34 @@ create table pa_prompt_audit
             references pa_account
             on delete SET NULL
 );
+
+
+-- PA_BLOG_GROUP
+create table pa_blog_group
+(
+    id          serial
+        constraint pa_blog_group_pk
+            primary key,
+    time_create timestamp default now(),
+
+    project     varchar(200) not null,
+    title       varchar(200) not null
+);
+
+
+-- PA_BLOG_POST
+create table pa_blog_post
+(
+    id          serial
+        constraint pa_blog_post_pk
+            primary key,
+    time_create timestamp default now(),
+
+    project     varchar(200)   not null,
+    title       varchar(200)   not null,
+    content     varchar(40000) not null,
+    group_id    integer
+        constraint pa_blog_post_group_id_fk
+            references pa_blog_group
+            on delete SET NULL
+);
