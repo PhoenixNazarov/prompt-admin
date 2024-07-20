@@ -50,7 +50,9 @@ def bind_view(
             d = _entity.dict()
             d.pop('id')
             for k, v in d.items():
-                setattr(change_entity, k, v)
+                if k == 'time_create':
+                    continue
+                change_entity.__setattr__(k, v)
             return await service.save(change_entity)
         else:
             return await service.save(_entity)
