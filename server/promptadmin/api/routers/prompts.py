@@ -69,7 +69,7 @@ async def load_all(request: Request):
 
 
 @router.post('/save')
-async def save(prompt: Prompt, user_data=UserDependsAnnotated()):
+async def save(prompt: Prompt, user_data: UserDependsAnnotated):
     mapping = await mapping_service.find_by_table_field(prompt.table, prompt.field)
     conn = await asyncpg.connect(SETTINGS.connections[mapping.connection_name])
     await prompt_audit_service.save(
