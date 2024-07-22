@@ -14,10 +14,11 @@ import {usePromptAuditStore} from "../../stores/config/promptAudit.store.ts";
 import {useAccountStore} from "../../stores/user.store.ts";
 import CompareView from "./Editor/CompareView.vue";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
+import Breadcrumb from 'primevue/breadcrumb';
 
 export default defineComponent({
   name: "WorkplaceView",
-  components: {FontAwesomeIcon, CompareView, HintView, WorkplaceMenuView, EditorView, MainLayout},
+  components: {FontAwesomeIcon, CompareView, HintView, WorkplaceMenuView, EditorView, MainLayout, Breadcrumb},
   setup() {
     const promptStore = usePromptStore()
     const mappingStore = useMappingStore()
@@ -65,6 +66,16 @@ export default defineComponent({
       if (prompt.preview) return `PREVIEW: ${prompt.name}`
       if (prompt.auditData) return `COMPARE: ${prompt.name}`
       return prompt.name
+    },
+    breadcrumbItems() {
+      const mapping = this.mappingStore.getById(this.selectedPrompt?.mapping_id)
+      if (!mapping) return []
+      return [
+        {label: mapping.connection_name, icon: 'fa fa-diagram-project'},
+        {label: mapping.table, icon: 'fa fa-table'},
+        {label: mapping.field},
+        {label: this.selectedPrompt?.name}
+      ]
     }
   },
   mounted() {
@@ -101,11 +112,16 @@ export default defineComponent({
           <FontAwesomeIcon icon="fa-xmark" style="margin-left: 1rem" @click.prevent="closePrompt(i)"/>
         </VTab>
       </VTabs>
-      <CompareView :prompt='selectedPrompt' v-if="selectedPrompt && selectedPrompt.auditData"/>
-      <EditorView :prompt='selectedPrompt' v-else-if="selectedPrompt && !selectedPrompt.auditData"/>
-      <div style="color: var(--color-5); padding: 1rem" v-else>
-        Select need prompt...
+      <div>
+        <CompareView :prompt='selectedPrompt' v-if="selectedPrompt && selectedPrompt.auditData"/>
+        <EditorView :prompt='selectedPrompt' v-else-if="selectedPrompt && !selectedPrompt.auditData"/>
+        <div style="color: var(--color-5); padding: 1rem" v-else>
+          Select need prompt...
+        </div>
+        <Breadcrumb v-if="breadcrumbItems().length > 0" :model="breadcrumbItems()"
+                    style="background-color: white; padding: 0.2rem 1rem; height: 2rem"/>
       </div>
+
     </div>
     <div class="hint outer-y">
       <HintView v-if="selectedPrompt" :prompt="selectedPrompt" @preview="selectPrompt"/>

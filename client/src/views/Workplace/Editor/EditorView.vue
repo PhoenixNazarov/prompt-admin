@@ -65,7 +65,7 @@ export default defineComponent({
 
 .codemirror {
   width: 100%;
-  height: calc(100vh - 6rem);
+  height: calc(100vh - 8rem);
   margin: 0;
   overflow: auto;
   background-color: white;

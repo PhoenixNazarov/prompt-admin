@@ -21,7 +21,7 @@ export default defineComponent({
   },
   data() {
     return {
-      height: (window.innerHeight - 6 * parseFloat(getComputedStyle(document.documentElement).fontSize))
+      height: (window.innerHeight - 8 * parseFloat(getComputedStyle(document.documentElement).fontSize))
     }
   }
 })

@@ -27,26 +27,26 @@ export default defineComponent({
 <template>
   <div>
     <div class="header">
-      <div class="name case" @click.prevent="RouterService.goToWorkplace()">Prompt Admin</div>
-      <div class="case" @click.prevent="RouterService.goToWorkplace()">
+      <a href="/workplace" class="name" @click.prevent="RouterService.goToWorkplace()">Prompt Admin</a>
+      <a href="/workplace" class="case" @click.prevent="RouterService.goToWorkplace()">
         <FontAwesomeIcon icon="pen"/>
         Editor
-      </div>
+      </a>
 
-      <div class="case" @click.prevent="RouterService.goToFormat()">
+      <a href="/format" class="case" @click.prevent="RouterService.goToFormat()">
         <FontAwesomeIcon icon="calculator"/>
         Format
-      </div>
+      </a>
 
-      <div class="case" @click.prevent="RouterService.goToTableList()">
+      <a href="/table/mapping" class="case" @click.prevent="RouterService.goToTableList()">
         <FontAwesomeIcon icon="table"/>
         Table
-      </div>
+      </a>
 
-      <div class="case" @click.prevent="RouterService.goToAccount()">
+      <a href="/account" class="case" @click.prevent="RouterService.goToAccount()">
         <FontAwesomeIcon icon="user"/>
         Account
-      </div>
+      </a>
 
       <VMenu>
         <template v-slot:activator="{ props }">
@@ -56,9 +56,13 @@ export default defineComponent({
           </div>
         </template>
         <div style="background-color: var(--color-5); padding:0.25rem; border-radius: 0.2rem">
-          <div class="pointer" v-for="project in projectStore.projects"
-               @click.prevent="RouterService.goToProject(project)">
-            {{ project }}
+          <div v-for="project in projectStore.projects" style="display: flex;justify-content: center;">
+            <a :href="`/project/${project}/group/-1`" class="pointer case"
+               @click.prevent="RouterService.goToProject(project)"
+               style="margin-right: 0 !important; text-align: center; width: 100%;"
+            >
+              {{ project }}
+            </a>
           </div>
         </div>
       </VMenu>
@@ -79,10 +83,13 @@ export default defineComponent({
 
 .name {
   color: var(--color-3);
-  font-size: 1.5rem;
+  font-size: 1rem;
   text-transform: uppercase;
   font-weight: 600;
-  padding: 0.35rem;
+  padding: 0.4rem;
+  margin-right: 2rem;
+  cursor: pointer;
+  text-decoration: none;
 }
 
 .inner {
@@ -91,8 +98,19 @@ export default defineComponent({
 }
 
 .case {
-  margin-right: 2rem;
+  margin-right: 1rem;
   cursor: pointer;
+  padding: 0.4rem 0.8rem;
+  text-decoration: none;
+}
+
+.case:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 0.4rem;
+}
+
+.case:visited {
+  color: inherit;
 }
 
 </style>
