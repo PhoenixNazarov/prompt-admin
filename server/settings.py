@@ -1,10 +1,16 @@
 import os
-
+from pydantic import BaseModel
 from promptadmin.commons.dto.base_settings import (
     BaseSettings,
     BaseRouter,
     DatabaseCred
 )
+
+
+class ProjectInfo(BaseModel):
+    connection: str
+    sync_endpoint: str
+    sync_secret: str
 
 
 class _Settings(BaseSettings):
@@ -23,6 +29,14 @@ class _Settings(BaseSettings):
     message_routers: list[BaseRouter] = []
 
     connections: dict[str, str] = {}
+
+    projects: dict[str, ProjectInfo] = {
+        'fundmarket': ProjectInfo(
+            connection='',
+            sync_endpoint='http://0.0.0.0:8081/api/prompt-admin/collect',
+            sync_secret='test'
+        )
+    }
 
 
 SETTINGS = _Settings()

@@ -10,6 +10,7 @@ import {Mapping, useMappingStore} from "./mapping.store.ts";
 import {Prompt, usePromptStore} from "../prompt.store.ts";
 import {useOutputStore} from "./output.store.ts";
 import {useInputStore} from "./input.store.ts";
+import {useSyncDataStore} from "./syncData.store.ts";
 
 export interface MappingEntity extends BaseEntity {
     connection_name?: string
@@ -22,7 +23,7 @@ export interface MappingEntity extends BaseEntity {
 }
 
 
-function getByFilter(state, connectionName: string, table: string, field: string, nameE: string | undefined, mappingId: number, entity: string): MappingEntity[] {
+function getByFilter(state, connectionName: string, table: string, field: string, nameE: string | undefined, mappingId: number | undefined, entity: string): MappingEntity[] {
     return state.entity.filter(
         e =>
             (e.connection_name == undefined || e.connection_name == connectionName) &&
@@ -61,6 +62,14 @@ export const useMappingEntityStore = defineStore({
                 const supportEntity = getByFilter(state, mapping.connection_name, mapping.table, mapping.field, prompt.name, mapping.id, 'macro')
                 const macroStore = useMacroStore()
                 return macroStore.getByIds(supportEntity.map(se => se.entity_id))
+            }
+        },
+        getSyncDataByFilter: state => {
+            return (mapping: Mapping, prompt: Prompt) => {
+                const supportEntity = getByFilter(state, mapping.connection_name, mapping.table, mapping.field, prompt.name, mapping.id, 'sync_data')
+                const syncDataStore = useSyncDataStore()
+                if (supportEntity.length <= 0) return
+                return syncDataStore.getById(supportEntity[0].entity_id)
             }
         },
         getPromptsByMappingEntity: _ => {

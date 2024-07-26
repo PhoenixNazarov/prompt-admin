@@ -15,6 +15,7 @@ import {useAccountStore} from "../../stores/user.store.ts";
 import CompareView from "./Editor/CompareView.vue";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import Breadcrumb from 'primevue/breadcrumb';
+import {useSyncDataStore} from "../../stores/config/syncData.store.ts";
 
 export default defineComponent({
   name: "WorkplaceView",
@@ -28,6 +29,7 @@ export default defineComponent({
     const inputStore = useInputStore()
     const promptAuditStore = usePromptAuditStore()
     const accountStore = useAccountStore()
+    const syncDataStore = useSyncDataStore()
     return {
       promptStore,
       mappingStore,
@@ -36,7 +38,8 @@ export default defineComponent({
       outputStore,
       inputStore,
       promptAuditStore,
-      accountStore
+      accountStore,
+      syncDataStore
     }
   },
   data() {
@@ -86,6 +89,7 @@ export default defineComponent({
     this.outputStore.loadAll()
     this.inputStore.loadAll()
     this.accountStore.loadAll()
+    this.syncDataStore.loadAll()
   },
 })
 </script>

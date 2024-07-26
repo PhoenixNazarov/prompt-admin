@@ -32,7 +32,7 @@ create table pa_mapping
     "table"         varchar(128)  not null,
     field           varchar(128)  not null,
     description     varchar(1000) not null,
-    field_name      varchar(128),
+    field_name      varchar(128)  not null,
     field_order     varchar(128),
     "desc"          boolean   default false,
     connection_name varchar(128)  not null
@@ -68,7 +68,7 @@ create table pa_mapping_entity
     mapping_id      integer
         constraint pa_mapping_entity__id_fk
             references pa_mapping
-            on delete SET NULL,
+            on delete CASCADE,
     entity          varchar(128) not null,
     entity_id       integer      not null
 );
@@ -163,4 +163,22 @@ create table pa_blog_post
         constraint pa_blog_post_group_id_fk
             references pa_blog_group
             on delete SET NULL
+);
+
+
+-- PA_SYNC_DATA
+create table pa_sync_data
+(
+    id                        serial
+        constraint pa_sync_data_pk
+            primary key,
+    time_create               timestamp default now(),
+
+    service_model_info        varchar(30000) not null,
+    template_context_type     varchar(50000) not null,
+    template_context_default  varchar(100000) not null,
+    history_context_default   varchar(30000) not null,
+    parsed_model_type         varchar(30000),
+    parsed_model_default      varchar(30000),
+    fail_parse_model_strategy varchar(50)
 );

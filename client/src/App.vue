@@ -1,10 +1,11 @@
 <script lang="ts">
 import {defineComponent} from 'vue'
 import {RouterView} from 'vue-router'
+import SchemaJsonView from "./views/SchemaJsonView.vue";
 
 export default defineComponent({
   name: "App",
-  components: {RouterView}
+  components: {SchemaJsonView, RouterView}
 })
 </script>
 

@@ -238,7 +238,7 @@ const router = createRouter({
                                             props: route => {
                                                 return {
                                                     project: route.params.project as string,
-                                                    groupId: Number.parseInt(route.params.groupId)
+                                                    groupId: Number.parseInt(route.params.groupId as string)
                                                 }
                                             }
                                         }

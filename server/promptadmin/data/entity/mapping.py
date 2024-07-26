@@ -8,7 +8,7 @@ class MappingData(BaseModel):
     field: str
 
     description: str
-    field_name: str | None = None
+    field_name: str
     field_order: str | None = None
     desc: bool = False
     connection_name: str

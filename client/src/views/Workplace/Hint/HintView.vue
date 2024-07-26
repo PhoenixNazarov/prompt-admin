@@ -17,7 +17,10 @@ import SettingsEditView from "../../Account/SettingsEditView.vue";
 import InputList from "../../Tables/Edit/InputList.vue";
 import MacroList from "../../Tables/Edit/MacroList.vue";
 import OutputList from "../../Tables/Edit/OutputList.vue";
-
+import {SyncData, useSyncDataStore} from "../../../stores/config/syncData.store.ts";
+import JsonEditorVue from 'json-editor-vue'
+import 'vanilla-jsoneditor/themes/jse-theme-dark.css'
+import HintSyncData from "./HintSyncData.vue";
 
 export default defineComponent({
   name: "HintView",
@@ -26,7 +29,17 @@ export default defineComponent({
       return RouterService
     }
   },
-  components: {OutputList, MacroList, InputList, SettingsEditView, FontAwesomeIcon, ChangesHistory, CodeText},
+  components: {
+    HintSyncData,
+    OutputList,
+    MacroList,
+    InputList,
+    SettingsEditView,
+    FontAwesomeIcon,
+    ChangesHistory,
+    CodeText,
+    JsonEditorVue
+  },
   props: {
     prompt: {
       type: Object as PropType<Prompt>
@@ -39,21 +52,24 @@ export default defineComponent({
     const promptAuditStore = usePromptAuditStore()
     const accountStore = useAccountStore()
     const settingsStore = useSettingsStore()
+    const syncDataStore = useSyncDataStore()
     return {
       mappingStore,
       mappingEntityStore,
       promptStore,
       promptAuditStore,
       accountStore,
-      settingsStore
+      settingsStore,
+      syncDataStore
     }
   },
   data() {
     return {
       loading: {
         save: false,
-        preview: false
+        preview: false,
       },
+      syncDataDefaults: undefined as object | undefined
     }
   },
   methods: {
@@ -75,6 +91,11 @@ export default defineComponent({
       const mapping = this.mapping()
       if (mapping && this.prompt) return this.mappingEntityStore.getMacroByFilter(mapping, this.prompt).sort((one, two) => one.macro > two.macro ? -1 : 1)
       return []
+    },
+    syncData(): SyncData | undefined {
+      const mapping = this.mapping()
+      if (mapping && this.prompt) return this.mappingEntityStore.getSyncDataByFilter(mapping, this.prompt)
+      return undefined
     },
     async save() {
       this.loading.save = true
@@ -104,6 +125,16 @@ export default defineComponent({
       })
     }
   },
+  mounted() {
+    const syncData = this.syncData()
+    if (syncData) this.syncDataDefaults = JSON.parse(syncData.template_context_default)
+  },
+  watch: {
+    prompt() {
+      const syncData = this.syncData()
+      if (syncData) this.syncDataDefaults = JSON.parse(syncData.template_context_default)
+    }
+  }
 })
 </script>
 
@@ -144,78 +175,81 @@ export default defineComponent({
         </VCardText>
       </VCard>
 
-      <VCard class="mt-4" variant="tonal">
-        <VCardTitle>
-          Inputs
-          <VDialog>
-            <template v-slot:activator="{ props: activatorProps }">
-              <FontAwesomeIcon icon="circle-plus" class="pointer" v-bind="activatorProps"/>
-            </template>
-            <template v-slot:default="{ isActive }">
-              <VCard>
-                <InputList :create="false" @clickRow="e => createMappingEntity('input', e.id)"/>
-              </VCard>
-            </template>
-          </VDialog>
-        </VCardTitle>
-        <VCardText>
-          <div v-for="mappingVariable in inputs()">
-            <FontAwesomeIcon icon="circle-info" class="pointer circle-info"
-                             @click.prevent="RouterService.goToTableItem('input', mappingVariable.id)"/>
-            <b>{{ mappingVariable.macro }}</b>:
-            {{ mappingVariable.description }}<br>
-          </div>
-        </VCardText>
-      </VCard>
+      <HintSyncData v-if="syncData()" :sync-data="syncData()!"/>
+      <div v-else>
+        <VCard class="mt-4" variant="tonal">
+          <VCardTitle>
+            Inputs
+            <VDialog>
+              <template v-slot:activator="{ props: activatorProps }">
+                <FontAwesomeIcon icon="circle-plus" class="pointer" v-bind="activatorProps"/>
+              </template>
+              <template v-slot:default="{ isActive }">
+                <VCard>
+                  <InputList :create="false" @clickRow="e => createMappingEntity('input', e.id)"/>
+                </VCard>
+              </template>
+            </VDialog>
+          </VCardTitle>
+          <VCardText>
+            <div v-for="mappingVariable in inputs()">
+              <FontAwesomeIcon icon="circle-info" class="pointer circle-info"
+                               @click.prevent="RouterService.goToTableItem('input', mappingVariable.id)"/>
+              <b>{{ mappingVariable.macro }}</b>:
+              {{ mappingVariable.description }}<br>
+            </div>
+          </VCardText>
+        </VCard>
 
-      <VCard class="mt-4" variant="tonal">
-        <VCardTitle>
-          Macros
-          <VDialog>
-            <template v-slot:activator="{ props: activatorProps }">
-              <FontAwesomeIcon icon="circle-plus" class="pointer" v-bind="activatorProps"/>
-            </template>
-            <template v-slot:default="{ isActive }">
-              <VCard>
-                <MacroList :create="false" @clickRow="e => createMappingEntity('macro', e.id)"/>
-              </VCard>
-            </template>
-          </VDialog>
-        </VCardTitle>
-        <VCardText>
-          <div v-for="mappingVariable in macros()">
-            <FontAwesomeIcon icon="circle-info" class="pointer circle-info"
-                             @click.prevent="RouterService.goToTableItem('macro', mappingVariable.id)"/>
-            <b>{{ mappingVariable.macro }}</b>:
-            {{ mappingVariable.description }} <br>
-          </div>
-        </VCardText>
-      </VCard>
+        <VCard class="mt-4" variant="tonal">
+          <VCardTitle>
+            Macros
+            <VDialog>
+              <template v-slot:activator="{ props: activatorProps }">
+                <FontAwesomeIcon icon="circle-plus" class="pointer" v-bind="activatorProps"/>
+              </template>
+              <template v-slot:default="{ isActive }">
+                <VCard>
+                  <MacroList :create="false" @clickRow="e => createMappingEntity('macro', e.id)"/>
+                </VCard>
+              </template>
+            </VDialog>
+          </VCardTitle>
+          <VCardText>
+            <div v-for="mappingVariable in macros()">
+              <FontAwesomeIcon icon="circle-info" class="pointer circle-info"
+                               @click.prevent="RouterService.goToTableItem('macro', mappingVariable.id)"/>
+              <b>{{ mappingVariable.macro }}</b>:
+              {{ mappingVariable.description }} <br>
+            </div>
+          </VCardText>
+        </VCard>
 
-      <VCard variant="plain" title="Output" v-if="!output()">
-        <VCardText>
-          <VDialog>
-            <template v-slot:activator="{ props: activatorProps }">
-              <div class="pointer" v-bind="activatorProps">
-                Bind output
-                <FontAwesomeIcon icon="circle-plus" class="pointer"/>
-              </div>
-            </template>
-            <template v-slot:default="{ isActive }">
-              <VCard>
-                <OutputList :create="false" @clickRow="e => createMappingEntity('output', e.id)"/>
-              </VCard>
-            </template>
-          </VDialog>
-        </VCardText>
-      </VCard>
-      <CodeText
-          v-if="output()"
-          title="Required output format"
-          :code="output()?.output"
-          :info-icon="true"
-          @info="RouterService.goToTableItem('output', output()?.id)"
-      />
+        <VCard variant="plain" title="Output" v-if="!output()">
+          <VCardText>
+            <VDialog>
+              <template v-slot:activator="{ props: activatorProps }">
+                <div class="pointer" v-bind="activatorProps">
+                  Bind output
+                  <FontAwesomeIcon icon="circle-plus" class="pointer"/>
+                </div>
+              </template>
+              <template v-slot:default="{ isActive }">
+                <VCard>
+                  <OutputList :create="false" @clickRow="e => createMappingEntity('output', e.id)"/>
+                </VCard>
+              </template>
+            </VDialog>
+          </VCardText>
+        </VCard>
+        <CodeText
+            v-if="output()"
+            title="Required output format"
+            :code="output()?.output"
+            :info-icon="true"
+            @info="RouterService.goToTableItem('output', output()?.id)"
+        />
+      </div>
 
       <ChangesHistory class="mt-4" :prompt="prompt" @preview="prompt => $emit('preview', prompt)"/>
     </div>
