@@ -4,6 +4,7 @@ version = "0.1.0"
 description = ""
 authors = ["phoenix <vova24848@gmail.com>"]
 readme = "README.md"
+packages = [{ include = "promptadmin" }]
 
 [tool.poetry.dependencies]
 python = "^3.11"
