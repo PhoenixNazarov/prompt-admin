@@ -19,9 +19,17 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          sparse-checkout: 'library'
+          sparse-checkout-cone-mode: false
 
-      - name: Cd library
-        run: cd library
+      - name: Move library files to root
+        run: |
+          ls -lah
+          shopt -s dotglob
+          mv library/* .
+          rm -rf library
+          ls -lah
 
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
