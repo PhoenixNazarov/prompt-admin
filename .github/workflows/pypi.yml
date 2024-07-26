@@ -20,8 +20,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: cd library
-        uses: cd library
+      - name: Cd library
+        run: cd library
 
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
