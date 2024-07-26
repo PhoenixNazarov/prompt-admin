@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "prompt-admin-server"
+name = "prompt-admin"
 version = "0.1.0"
 description = ""
 authors = ["phoenix <vova24848@gmail.com>"]
