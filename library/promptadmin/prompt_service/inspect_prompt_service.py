@@ -139,7 +139,7 @@ class InspectPromptService:
         model_response = await self.model_service.execute(prompt, history)
 
         logger.info(
-            'model_response',
+            'Model processing',
             extra={
                 'prompt': prompt,
                 'history': history,
@@ -167,22 +167,23 @@ class InspectPromptService:
                 elif self.fail_parse_model_strategy == 'default':
                     model_response.parsed_model = self.parsed_model_default
 
-        logger.info(
-            'Model processing',
-            extra={
-                'prompt': prompt,
-                'history': history,
-                'mapping': {
-                    'table': self.table,
-                    'field': self.field,
-                    'field_name': self.field_name,
-                    'name': self.name,
-                },
-                'model': {
-                    'config': self.model_service.info().model_dump(),
-                    'response': model_response.model_dump()
+            logger.info(
+                'Parsed model',
+                extra={
+                    'prompt': prompt,
+                    'history': history,
+                    'mapping': {
+                        'table': self.table,
+                        'field': self.field,
+                        'field_name': self.field_name,
+                        'name': self.name,
+                    },
+                    'model': {
+                        'parsed_model_type': str(self.parsed_model_type),
+                        'raw_text': str(model_response.raw_text),
+                        'parsed_model': str(model_response.parsed_model)
+                    }
                 }
-            }
-        )
+            )
 
         return model_response
