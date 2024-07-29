@@ -146,7 +146,7 @@ class InspectPromptService:
                 'table': self.table,
                 'field': self.field,
                 'field_name': self.field_name,
-                'name': self.name,
+                'prompt_name': self.name,
                 'model_config': self.model_service.info(),
                 'model_response': model_response
             }
