@@ -18,6 +18,7 @@
     "@primevue/themes": "^4.0.0",
     "axios": "==1.6.0",
     "dedent": "^1.5.3",
+    "json-editor-vue": "^0.15.1",
     "moment": "^2.30.1",
     "pinia": "^2.1.7",
     "pinia-plugin-persistedstate": "^3.2.1",
