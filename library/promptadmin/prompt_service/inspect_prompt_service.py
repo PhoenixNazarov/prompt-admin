@@ -150,8 +150,8 @@ class InspectPromptService:
                     'name': self.name,
                 },
                 'model': {
-                    'config': self.model_service.info(),
-                    'response': model_response
+                    'config': self.model_service.info().model_dump(),
+                    'response': model_response.model_dump()
                 }
             }
         )
