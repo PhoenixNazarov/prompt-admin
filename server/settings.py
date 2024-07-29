@@ -23,14 +23,6 @@ class _Settings(BaseSettings):
 
     connections: dict[str, str] = {}
 
-    projects: dict[str, ProjectInfo] = {
-        'fundmarket': ProjectInfo(
-            connection='',
-            sync_endpoint='http://0.0.0.0:8081/api/prompt-admin/collect',
-            sync_secret='test'
-        )
-    }
-
 
 SETTINGS = _Settings()
 
