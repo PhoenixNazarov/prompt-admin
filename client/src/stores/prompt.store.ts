@@ -47,8 +47,8 @@ export const usePromptStore = defineStore({
         async savePrompt(prompt: Prompt) {
             await ApiService.post('/api/prompts/save', prompt)
         },
-        async previewPrompt(prompt: Prompt) {
-            const result = await ApiService.post<string>('/api/prompts/preview', prompt)
+        async previewPrompt(prompt: Prompt, context: object | undefined = undefined) {
+            const result = await ApiService.post<string>('/api/prompts/preview', {prompt: prompt, context: context})
             const previewPrompt = {...prompt}
             previewPrompt.value = result
             previewPrompt.preview = true

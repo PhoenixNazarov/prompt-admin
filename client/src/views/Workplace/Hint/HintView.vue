@@ -10,7 +10,7 @@ import {useAccountStore} from "../../../stores/user.store.ts";
 import {useSettingsStore} from "../../../stores/config/settings.store.ts";
 import CodeText from "../../../components/CodeText.vue";
 import ChangesHistory from "./ChangesHistory.vue";
-import {dateFormat} from "../../Utils.ts";
+import {dateFormat, parseJson} from "../../Utils.ts";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {RouterService} from "../../../plugins/router.ts";
 import SettingsEditView from "../../Account/SettingsEditView.vue";
@@ -60,7 +60,7 @@ export default defineComponent({
       promptAuditStore,
       accountStore,
       settingsStore,
-      syncDataStore
+      syncDataStore,
     }
   },
   data() {
@@ -107,7 +107,8 @@ export default defineComponent({
       if (!this.prompt) return
       this.loading.preview = true
       try {
-        const previewPrompt = await this.promptStore.previewPrompt(this.prompt)
+        const syncData = this.syncData()
+        const previewPrompt = await this.promptStore.previewPrompt(this.prompt, parseJson(syncData?.template_context_default))
         this.$emit('preview', previewPrompt)
       } catch (e) {
         alert('Cant preview this prompt. Dont use unsupported jinja fields')
@@ -151,7 +152,7 @@ export default defineComponent({
       <h1 v-if="prompt.preview == true">Preview</h1>
       <h1 v-if="prompt.auditData?.audit">Change history</h1>
       <h2 v-if="prompt.auditData?.audit"><b>Time change: </b>
-        {{ dateFormat(new Date(prompt.auditData?.audit.time_create)) }}</h2>
+        {{ dateFormat(prompt.auditData?.audit.time_create) }}</h2>
       <h2 v-if="prompt.auditData?.audit"><b>Account: </b>
         {{ accountStore.getLoginById(prompt.auditData?.audit.account_id) }}</h2>
 
@@ -172,10 +173,15 @@ export default defineComponent({
       <VCard class="mt-4" :title="prompt.name" variant="tonal">
         <VCardText>
           {{ mapping()?.description }}
+          <div v-if="syncData()?.time_create">
+            <b>Last time synchronization: </b> {{ dateFormat(syncData()?.time_create) }}
+          </div>
         </VCardText>
       </VCard>
 
-      <HintSyncData v-if="syncData()" :sync-data="syncData()!"/>
+      <HintSyncData v-if="syncData() && mapping()?.connection_name"
+                    :sync-data="syncData()!"
+                    :project="mapping()?.connection_name!"/>
       <div v-else>
         <VCard class="mt-4" variant="tonal">
           <VCardTitle>

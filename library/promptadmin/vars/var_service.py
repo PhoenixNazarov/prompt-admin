@@ -16,7 +16,7 @@ class VarService:
 
     async def collect_vars(self) -> dict[str, str]:
         try:
-            conn = await asyncpg.connect(SETTINGS.connections[self.connection])
+            conn = await asyncpg.connect(self.connection)
         except Exception as e:
             logger.error('Error connection database for get vars', exc_info=e)
             return {}

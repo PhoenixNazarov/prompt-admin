@@ -2,8 +2,8 @@ import pytest
 
 from pydantic import BaseModel
 
-from promptadmin.format.errors import CantValidateValue
-from promptadmin.format.schema import Schema
+from promptadmin_server.format.errors import CantValidateValue
+from promptadmin_server.format.schema import Schema
 
 
 class SchemaTestCase(BaseModel):

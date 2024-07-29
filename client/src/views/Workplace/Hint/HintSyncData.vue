@@ -3,19 +3,27 @@ import {defineComponent, PropType} from 'vue'
 import {SyncData, useSyncDataStore} from "../../../stores/config/syncData.store.ts";
 import JsonEditorVue from "json-editor-vue";
 import CodeText from "../../../components/CodeText.vue";
+import {parseJson} from "../../Utils.ts";
+import {useVarsStore} from "../../../stores/vars.store.ts";
 
 export default defineComponent({
   name: "HintSyncData",
   components: {CodeText, JsonEditorVue},
   setup() {
     const syncDataStore = useSyncDataStore()
+    const varsStore = useVarsStore()
     return {
-      syncDataStore
+      syncDataStore,
+      varsStore
     }
   },
   props: {
     syncData: {
       type: Object as PropType<SyncData>,
+      required: true
+    },
+    project: {
+      type: String,
       required: true
     }
   },
@@ -30,38 +38,40 @@ export default defineComponent({
       parsed_model_default_type: 'object',
       parsed_model_default_tab: 'json',
       fail_parse_model_strategy: undefined as object | undefined,
-      parsed_model_default_xml: undefined as string | undefined
+      parsed_model_default_xml: undefined as string | undefined,
+      context: undefined as object | undefined
     }
   },
   methods: {
     initSyncData() {
-      this.service_model_info = this.parseJson(this.syncData.service_model_info)
-      this.template_context_type = this.parseJson(this.syncData.template_context_type)
-      this.template_context_default = this.parseJson(this.syncData.template_context_default)
-      this.history_context_default = this.parseJson(this.syncData.history_context_default)
-      this.parsed_model_type = this.parseJson(this.syncData.parsed_model_type)
-      this.parsed_model_default = this.parseJson(this.syncData.parsed_model_default)
+      this.service_model_info = parseJson(this.syncData.service_model_info)
+      this.template_context_type = parseJson(this.syncData.template_context_type)
+      this.template_context_default = parseJson(this.syncData.template_context_default)
+      this.history_context_default = parseJson(this.syncData.history_context_default)
+      this.parsed_model_type = parseJson(this.syncData.parsed_model_type)
+      this.parsed_model_default = parseJson(this.syncData.parsed_model_default)
       if (!this.parsed_model_default && this.syncData.parsed_model_default) {
         this.parsed_model_default = this.syncData.parsed_model_default
         this.parsed_model_default_type = 'string'
       }
-      this.fail_parse_model_strategy = this.parseJson(this.syncData.fail_parse_model_strategy)
+      this.fail_parse_model_strategy = parseJson(this.syncData.fail_parse_model_strategy)
+      this.initVars()
     },
-    parseJson(input: string | undefined) {
-      if (!input) return
-      try {
-        return JSON.parse(input)
-      } catch (e) {
-      }
-      return
+    async initVars() {
+      await this.varsStore.load(this.project)
+      this.context = {...this.template_context_default, var: this.varsStore.vars.get(this.project)}
     }
   },
   mounted() {
     this.initSyncData()
+    this.initVars()
   },
   watch: {
     syncData() {
       this.initSyncData()
+    },
+    project() {
+      this.initVars()
     }
   }
 })
@@ -77,7 +87,7 @@ export default defineComponent({
     </VCard>
     <VCard class="mt-4" title="Context" variant="tonal">
       <VCardText>
-        <JsonEditorVue v-model="template_context_default" mode="tree" :mainMenuBar="false" :navigationBar="false"
+        <JsonEditorVue v-model="context" mode="tree" :mainMenuBar="false" :navigationBar="false"
                        class="jse-theme-dark"/>
       </VCardText>
     </VCard>

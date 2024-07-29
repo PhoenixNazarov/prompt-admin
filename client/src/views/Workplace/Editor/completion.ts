@@ -38,12 +38,11 @@ export function createCompletions(mapping: Mapping, prompt: Prompt) {
     const syncData = mappingEntityStore.getSyncDataByFilter(mapping, prompt)
 
     if (syncData) {
-        // try {
-        const context = JSON.parse(syncData.template_context_default)
-        options = collectSyncDataObject('', context, true)
-        console.log(options)
-        // } catch (e) {
-        // }
+        try {
+            const context = JSON.parse(syncData.template_context_default)
+            options = collectSyncDataObject('', context, true)
+        } catch (e) {
+        }
     } else {
         mappingEntityStore.getInputsByFilter(mapping, prompt).forEach(v => {
             options.push({label: v.macro, type: "text", apply: v.macro_value, detail: v.description})

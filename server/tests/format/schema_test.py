@@ -1,4 +1,4 @@
-from promptadmin.format.schema import Schema, ObjectSchema, ValueSchema
+from promptadmin_server.format.schema import Schema, ObjectSchema, ValueSchema
 
 
 def test_from_string_value_string():

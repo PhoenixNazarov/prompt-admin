@@ -1,16 +1,9 @@
 import os
-from pydantic import BaseModel
-from promptadmin.commons.dto.base_settings import (
+from promptadmin_server.commons.dto.base_settings import (
     BaseSettings,
     BaseRouter,
     DatabaseCred
 )
-
-
-class ProjectInfo(BaseModel):
-    connection: str
-    sync_endpoint: str
-    sync_secret: str
 
 
 class _Settings(BaseSettings):

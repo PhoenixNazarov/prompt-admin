@@ -1,4 +1,4 @@
-from promptadmin.api.app import app
+from promptadmin_server.api.app import app
 import uvicorn
 
 from settings import SETTINGS
