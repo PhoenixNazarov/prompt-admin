@@ -1045,13 +1045,13 @@ sqlalchemy = ["sqlalchemy (>=1.4.29)"]
 
 [[package]]
 name = "prompt-admin"
-version = "0.1.1"
+version = "0.1.3"
 description = ""
 optional = false
 python-versions = "<4.0,>=3.11"
 files = [
-    {file = "prompt_admin-0.1.1-py3-none-any.whl", hash = "sha256:8a771b442f50c5625d3fad5d221a1673771764922f2366ac635daed9d924fda8"},
-    {file = "prompt_admin-0.1.1.tar.gz", hash = "sha256:e4b4c520fa918ed8d598c21ccad4e3822a2acb84e5b0a72e031648fbccc02df7"},
+    {file = "prompt_admin-0.1.3-py3-none-any.whl", hash = "sha256:0c356faca517ecf2d992ca79358db4af7be9df8cb123996e0069967d8be68780"},
+    {file = "prompt_admin-0.1.3.tar.gz", hash = "sha256:e97c84e8e9f718c3fcae25acfec4005b97fb78f4a621fdd2093d098b9cac9694"},
 ]
 
 [package.dependencies]
@@ -2030,4 +2030,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "a0e54355d900ba39df1b8f1235950a3589946b9ce37a457eb04b0f60d23fb758"
+content-hash = "cb95912fe2ae77fdad1d327de5d09e0690cae476fecfa55739378593c8cc0bb7"

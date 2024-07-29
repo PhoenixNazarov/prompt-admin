@@ -97,7 +97,7 @@ class InspectPromptService:
 
     async def process(self, *args, prompt: str | None = None, **kwargs) -> ModelResponse:
         contexts = self._collect_contexts(*args, **kwargs)
-        prompt = prompt or await self._collect_prompt(prompt, contexts)
+        prompt = await self._collect_prompt(prompt, contexts)
         history = kwargs.get('history', [])
         return await self._execute_prompt(prompt, history)
 
@@ -143,12 +143,16 @@ class InspectPromptService:
             extra={
                 'prompt': prompt,
                 'history': history,
-                'table': self.table,
-                'field': self.field,
-                'field_name': self.field_name,
-                'prompt_name': self.name,
-                'model_config': self.model_service.info(),
-                'model_response': model_response
+                'mapping': {
+                    'table': self.table,
+                    'field': self.field,
+                    'field_name': self.field_name,
+                    'name': self.name,
+                },
+                'model': {
+                    'config': self.model_service.info(),
+                    'response': model_response
+                }
             }
         )
         if self.parsed_model_type:
