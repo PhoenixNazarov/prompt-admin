@@ -25,6 +25,8 @@ class ParserOutputService:
 
     @staticmethod
     def try_extract_json(s: str):
+        if '{' not in s and '[' not in s:
+            s = '{' + s
         s = s[next(idx for idx, c in enumerate(s) if c in '{['):]
         try:
             return json.loads(s)
@@ -33,9 +35,18 @@ class ParserOutputService:
 
     @staticmethod
     def try_parse_xml(s: str):
-        res = re.search(r'<[^>]*>((.|\W)*)</[a-zA-Z_]*>', s)
+        s = s.replace('\n', '@||')
+        tag = re.search(r'<([a-zA-Z_]*)>', s)
+        if tag:
+            first_tag = tag.group(1)
+            res = re.search(rf'<{first_tag}>.*</{first_tag}>', s)
+            if res:
+                find = res.group(0)
+                find = find.replace('@||', '\n')
+                return xmltodict.parse(find, attr_prefix='attr_')
+        res = re.search(r'<[^>]*/>', s)
         if res is None:
-            res = re.search(r'<[^>]*/>', s)
-            if res is None:
-                return None
-        return xmltodict.parse(res.group(0), attr_prefix='attr_')
+            return None
+        find = res.group(0)
+        find = find.replace('@||', '\n')
+        return xmltodict.parse(find, attr_prefix='attr_')
