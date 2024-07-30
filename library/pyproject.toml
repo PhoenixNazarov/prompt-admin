@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "prompt-admin"
-version = "0.1.7"
+version = "0.1.8"
 description = ""
 authors = ["phoenix <vova24848@gmail.com>"]
 readme = "README.md"
@@ -17,6 +17,7 @@ SQLAlchemy = "^2.0.23"
 xmltodict = "^0.13.0"
 asyncpg = "^0.29.0"
 fastapi = "^0.110.1"
+jsonschema = "^4.23.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.3"

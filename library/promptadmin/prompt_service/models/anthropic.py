@@ -42,6 +42,15 @@ class AnthropicModelService(BaseModelService):
             }
         )
 
+    @staticmethod
+    def from_info(model_service_info: ModelServiceInfo):
+        return AnthropicModelService(
+            prompt_position=model_service_info.config.get('prompt_position'),
+            max_tokens=model_service_info.config.get('max_position'),
+            model=model_service_info.model,
+            temperature=model_service_info.config.get('temperature'),
+        )
+
     async def execute(self, prompt: str, history: list[Message]) -> AnthropicModelResponse:
         messages = []
         system = NOT_GIVEN
