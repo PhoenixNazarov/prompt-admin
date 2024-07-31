@@ -23,6 +23,9 @@ class _Settings(BaseSettings):
 
     connections: dict[str, str] = {}
 
+    sync_edpoints: dict[str, str] = {}
+    sync_secrets: dict[str, str] = {}
+
     anthropic_key: str = os.environ['PA_ANTHROPIC_KEY']
 
 
@@ -32,3 +35,13 @@ for k, v in os.environ.items():
     if k.startswith('PA_CONNECTION_'):
         name = k.removeprefix('PA_CONNECTION_').lower()
         SETTINGS.connections[name] = v
+
+for k, v in os.environ.items():
+    if k.startswith('PA_SYNC_ENDPOINT_'):
+        name = k.removeprefix('PA_SYNC_ENDPOINT_').lower()
+        SETTINGS.sync_edpoints[name] = v
+
+for k, v in os.environ.items():
+    if k.startswith('PA_SYNC_SECRET_'):
+        name = k.removeprefix('PA_SYNC_SECRET_').lower()
+        SETTINGS.sync_secrets[name] = v

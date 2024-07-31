@@ -16,6 +16,7 @@ class UnitTestJob(BackgroundTask):
         self.prompt_unit_test_service = prompt_unit_test_service or PromptUnitTestService()
 
     async def start(self):
+        await asyncio.sleep(60 * 10)
         while True:
             view_params = (
                 ViewParamsBuilder()
