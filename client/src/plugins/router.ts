@@ -7,6 +7,7 @@ import {useOutputStore} from "../stores/config/output.store.ts";
 import {usePromptStore} from "../stores/prompt.store.ts";
 import {useMacroStore} from "../stores/config/macro.store.ts";
 import {useInputStore} from "../stores/config/input.store.ts";
+import {useVarsStore} from "../stores/vars.store.ts";
 
 
 function tableIdProp(id: string): number | undefined {
@@ -241,7 +242,18 @@ const router = createRouter({
                                                     groupId: Number.parseInt(route.params.groupId as string)
                                                 }
                                             }
-                                        }
+                                        },
+                                        {
+                                            name: 'ProjectVars',
+                                            path: 'vars',
+                                            component: () => import('../views/Project/ProjectVarView.vue'),
+                                            props: route => {
+                                                useVarsStore().load(route.params.project as string)
+                                                return {
+                                                    project: route.params.project as string,
+                                                }
+                                            }
+                                        },
                                     ]
                                 }
                             ]
@@ -289,6 +301,10 @@ export class RouterService {
 
     static async goToProjectGroup(project: string, groupId: number | undefined) {
         await router.push(`/project/${project}/group/${groupId == undefined ? -1 : groupId}`)
+    }
+
+    static async goToProjectVars(project: string) {
+        await router.push(`/project/${project}/vars`)
     }
 }
 

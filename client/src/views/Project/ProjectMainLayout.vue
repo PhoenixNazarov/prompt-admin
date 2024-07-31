@@ -175,6 +175,11 @@ export default defineComponent({
                       ]
                     }
                 ]]
+              },
+              {
+                label: 'Variables',
+                icon: 'pi pi-server',
+                command: () => RouterService.goToProjectVars(project)
               }
             ]"/>
         </VCol>

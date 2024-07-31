@@ -598,13 +598,13 @@ socks = ["socksio (==1.*)"]
 
 [[package]]
 name = "huggingface-hub"
-version = "0.24.3"
+version = "0.24.5"
 description = "Client library to download and publish models, datasets and other repos on the huggingface.co hub"
 optional = false
 python-versions = ">=3.8.0"
 files = [
-    {file = "huggingface_hub-0.24.3-py3-none-any.whl", hash = "sha256:69ecce486dd6cdad69937ba76779e893c224a670a9d947636c1d5cbd049e44d8"},
-    {file = "huggingface_hub-0.24.3.tar.gz", hash = "sha256:bfdc05cc9b64a0e24e8614a44222698799183268f6b68be209aa2df70cff2cde"},
+    {file = "huggingface_hub-0.24.5-py3-none-any.whl", hash = "sha256:d93fb63b1f1a919a22ce91a14518974e81fc4610bf344dfe7572343ce8d3aced"},
+    {file = "huggingface_hub-0.24.5.tar.gz", hash = "sha256:7b45d6744dd53ce9cbf9880957de00e9d10a9ae837f1c9b7255fc8fa4e8264f3"},
 ]
 
 [package.dependencies]
@@ -1099,13 +1099,13 @@ sqlalchemy = ["sqlalchemy (>=1.4.29)"]
 
 [[package]]
 name = "prompt-admin"
-version = "0.1.8"
+version = "0.1.9"
 description = ""
 optional = false
 python-versions = "<4.0,>=3.11"
 files = [
-    {file = "prompt_admin-0.1.8-py3-none-any.whl", hash = "sha256:f40796e3fe62b6436e23999c87871ac5b1f24ea14e9aeb5d51e2a98bae1595cf"},
-    {file = "prompt_admin-0.1.8.tar.gz", hash = "sha256:52ec6d15119bb4da03240f271421436a630f02e87fd0605650b17531ea2d030a"},
+    {file = "prompt_admin-0.1.9-py3-none-any.whl", hash = "sha256:500ced91256cc5162e600d18814e55adbd27fa2a28568b2102b6d4a466fb043a"},
+    {file = "prompt_admin-0.1.9.tar.gz", hash = "sha256:8008b626b062a006cf6eb09d87c281b380bd9a4252de6f90b15d77644fbd4047"},
 ]
 
 [package.dependencies]
@@ -2212,4 +2212,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "7331d3b52cfe920f939000b9b9d84d86a301036afbefcb4604a3143aef9b03db"
+content-hash = "c15f0541dee61d0eb4f19f27c698a7c5f0763276befff2bd8c11261986ad3307"

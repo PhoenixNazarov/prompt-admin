@@ -76,7 +76,9 @@ export default defineComponent({
       const mapping = this.mapping()
       if (!mapping) return []
       await this.varsStore.load(mapping.connection_name)
-      this.context = {...this.template_context_default, var: this.varsStore.vars.get(mapping.connection_name)}
+      const v = {}
+      this.varsStore.vars.get(mapping.connection_name)?.forEach(vr => v[vr.key] = vr.value)
+      this.context = {...this.template_context_default, var: v}
     },
     mapping(): Mapping | undefined {
       if (this.prompt) return this.mappingStore.getById(this.prompt.mapping_id)
