@@ -1,6 +1,7 @@
 import {
     faCalculator,
     faCheck,
+    faCircle,
     faCirclePlus,
     faDiagramProject,
     faInfoCircle,
@@ -10,8 +11,10 @@ import {
     faTerminal,
     faTrash,
     faUser,
-    faXmark
+    faXmark,
+    faSpinner
 } from '@fortawesome/free-solid-svg-icons'
+import {faCircle as farCircle} from '@fortawesome/free-regular-svg-icons'
 import {dom, library} from '@fortawesome/fontawesome-svg-core'
 import type {App} from "vue";
 
@@ -29,6 +32,9 @@ export function installFortAwesome(_: App) {
         faUser,
         faInfoCircle,
         faPlus,
-        faCirclePlus
+        faCirclePlus,
+        faCircle,
+        farCircle,
+        faSpinner
     )
 }

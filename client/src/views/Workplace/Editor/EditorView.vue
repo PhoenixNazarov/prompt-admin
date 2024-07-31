@@ -41,7 +41,7 @@ export default defineComponent({
   components: {Codemirror},
   data() {
     return {
-      height: (window.innerHeight - 3 * parseFloat(getComputedStyle(document.documentElement).fontSize)) + 'px'
+      height: (window.innerHeight - 8 * parseFloat(getComputedStyle(document.documentElement).fontSize)) + 'px'
     }
   }
 })

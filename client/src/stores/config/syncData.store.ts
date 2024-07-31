@@ -17,6 +17,11 @@ export interface SyncData extends BaseEntity {
     fail_parse_model_strategy?: string
 
     parsed_model_default_xml?: string
+
+    test_status: string
+    test_preview?: string
+    test_response_model?: string
+    test_exception?: string
 }
 
 
@@ -30,8 +35,8 @@ export const useSyncDataStore = defineStore({
     },
     actions: {
         ...abstractStoreFactory<SyncData>('sync_data'),
-        async loadXmlParsedModelDefault(syncData: SyncData) {
-            if (!syncData.parsed_model_default) return
+        async loadXmlParsedModelDefault(syncData: SyncData | undefined) {
+            if (!syncData?.parsed_model_default) return
             syncData.parsed_model_default_xml = await ApiService.post<string>('/api/config/sync_data/convert/xml', {obj: JSON.parse(syncData.parsed_model_default)})
         }
     }

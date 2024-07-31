@@ -10,7 +10,7 @@ import {useAccountStore} from "../../../stores/user.store.ts";
 import {useSettingsStore} from "../../../stores/config/settings.store.ts";
 import CodeText from "../../../components/CodeText.vue";
 import ChangesHistory from "./ChangesHistory.vue";
-import {dateFormat, parseJson} from "../../Utils.ts";
+import {dateFormat} from "../../Utils.ts";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {RouterService} from "../../../plugins/router.ts";
 import SettingsEditView from "../../Account/SettingsEditView.vue";
@@ -68,8 +68,7 @@ export default defineComponent({
       loading: {
         save: false,
         preview: false,
-      },
-      syncDataDefaults: undefined as object | undefined
+      }
     }
   },
   methods: {
@@ -107,8 +106,7 @@ export default defineComponent({
       if (!this.prompt) return
       this.loading.preview = true
       try {
-        const syncData = this.syncData()
-        const previewPrompt = await this.promptStore.previewPrompt(this.prompt, parseJson(syncData?.template_context_default))
+        const previewPrompt = await this.promptStore.previewPrompt(this.prompt)
         this.$emit('preview', previewPrompt)
       } catch (e) {
         alert('Cant preview this prompt. Dont use unsupported jinja fields')
@@ -126,16 +124,6 @@ export default defineComponent({
       })
     }
   },
-  mounted() {
-    const syncData = this.syncData()
-    if (syncData) this.syncDataDefaults = JSON.parse(syncData.template_context_default)
-  },
-  watch: {
-    prompt() {
-      const syncData = this.syncData()
-      if (syncData) this.syncDataDefaults = JSON.parse(syncData.template_context_default)
-    }
-  }
 })
 </script>
 
@@ -143,9 +131,10 @@ export default defineComponent({
   <div class="hint outer-y">
     <div v-if="prompt">
 
-      <div v-if="prompt.preview != true && !prompt.auditData?.audit">
+      <div v-if="!prompt.previewData && !prompt.auditData?.audit">
         <VBtn variant="tonal" density="comfortable" @click.prevent="save" :loading="loading.save">Save</VBtn>
-        <VBtn variant="tonal" density="comfortable" @click.prevent="preview" :loading="loading.preview"
+        <VBtn v-if="!syncData()" variant="tonal" density="comfortable" @click.prevent="preview"
+              :loading="loading.preview"
               style="margin-left: 1rem">Preview
         </VBtn>
       </div>
@@ -179,9 +168,11 @@ export default defineComponent({
         </VCardText>
       </VCard>
 
-      <HintSyncData v-if="syncData() && mapping()?.connection_name"
-                    :sync-data="syncData()!"
-                    :project="mapping()?.connection_name!"/>
+      <HintSyncData
+          v-if="syncData() && prompt"
+          :prompt="prompt"
+          @preview="prompt => $emit('preview', prompt)"
+      />
       <div v-else>
         <VCard class="mt-4" variant="tonal">
           <VCardTitle>

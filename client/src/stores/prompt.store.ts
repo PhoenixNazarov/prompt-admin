@@ -1,6 +1,19 @@
 import {defineStore} from "pinia";
 import {ApiService} from "../api/ApiService.ts";
 import {PromptAudit} from "./config/promptAudit.store.ts";
+import {SyncData} from "./config/syncData.store.ts";
+
+export interface PromptExecuteAnthropic {
+    origin_message: object
+    raw_text: string
+    parsed_model?: string
+}
+
+export interface PromptExecute {
+    response_model: PromptExecuteAnthropic
+    parsed_model_error: boolean
+}
+
 
 export interface Prompt {
     mapping_id: number
@@ -17,8 +30,13 @@ export interface Prompt {
         prevAudit?: PromptAudit
     }
 
-    llmData?: {
-        response: string
+    previewData?: {
+        value: string
+        executeData?: PromptExecute
+    }
+
+    unitTestData?: {
+        syncData: SyncData
     }
 }
 
@@ -50,9 +68,17 @@ export const usePromptStore = defineStore({
         async previewPrompt(prompt: Prompt, context: object | undefined = undefined) {
             const result = await ApiService.post<string>('/api/prompts/preview', {prompt: prompt, context: context})
             const previewPrompt = {...prompt}
-            previewPrompt.value = result
-            previewPrompt.preview = true
+            previewPrompt.previewData = {value: result}
             return previewPrompt
+        },
+        async execute(prompt: Prompt, syncData: SyncData) {
+            if (!prompt.previewData) return
+            prompt.previewData.executeData = await ApiService.post<PromptExecute>('/api/prompts/execute', {
+                service_model_info: JSON.parse(syncData.service_model_info),
+                history: JSON.parse(syncData.history_context_default),
+                prompt: prompt.previewData.value,
+                parsed_model_type: syncData.parsed_model_type ? JSON.parse(syncData.parsed_model_type) : undefined
+            })
         },
         async connectionsLoadAll() {
             if (this.connections.length > 0) return

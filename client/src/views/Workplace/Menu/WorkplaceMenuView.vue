@@ -4,6 +4,7 @@ import {Prompt, usePromptStore} from "../../../stores/prompt.store.ts";
 import {Mapping, useMappingStore} from "../../../stores/config/mapping.store.ts";
 import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
 import {useSettingsStore} from "../../../stores/config/settings.store.ts";
+import PromptUnitTestStatus from "./PromptUnitTestStatus.vue";
 
 export function hashCode(str: string | number | undefined): number {
   const newStr = String(str)
@@ -16,7 +17,7 @@ export function hashCode(str: string | number | undefined): number {
 
 export default defineComponent({
   name: "WorkplaceMenuView",
-  components: {FontAwesomeIcon},
+  components: {PromptUnitTestStatus, FontAwesomeIcon},
   setup() {
     const promptStore = usePromptStore()
     const mappingStore = useMappingStore()
@@ -103,7 +104,10 @@ export default defineComponent({
               v-for="prompt in sortPrompts(mapping, promptStore.promptsByMapping(mapping.id))"
               @click.prevent="$emit('selectPrompt', prompt)"
           >
-            {{ prompt.name }}
+            <div>
+              <PromptUnitTestStatus :prompt="prompt" @selectPrompt="p => $emit('selectPrompt', p)"/>
+              {{ prompt.name }}
+            </div>
           </VListItem>
         </VListGroup>
       </VListGroup>

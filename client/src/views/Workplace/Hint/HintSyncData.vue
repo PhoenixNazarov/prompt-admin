@@ -5,6 +5,9 @@ import JsonEditorVue from "json-editor-vue";
 import CodeText from "../../../components/CodeText.vue";
 import {parseJson} from "../../Utils.ts";
 import {useVarsStore} from "../../../stores/vars.store.ts";
+import {Prompt, usePromptStore} from "../../../stores/prompt.store.ts";
+import {Mapping, useMappingStore} from "../../../stores/config/mapping.store.ts";
+import {useMappingEntityStore} from "../../../stores/config/mappingEntity.store.ts";
 
 export default defineComponent({
   name: "HintSyncData",
@@ -12,18 +15,20 @@ export default defineComponent({
   setup() {
     const syncDataStore = useSyncDataStore()
     const varsStore = useVarsStore()
+    const mappingStore = useMappingStore()
+    const promptStore = usePromptStore()
+    const mappingEntityStore = useMappingEntityStore()
     return {
       syncDataStore,
-      varsStore
+      varsStore,
+      mappingStore,
+      promptStore,
+      mappingEntityStore
     }
   },
   props: {
-    syncData: {
-      type: Object as PropType<SyncData>,
-      required: true
-    },
-    project: {
-      type: String,
+    prompt: {
+      type: Object as PropType<Prompt>,
       required: true
     }
   },
@@ -39,40 +44,63 @@ export default defineComponent({
       parsed_model_default_tab: 'json',
       fail_parse_model_strategy: undefined as object | undefined,
       parsed_model_default_xml: undefined as string | undefined,
-      context: undefined as object | undefined
+      context: undefined as object | undefined,
+      loading: {
+        preview: false
+      }
     }
   },
   methods: {
+    syncData(): SyncData | undefined {
+      const mapping = this.mapping()
+      if (mapping && this.prompt) return this.mappingEntityStore.getSyncDataByFilter(mapping, this.prompt)
+      return undefined
+    },
     initSyncData() {
-      this.service_model_info = parseJson(this.syncData.service_model_info)
-      this.template_context_type = parseJson(this.syncData.template_context_type)
-      this.template_context_default = parseJson(this.syncData.template_context_default)
-      this.history_context_default = parseJson(this.syncData.history_context_default)
-      this.parsed_model_type = parseJson(this.syncData.parsed_model_type)
-      this.parsed_model_default = parseJson(this.syncData.parsed_model_default)
-      if (!this.parsed_model_default && this.syncData.parsed_model_default) {
-        this.parsed_model_default = this.syncData.parsed_model_default
+      const syncData = this.syncData()
+      if (!syncData) return
+      this.service_model_info = parseJson(syncData.service_model_info)
+      this.template_context_type = parseJson(syncData.template_context_type)
+      this.template_context_default = parseJson(syncData.template_context_default)
+      this.history_context_default = parseJson(syncData.history_context_default)
+      this.parsed_model_type = parseJson(syncData.parsed_model_type)
+      this.parsed_model_default = parseJson(syncData.parsed_model_default)
+      if (!this.parsed_model_default && syncData.parsed_model_default) {
+        this.parsed_model_default = syncData.parsed_model_default
         this.parsed_model_default_type = 'string'
       }
-      this.fail_parse_model_strategy = parseJson(this.syncData.fail_parse_model_strategy)
+      this.fail_parse_model_strategy = parseJson(syncData.fail_parse_model_strategy)
       this.initVars()
     },
     async initVars() {
-      await this.varsStore.load(this.project)
-      this.context = {...this.template_context_default, var: this.varsStore.vars.get(this.project)}
-    }
+      const mapping = this.mapping()
+      if (!mapping) return []
+      await this.varsStore.load(mapping.connection_name)
+      this.context = {...this.template_context_default, var: this.varsStore.vars.get(mapping.connection_name)}
+    },
+    mapping(): Mapping | undefined {
+      if (this.prompt) return this.mappingStore.getById(this.prompt.mapping_id)
+    },
+    async preview() {
+      if (!this.prompt) return
+      this.loading.preview = true
+      try {
+        const previewPrompt = await this.promptStore.previewPrompt(this.prompt, this.context)
+        this.$emit('preview', previewPrompt)
+      } catch (e) {
+        alert('Cant preview this prompt. Dont use unsupported jinja fields')
+      }
+      this.loading.preview = false
+    },
   },
   mounted() {
     this.initSyncData()
     this.initVars()
   },
   watch: {
-    syncData() {
+    prompt() {
       this.initSyncData()
     },
-    project() {
-      this.initVars()
-    }
   }
 })
 </script>
@@ -86,6 +114,9 @@ export default defineComponent({
       </VCardText>
     </VCard>
     <VCard class="mt-4" title="Context" variant="tonal">
+      <VCardTitle>
+        <VBtn variant="tonal" density="comfortable" @click.prevent="preview" :loading="loading.preview" text="Preview"/>
+      </VCardTitle>
       <VCardText>
         <JsonEditorVue v-model="context" mode="tree" :mainMenuBar="false" :navigationBar="false"
                        class="jse-theme-dark"/>
@@ -95,7 +126,7 @@ export default defineComponent({
       <VCardText>
         <VTabs v-if="parsed_model_default_type == 'object'" v-model="parsed_model_default_tab">
           <VTab value="json">JSON</VTab>
-          <VTab value="xml" @click.prevent="syncDataStore.loadXmlParsedModelDefault(syncData)">XML</VTab>
+          <VTab value="xml" @click.prevent="syncDataStore.loadXmlParsedModelDefault(syncData())">XML</VTab>
         </VTabs>
         <VTabsWindow v-model="parsed_model_default_tab">
           <VTabsWindowItem value="json">
@@ -103,7 +134,7 @@ export default defineComponent({
                            class="jse-theme-dark"/>
           </VTabsWindowItem>
           <VTabsWindowItem value="xml">
-            <CodeText :code="syncData.parsed_model_default_xml"/>
+            <CodeText :code="syncData()?.parsed_model_default_xml"/>
           </VTabsWindowItem>
         </VTabsWindow>
 

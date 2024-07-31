@@ -16,10 +16,16 @@ import CompareView from "./Editor/CompareView.vue";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import Breadcrumb from 'primevue/breadcrumb';
 import {useSyncDataStore} from "../../stores/config/syncData.store.ts";
+import PreviewView from "./Editor/PreviewView.vue";
+import UnitTestView from "./Editor/UnitTestView.vue";
 
 export default defineComponent({
   name: "WorkplaceView",
-  components: {FontAwesomeIcon, CompareView, HintView, WorkplaceMenuView, EditorView, MainLayout, Breadcrumb},
+  components: {
+    UnitTestView,
+    PreviewView,
+    FontAwesomeIcon, CompareView, HintView, WorkplaceMenuView, EditorView, MainLayout, Breadcrumb
+  },
   setup() {
     const promptStore = usePromptStore()
     const mappingStore = useMappingStore()
@@ -66,8 +72,9 @@ export default defineComponent({
       }
     },
     name(prompt: Prompt) {
-      if (prompt.preview) return `PREVIEW: ${prompt.name}`
+      if (prompt.previewData) return `PREVIEW: ${prompt.name}`
       if (prompt.auditData) return `COMPARE: ${prompt.name}`
+      if (prompt.unitTestData) return `TEST: ${prompt.name}`
       return prompt.name
     },
     breadcrumbItems() {
@@ -118,7 +125,9 @@ export default defineComponent({
       </VTabs>
       <div>
         <CompareView :prompt='selectedPrompt' v-if="selectedPrompt && selectedPrompt.auditData"/>
-        <EditorView :prompt='selectedPrompt' v-else-if="selectedPrompt && !selectedPrompt.auditData"/>
+        <PreviewView :prompt='selectedPrompt' v-else-if="selectedPrompt && selectedPrompt.previewData"/>
+        <UnitTestView :prompt="selectedPrompt" v-else-if="selectedPrompt && selectedPrompt.unitTestData"/>
+        <EditorView :prompt='selectedPrompt' v-else-if="selectedPrompt"/>
         <div style="color: var(--color-5); padding: 1rem" v-else>
           Select need prompt...
         </div>

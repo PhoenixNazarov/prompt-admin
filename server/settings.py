@@ -23,6 +23,8 @@ class _Settings(BaseSettings):
 
     connections: dict[str, str] = {}
 
+    anthropic_key: str = os.environ['PA_ANTHROPIC_KEY']
+
 
 SETTINGS = _Settings()
 

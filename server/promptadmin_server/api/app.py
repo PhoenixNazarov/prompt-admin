@@ -1,8 +1,10 @@
+from promptadmin_server.api.job.unit_test_job import UnitTestJob
 from promptadmin_server.api.routers import router
 from promptadmin_server.api.session_middleware import SessionMiddleware
 from promptadmin_server.commons.fastapi.app import create_app
 
 app = create_app(
+    background_tasks=[UnitTestJob()],
     redoc_url='/api/redoc',
     docs_url='/api/docs',
     openapi_url='/api/openapi.json',
