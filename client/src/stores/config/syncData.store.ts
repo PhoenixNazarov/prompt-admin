@@ -17,11 +17,6 @@ export interface SyncData extends BaseEntity {
     fail_parse_model_strategy?: string
 
     parsed_model_default_xml?: string
-
-    test_status: string
-    test_preview?: string
-    test_response_model?: string
-    test_exception?: string
 }
 
 

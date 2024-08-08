@@ -24,8 +24,8 @@ export default defineComponent({
     }
   },
   methods: {
-    syncData() {
-      return this.prompt.unitTestData?.syncData
+    unitTest() {
+      return this.prompt.unitTestData?.unitTest
     }
   },
   data() {
@@ -42,17 +42,17 @@ export default defineComponent({
     <VCard title="Status">
       <VCardText>
         <div>
-          <FontAwesomeIcon v-if="syncData()?.test_status == 'preview' && syncData()?.test_exception"
+          <FontAwesomeIcon v-if="unitTest()?.test_status == 'preview' && unitTest()?.test_exception"
                            :icon="['fas', 'circle']" style="color: var(--color-1)"/>
-          <FontAwesomeIcon v-else-if="syncData()?.test_status == 'execution'" :icon="['fas', 'circle']"
+          <FontAwesomeIcon v-else-if="unitTest()?.test_status == 'execution'" :icon="['fas', 'circle']"
                            style="color: green"/>
           <FontAwesomeIcon v-else :spin="true" icon="spinner"/>
           Preview
         </div>
         <div>
-          <FontAwesomeIcon v-if="syncData()?.test_status == 'execution' && syncData()?.test_exception"
+          <FontAwesomeIcon v-if="unitTest()?.test_status == 'execution' && unitTest()?.test_exception"
                            :icon="['fas', 'circle']" style="color: var(--color-1)"/>
-          <FontAwesomeIcon v-else-if="syncData()?.test_status == 'execution'" :icon="['fas', 'circle']"
+          <FontAwesomeIcon v-else-if="unitTest()?.test_status == 'execution'" :icon="['fas', 'circle']"
                            style="color: green"/>
           <FontAwesomeIcon v-else :spin="true" icon="spinner"/>
           Execution
@@ -60,10 +60,10 @@ export default defineComponent({
       </VCardText>
     </VCard>
 
-    <VCard title="Preview" class="mt-4" v-if="prompt.unitTestData?.syncData.test_preview">
+    <VCard title="Preview" class="mt-4" v-if="prompt.unitTestData?.unitTest.test_preview">
       <VCardText>
         <Codemirror
-            v-model="prompt.unitTestData!.syncData.test_preview"
+            v-model="prompt.unitTestData!.unitTest.test_preview"
             placeholder="Code goes here..."
             :style="{ height: height }"
             :autofocus="true"
@@ -74,10 +74,10 @@ export default defineComponent({
       </VCardText>
     </VCard>
 
-    <VCard title="Response Model" class="mt-4" v-if="prompt.unitTestData?.syncData.test_response_model">
+    <VCard title="Response Model" class="mt-4" v-if="prompt.unitTestData?.unitTest.test_response_model">
       <VCardText>
         <JsonEditorVue
-            :modelValue="JSON.parse(prompt.unitTestData!.syncData.test_response_model)"
+            :modelValue="JSON.parse(prompt.unitTestData!.unitTest.test_response_model)"
             mode="tree"
             :mainMenuBar="false"
             :navigationBar="false"
@@ -87,9 +87,9 @@ export default defineComponent({
       </VCardText>
     </VCard>
 
-    <VCard title="Exception" class="mt-4" v-if="prompt.unitTestData?.syncData.test_exception">
+    <VCard title="Exception" class="mt-4" v-if="prompt.unitTestData?.unitTest.test_exception">
       <VCardText>
-        <CodeText :error="prompt.unitTestData?.syncData.test_exception"/>
+        <CodeText :error="prompt.unitTestData?.unitTest.test_exception"/>
       </VCardText>
     </VCard>
   </div>

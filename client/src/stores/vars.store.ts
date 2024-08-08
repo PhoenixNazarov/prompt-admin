@@ -38,13 +38,27 @@ export const useVarsStore = defineStore({
         },
         async change(project: string, key: string, value: string) {
             await ApiService.post('/api/vars/change', {project: project, key: key, value: value})
+            let projectVars = this.vars.get(project)
+            if (!projectVars) return
+            projectVars = projectVars.map(v => {
+                if (v.key == key) {
+                    v.value = value
+                    return v
+                }
+                return v
+            })
+            this.vars.set(project, projectVars)
         },
         async remove(project: string, key: string) {
             await ApiService.post('/api/vars/remove', {project: project, key: key})
-            await this.load(project)
+            let projectVars = this.vars.get(project)
+            if (!projectVars) return
+            projectVars = projectVars.filter(v => v.key != key)
+            this.vars.set(project, projectVars)
         },
         async create(project: string, key: string, value: string) {
             await ApiService.post('/api/vars/create', {project: project, key: key, value: value})
+            this.vars.get(project)?.push({key: key, value: value})
         }
     }
 })

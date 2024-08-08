@@ -2,6 +2,7 @@ import {defineStore} from "pinia";
 import {ApiService} from "../api/ApiService.ts";
 import {PromptAudit} from "./config/promptAudit.store.ts";
 import {SyncData} from "./config/syncData.store.ts";
+import {UnitTest} from "./config/unitTest.store.ts";
 
 export interface PromptExecuteAnthropic {
     origin_message: object
@@ -36,7 +37,7 @@ export interface Prompt {
     }
 
     unitTestData?: {
-        syncData: SyncData
+        unitTest: UnitTest
     }
 }
 

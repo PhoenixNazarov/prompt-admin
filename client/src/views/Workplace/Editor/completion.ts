@@ -2,6 +2,7 @@ import {Mapping} from "../../../stores/config/mapping.store.ts";
 import {Prompt} from "../../../stores/prompt.store.ts";
 import {useMappingEntityStore} from "../../../stores/config/mappingEntity.store.ts";
 import {autocompletion, CompletionContext} from "@codemirror/autocomplete";
+import {useVarsStore} from "../../../stores/vars.store.ts";
 
 type Completion = { label: string, type: "text", apply: string, detail: string }
 
@@ -33,6 +34,7 @@ function collectSyncDataObject(prefix: string, object: any, first = false): Comp
 
 export function createCompletions(mapping: Mapping, prompt: Prompt) {
     const mappingEntityStore = useMappingEntityStore()
+    const varsStore = useVarsStore()
     let options = []
 
     const syncData = mappingEntityStore.getSyncDataByFilter(mapping, prompt)
@@ -52,6 +54,18 @@ export function createCompletions(mapping: Mapping, prompt: Prompt) {
             options.push({label: v.macro, type: "text", apply: v.macro_value, detail: v.description})
         })
     }
+
+    const vars = varsStore.getByProject(mapping.connection_name)
+
+    vars.forEach(
+        v => {
+            options.push({
+                label: `{{ var.${v.key} }}`,
+                type: 'text',
+                apply: `{{ var.${v.key} }}`
+            })
+        }
+    )
 
     function myCompletions(context: CompletionContext) {
         let word = context.matchBefore(/\w*/)
