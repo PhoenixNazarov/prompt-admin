@@ -1,4 +1,5 @@
 import json
+from typing import Any
 
 import jinja2
 from promptadmin.output.parser_output_service import ParserOutputService
@@ -46,7 +47,7 @@ class PreviewTemplateService:
         return self.preview(prompt.value, data)
 
     @staticmethod
-    def preview(prompt: str, context: dict[str, str]):
+    def preview(prompt: str, context: dict[str, Any]):
         environment = jinja2.Environment()
         template = environment.from_string(prompt)
 

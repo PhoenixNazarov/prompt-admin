@@ -11,8 +11,3 @@ class SyncData(BaseEntity, table=True):
     parsed_model_type: str | None
     parsed_model_default: str | None
     fail_parse_model_strategy: str | None
-
-    test_status: str = 'wait'
-    test_preview: str | None = None
-    test_response_model: str | None = None  # json
-    test_exception: str | None = None

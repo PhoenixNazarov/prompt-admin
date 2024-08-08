@@ -29,26 +29,28 @@ class PromptSyncService:
         async with httpx.AsyncClient() as client:
             try:
                 r = await client.get(endpoint, headers={'Prompt-Admin-Secret': secret})
-                result = r.json()
-                app = result['app']
-                prompt_service_info = result['prompt_service_info']
-                for i in prompt_service_info:
-                    await self.sync(
-                        app=app,
-                        table=i['table'],
-                        field=i['field'],
-                        field_name=i['field_name'],
-                        name=i['name'],
-                        service_model_info=i['service_model_info'],
-                        template_context_type=i['template_context_type'],
-                        template_context_default=i['template_context_default'],
-                        history_context_default=i['history_context_default'],
-                        parsed_model_type=i['parsed_model_type'],
-                        parsed_model_default=i['parsed_model_default'],
-                        fail_parse_model_strategy=i['fail_parse_model_strategy']
-                    )
+                await self.sync_json(r.json())
             except Exception as e:
                 logger.error('Sync exception', exc_info=e)
+
+    async def sync_json(self, result: dict):
+        app = result['app']
+        prompt_service_info = result['prompt_service_info']
+        for i in prompt_service_info:
+            await self.sync(
+                app=app,
+                table=i['table'],
+                field=i['field'],
+                field_name=i['field_name'],
+                name=i['name'],
+                service_model_info=i['service_model_info'],
+                template_context_type=i['template_context_type'],
+                template_context_default=i['template_context_default'],
+                history_context_default=i['history_context_default'],
+                parsed_model_type=i['parsed_model_type'],
+                parsed_model_default=i['parsed_model_default'],
+                fail_parse_model_strategy=i['fail_parse_model_strategy']
+            )
 
     async def sync(
             self,
