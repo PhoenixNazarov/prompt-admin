@@ -44,9 +44,10 @@ def bind_prompt(
                 self,
                 *args,
                 prompt: str | None = None,
+                history: list[Message] | None = None,
                 **kwargs
         ) -> ModelResponse:
-            return await inspect_prompt_service.process(*args, prompt=prompt, **kwargs)
+            return await inspect_prompt_service.process(*args, prompt=prompt, history=history, **kwargs)
 
         return wrapper
 

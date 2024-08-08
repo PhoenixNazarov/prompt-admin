@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 
 class AnthropicModelResponse(ModelResponse[T], Generic[T]):
     origin_message: AnthropicMessage | None = None
+    messages: list[dict[str, str]]
 
 
 class AnthropicModelService(BaseModelService):
@@ -55,27 +56,23 @@ class AnthropicModelService(BaseModelService):
         messages = []
         system = NOT_GIVEN
         if self.prompt_position == 'user':
-            messages = [
-                {
-                    'role': 'user',
-                    'content': prompt,
-                }
-            ]
+            history.append(Message(content=prompt, role='user'))
         elif self.prompt_position == 'system':
-            for message in history:
-                if message.role == 'user':
-                    if len(messages) > 0 and messages[-1]['role'] == 'user':
-                        messages[-1]['content'] += '\n\n' + message.content
-                    else:
-                        messages.append({'role': 'user', 'content': message.content})
-                if message.role == 'assistant':
-                    if len(messages) <= 0:
-                        messages.append({'role': 'user', 'content': 'Hello'})
-                    if messages[-1]['role'] == 'assistant':
-                        messages[-1]['content'] += '\n\n' + message.content
-                    else:
-                        messages.append({'role': 'assistant', 'content': message.content})
             system = prompt
+
+        for message in history:
+            if message.role == 'user':
+                if len(messages) > 0 and messages[-1]['role'] == 'user':
+                    messages[-1]['content'] += '\n\n' + message.content
+                else:
+                    messages.append({'role': 'user', 'content': message.content})
+            if message.role == 'assistant':
+                if len(messages) <= 0:
+                    messages.append({'role': 'user', 'content': 'Hello'})
+                if messages[-1]['role'] == 'assistant':
+                    messages[-1]['content'] += '\n\n' + message.content
+                else:
+                    messages.append({'role': 'assistant', 'content': message.content})
 
         anthropic_message = await self.anthropic.messages.create(
             max_tokens=self.max_tokens,
@@ -87,5 +84,6 @@ class AnthropicModelService(BaseModelService):
 
         return AnthropicModelResponse(
             raw_text=anthropic_message.content[0].text,
-            origin_message=anthropic_message
+            origin_message=anthropic_message,
+            messages=messages
         )

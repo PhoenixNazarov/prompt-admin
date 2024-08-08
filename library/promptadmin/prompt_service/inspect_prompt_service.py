@@ -95,10 +95,16 @@ class InspectPromptService:
                 continue
             self.parsed_model_type = return_type
 
-    async def process(self, *args, prompt: str | None = None, **kwargs) -> ModelResponse:
+    async def process(
+            self,
+            *args,
+            prompt: str | None = None,
+            history: list[Message] | None = None,
+            **kwargs
+    ) -> ModelResponse:
         contexts = self._collect_contexts(*args, **kwargs)
         prompt = await self._collect_prompt(prompt, contexts)
-        history = kwargs.get('history', [])
+        history = history or []
         return await self._execute_prompt(prompt, history)
 
     def _collect_contexts(self, *args, **kwargs):

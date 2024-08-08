@@ -1,5 +1,3 @@
-import json
-
 from promptadmin.prompt_service.decorator import instances
 from promptadmin.types.project_promt_info import ProjectPromptInfo
 from settings import SETTINGS
