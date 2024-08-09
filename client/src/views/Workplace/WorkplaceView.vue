@@ -18,6 +18,7 @@ import Breadcrumb from 'primevue/breadcrumb';
 import {useSyncDataStore} from "../../stores/config/syncData.store.ts";
 import PreviewView from "./Editor/PreviewView.vue";
 import UnitTestView from "./Editor/UnitTestView.vue";
+import {useUnitTestStore} from "../../stores/config/unitTest.store.ts";
 
 export default defineComponent({
   name: "WorkplaceView",
@@ -36,6 +37,7 @@ export default defineComponent({
     const promptAuditStore = usePromptAuditStore()
     const accountStore = useAccountStore()
     const syncDataStore = useSyncDataStore()
+    const unitTestStore = useUnitTestStore()
     return {
       promptStore,
       mappingStore,
@@ -45,7 +47,8 @@ export default defineComponent({
       inputStore,
       promptAuditStore,
       accountStore,
-      syncDataStore
+      syncDataStore,
+      unitTestStore
     }
   },
   data() {
@@ -97,6 +100,7 @@ export default defineComponent({
     this.inputStore.loadAll()
     this.accountStore.loadAll()
     this.syncDataStore.loadAll()
+    this.unitTestStore.loadAll()
   },
 })
 </script>
@@ -149,13 +153,13 @@ export default defineComponent({
 }
 
 .menu {
-  width: 20rem;
+  width: 25rem;
   background-color: var(--color-4);
   overflow-x: hidden;
 }
 
 .editor {
-  width: calc(100vw - 45rem)
+  width: calc(100vw - 50rem)
 }
 
 .hint {

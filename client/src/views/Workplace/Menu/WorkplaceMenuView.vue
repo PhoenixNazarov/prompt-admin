@@ -5,6 +5,7 @@ import {Mapping, useMappingStore} from "../../../stores/config/mapping.store.ts"
 import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
 import {useSettingsStore} from "../../../stores/config/settings.store.ts";
 import PromptUnitTestStatus from "./PromptUnitTestStatus.vue";
+import {useMappingEntityStore} from "../../../stores/config/mappingEntity.store.ts";
 
 export function hashCode(str: string | number | undefined): number {
   const newStr = String(str)
@@ -22,10 +23,12 @@ export default defineComponent({
     const promptStore = usePromptStore()
     const mappingStore = useMappingStore()
     const settingsStore = useSettingsStore()
+    const mappingEntityStore = useMappingEntityStore()
     return {
       promptStore,
       mappingStore,
-      settingsStore
+      settingsStore,
+      mappingEntityStore
     }
   },
   data() {
@@ -53,6 +56,30 @@ export default defineComponent({
           return hashCode(a.sort_value) - hashCode(b.sort_value)
         }
       })
+    },
+    doDisable(connectionName: string, table: string, field: string, name: string) {
+      this.mappingEntityStore.save({
+        connection_name: connectionName,
+        table: table,
+        field: field,
+        name: name,
+        entity: 'disable',
+        entity_id: 1
+      })
+    },
+    doUnDisable(mapping: Mapping, prompt: Prompt) {
+      const mappingEntity = this.isDisable(mapping, prompt)
+      if (mappingEntity) this.mappingEntityStore.remove(mappingEntity.id)
+    },
+    isDisable(mapping: Mapping, prompt: Prompt) {
+      return this.mappingEntityStore.entity.find(
+          el =>
+              el.connection_name == mapping.connection_name &&
+              el.table == mapping.table &&
+              el.field == mapping.field &&
+              el.name == prompt.name &&
+              el.entity == 'disable'
+      )
     }
   }
 })
@@ -95,19 +122,60 @@ export default defineComponent({
               {{ mapping.field }}
             </VListItem>
           </template>
+
+          <VListGroup :value="mapping.field + mapping.id + 'disable'">
+            <template v-slot:activator="{ props }">
+              <VListItem
+                  v-bind="props"
+              >
+                <FontAwesomeIcon icon="eye-slash"/>
+                Disabled
+              </VListItem>
+            </template>
+            <VListItem
+                v-if="mapping.id"
+                v-for="prompt in sortPrompts(mapping, promptStore.promptsByMapping(mapping.id)).filter(p => isDisable(mapping, p))"
+                @click.prevent="$emit('selectPrompt', prompt)"
+            >
+              <div style="display: flex;justify-content: space-between;align-items: center;">
+                <div>
+                  {{ prompt.name }}
+                </div>
+                <FontAwesomeIcon
+                    icon="eye"
+                    style="opacity: 0.5"
+                    v-if="prompt.name"
+                    @click.prevent="doUnDisable(mapping, prompt)"
+                />
+              </div>
+
+            </VListItem>
+          </VListGroup>
+
           <VSkeletonLoader
               color="transparent"
               type="list-item"
               v-if="promptStore.loadings.loadAll"
           ></VSkeletonLoader>
+
           <VListItem
-              v-for="prompt in sortPrompts(mapping, promptStore.promptsByMapping(mapping.id))"
+              v-if="mapping.id"
+              v-for="prompt in sortPrompts(mapping, promptStore.promptsByMapping(mapping.id)).filter(p => !isDisable(mapping, p))"
               @click.prevent="$emit('selectPrompt', prompt)"
           >
-            <div>
-              <PromptUnitTestStatus :prompt="prompt" @selectPrompt="p => $emit('selectPrompt', p)"/>
-              {{ prompt.name }}
+            <div style="display: flex;justify-content: space-between;align-items: center;">
+              <div>
+                <PromptUnitTestStatus :prompt="prompt" @selectPrompt="p => $emit('selectPrompt', p)"/>
+                {{ prompt.name }}
+              </div>
+              <FontAwesomeIcon
+                  icon="eye-slash"
+                  style="opacity: 0.5"
+                  v-if="prompt.name"
+                  @click.prevent="doDisable(mapping.connection_name, mapping.table, mapping.field, prompt.name)"
+              />
             </div>
+
           </VListItem>
         </VListGroup>
       </VListGroup>

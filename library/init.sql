@@ -6,8 +6,9 @@ create table pa_var
             primary key,
     time_create timestamp default now(),
 
-    "key"       varchar(100)   not null,
-    "value"     varchar(20000) not null
+    "key"       varchar(100)            not null,
+    "value"     varchar(20000)          not null,
+    "template"  boolean   default false not null
 );
 
 create unique index pa_var_key on pa_var

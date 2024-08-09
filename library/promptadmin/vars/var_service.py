@@ -21,7 +21,20 @@ class VarService:
             logger.error('Error connection database for get vars', exc_info=e)
             return {}
 
-        row = await conn.fetch('SELECT key, value FROM pa_var')
+        row = await conn.fetch('SELECT key, value FROM pa_var WHERE template = FALSE')
+
+        return {
+            i.get('key'): i.get('value') for i in row
+        }
+
+    async def collect_templates(self) -> dict[str, str]:
+        try:
+            conn = await asyncpg.connect(self.connection)
+        except Exception as e:
+            logger.error('Error connection database for get vars', exc_info=e)
+            return {}
+
+        row = await conn.fetch('SELECT key, value FROM pa_var WHERE template = TRUE')
 
         return {
             i.get('key'): i.get('value') for i in row
@@ -35,6 +48,16 @@ class VarService:
             return
 
         await conn.fetch(f'INSERT INTO pa_var (key, value) VALUES (\'{key}\', \'{value}\')')
+
+
+    async def create_template(self, key: str, value: str):
+        try:
+            conn = await asyncpg.connect(self.connection)
+        except Exception as e:
+            logger.error('Error connection database for get vars', exc_info=e)
+            return
+
+        await conn.fetch(f'INSERT INTO pa_var (key, value, template) VALUES (\'{key}\', \'{value}\', true)')
 
     async def change(self, key: str, value: str):
         try:

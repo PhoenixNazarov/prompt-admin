@@ -11,6 +11,7 @@ import {Prompt, usePromptStore} from "../prompt.store.ts";
 import {useOutputStore} from "./output.store.ts";
 import {useInputStore} from "./input.store.ts";
 import {useSyncDataStore} from "./syncData.store.ts";
+import {ApiService} from "../../api/ApiService.ts";
 
 export interface MappingEntity extends BaseEntity {
     connection_name?: string
@@ -38,7 +39,8 @@ function getByFilter(state, connectionName: string, table: string, field: string
 export const useMappingEntityStore = defineStore({
     id: 'mappingEntity',
     state: () => ({
-        ...abstractStoreFactoryState<MappingEntity>()
+        ...abstractStoreFactoryState<MappingEntity>(),
+        disables: [] as MappingEntity[]
     }),
     getters: {
         ...abstractStoreFactoryGetters<MappingEntity>(),
@@ -107,6 +109,18 @@ export const useMappingEntityStore = defineStore({
         }
     },
     actions: {
-        ...abstractStoreFactory<MappingEntity>('mapping_entity')
+        ...abstractStoreFactory<MappingEntity>('mapping_entity'),
+        async loadAllDisable() {
+            await ApiService.get<MappingEntity[]>('/api/config/mapping_entity/disable/get/all')
+        },
+        async createDisable(connectionName: string, table: string, field: string, name: string) {
+            const mappingEntity = await ApiService.post<MappingEntity>('/api/config/mapping_entity/disable/create', {
+                connection_name: connectionName,
+                table: table,
+                field: field,
+                name: name
+            })
+            this.disables.push(mappingEntity)
+        }
     }
 })

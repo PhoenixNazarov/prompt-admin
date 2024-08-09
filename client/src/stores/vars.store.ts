@@ -3,7 +3,8 @@ import {ApiService} from "../api/ApiService.ts";
 
 export interface Variable {
     key: string
-    value: string
+    value: string,
+    template: boolean
 }
 
 
@@ -18,8 +19,16 @@ export const useVarsStore = defineStore({
     getters: {
         getByProject: state => {
             return (project: string) => {
-                const vars = state.vars.get(project)
-                return vars ? vars : []
+                const projectVars = state.vars.get(project)
+                if (!projectVars) return []
+                return projectVars.filter(el => !el.template)
+            }
+        },
+        getTemplateByProject: state => {
+            return (project: string) => {
+                const projectVars = state.vars.get(project)
+                if (!projectVars) return []
+                return projectVars.filter(el => el.template)
             }
         },
     },

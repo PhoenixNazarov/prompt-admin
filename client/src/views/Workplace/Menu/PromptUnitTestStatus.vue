@@ -45,7 +45,8 @@ export default defineComponent({
       if (this.prompt) return this.mappingStore.getById(this.prompt.mapping_id)
     },
     selectPrompt() {
-      this.$emit('selectPrompt', {...this.prompt, unitTestData: {unitTest: this.unitTest()}})
+      const unitTest = this.unitTest()
+      if (unitTest) this.$emit('selectPrompt', {...this.prompt, unitTestData: {unitTest: unitTest}})
     }
   }
 })
