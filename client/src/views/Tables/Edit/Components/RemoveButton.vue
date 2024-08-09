@@ -1,5 +1,5 @@
 <script lang="ts">
-import {defineComponent} from 'vue'
+import {defineComponent, PropType} from 'vue'
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {RouterService} from "../../../../plugins/router.ts";
 import CodeText from "../../../../components/CodeText.vue";
@@ -11,6 +11,10 @@ export default defineComponent({
     variant: {
       type: String,
       default: 'btn'
+    },
+    density: {
+      type: Object as PropType<'default' | 'comfortable' | 'compact'>,
+      default: 'default'
     },
     title: {
       type: String
@@ -56,8 +60,12 @@ export default defineComponent({
 <template>
   <VDialog max-width="500px">
     <template v-slot:activator="{ props: activatorProps }">
-      <VBtn v-if="variant == 'btn'" :loading="loadingDelete" color="var(--color-2)" text="Remove"
-            v-bind="activatorProps"/>
+      <VBtn
+          v-if="variant == 'btn'"
+          :loading="loadingDelete" color="var(--color-2)"
+          text="Remove"
+          :density="density"
+          v-bind="activatorProps"/>
       <FontAwesomeIcon v-else class="pointer" icon="fa-trash" v-bind="activatorProps"/>
     </template>
     <template v-slot:default="{ isActive }">

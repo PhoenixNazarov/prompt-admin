@@ -69,3 +69,7 @@ body {
 .codemirror {
     font-size: 0.8rem;
 }
+
+.p-breadcrumb-list {
+    width: max-content;
+}

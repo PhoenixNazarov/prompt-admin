@@ -77,7 +77,7 @@ export default defineComponent({
       if (!mapping) return []
       await this.varsStore.load(mapping.connection_name)
       const v = {}
-      this.varsStore.vars.get(mapping.connection_name)?.forEach(vr => v[vr.key] = vr.value)
+      this.varsStore.getByProject(mapping.connection_name)?.forEach(vr => v[vr.key] = vr.value)
       this.context = {...this.template_context_default, var: v}
     },
     mapping(): Mapping | undefined {
@@ -87,7 +87,7 @@ export default defineComponent({
       if (!this.prompt) return
       this.loading.preview = true
       try {
-        const previewPrompt = await this.promptStore.previewPrompt(this.prompt, this.context)
+        const previewPrompt = await this.promptStore.previewPrompt(this.prompt, this.context, this.mapping()?.connection_name)
         this.$emit('preview', previewPrompt)
       } catch (e) {
         alert('Cant preview this prompt. Dont use unsupported jinja fields')
