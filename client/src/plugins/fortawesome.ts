@@ -14,7 +14,8 @@ import {
     faXmark,
     faSpinner,
     faEye,
-    faEyeSlash
+    faEyeSlash,
+    faFile
 } from '@fortawesome/free-solid-svg-icons'
 import {faCircle as farCircle} from '@fortawesome/free-regular-svg-icons'
 import {dom, library} from '@fortawesome/fontawesome-svg-core'
@@ -39,6 +40,7 @@ export function installFortAwesome(_: App) {
         farCircle,
         faSpinner,
         faEye,
-        faEyeSlash
+        faEyeSlash,
+        faFile
     )
 }

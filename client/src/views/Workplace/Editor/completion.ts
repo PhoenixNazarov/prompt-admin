@@ -55,14 +55,26 @@ export function createCompletions(mapping: Mapping, prompt: Prompt) {
         })
     }
 
+    // VARIABLES
     const vars = varsStore.getByProject(mapping.connection_name)
-
     vars.forEach(
         v => {
             options.push({
                 label: `{{ var.${v.key} }}`,
                 type: 'text',
                 apply: `{{ var.${v.key} }}`
+            })
+        }
+    )
+
+    // TEMPLATES
+    const template = varsStore.getTemplateByProject(mapping.connection_name)
+    template.forEach(
+        v => {
+            options.push({
+                label: `{{ render_template("${v.key}") }}`,
+                type: 'text',
+                apply: `{{ render_template("${v.key}") }}`
             })
         }
     )

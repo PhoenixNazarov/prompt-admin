@@ -68,6 +68,7 @@ export default defineComponent({
       loading: {
         save: false,
         preview: false,
+        disable: false
       }
     }
   },
@@ -122,6 +123,40 @@ export default defineComponent({
         entity: entity,
         entity_id: entity_id
       })
+    },
+    async doDisable() {
+      const mapping = this.mapping()
+      if (!mapping) return
+      this.loading.disable = true
+      await this.mappingEntityStore.save({
+        connection_name: mapping.connection_name,
+        table: mapping.table,
+        field: mapping.field,
+        name: this.prompt?.name,
+        entity: 'disable',
+        entity_id: 1
+      })
+      this.loading.disable = false
+    },
+    async doUnDisable() {
+      const mappingEntity = this.isDisable()
+      this.loading.disable = true
+      if (mappingEntity) await this.mappingEntityStore.remove(mappingEntity.id)
+      this.loading.disable = false
+    },
+    isDisable() {
+      const mapping = this.mapping()
+      if (!mapping) return
+      const name = this.prompt?.name
+      if (name)
+        return this.mappingEntityStore.entity.find(
+            el =>
+                el.connection_name == mapping.connection_name &&
+                el.table == mapping.table &&
+                el.field == mapping.field &&
+                el.name == name &&
+                el.entity == 'disable'
+        )
     }
   },
 })
@@ -130,12 +165,19 @@ export default defineComponent({
 <template>
   <div class="hint outer-y">
     <div v-if="prompt">
-
       <div v-if="!prompt.previewData && !prompt.auditData?.audit">
         <VBtn variant="tonal" density="comfortable" @click.prevent="save" :loading="loading.save">Save</VBtn>
         <VBtn v-if="!syncData()" variant="tonal" density="comfortable" @click.prevent="preview"
               :loading="loading.preview"
               style="margin-left: 1rem">Preview
+        </VBtn>
+        <VBtn v-if="isDisable() == undefined"
+              variant="tonal" density="comfortable" @click.prevent="doDisable()" :loading="loading.disable"
+              style="margin-left: 1rem">Disable
+        </VBtn>
+        <VBtn v-if="isDisable() != undefined"
+              variant="tonal" density="comfortable" @click.prevent="doUnDisable()" :loading="loading.disable"
+              style="margin-left: 1rem">UnDisable
         </VBtn>
       </div>
       <h1 v-if="prompt.preview == true">Preview</h1>
@@ -171,7 +213,7 @@ export default defineComponent({
       <HintSyncData
           v-if="syncData() && prompt"
           :prompt="prompt"
-          @preview="prompt => $emit('preview', prompt)"
+          @preview="p => $emit('preview', p)"
       />
       <div v-else>
         <VCard class="mt-4" variant="tonal">
@@ -248,7 +290,7 @@ export default defineComponent({
         />
       </div>
 
-      <ChangesHistory class="mt-4" :prompt="prompt" @preview="prompt => $emit('preview', prompt)"/>
+      <ChangesHistory class="mt-4" :prompt="prompt" @preview="p => $emit('preview', p)"/>
     </div>
 
     <SettingsEditView/>

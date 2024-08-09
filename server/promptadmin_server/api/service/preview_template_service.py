@@ -1,10 +1,11 @@
 import json
 from typing import Any
 
-import jinja2
+from jinja2.nativetypes import NativeEnvironment
 from promptadmin.output.parser_output_service import ParserOutputService
 from promptadmin.prompt_service.models import build_model
 from promptadmin.types import ModelServiceInfo, Message
+from promptadmin.vars.var_service import VarService
 
 from promptadmin_server.api.dto.prompt import Prompt
 from promptadmin_server.api.dto.prompt_execute import PromptExecute
@@ -12,6 +13,7 @@ from promptadmin_server.data.entity.input import Input
 from promptadmin_server.data.service.input_service import InputService
 from promptadmin_server.data.service.mapping_entity_service import MappingEntityService
 from promptadmin_server.data.service.mapping_service import MappingService
+from settings import SETTINGS
 
 
 class PreviewTemplateService:
@@ -25,7 +27,8 @@ class PreviewTemplateService:
         self.mapping_entity_service = mapping_entity_service or MappingEntityService()
         self.mapping_service = mapping_service or MappingService()
 
-    async def preview_prompt(self, prompt: Prompt, context: dict[str, str] = None) -> str:
+    async def preview_prompt(self, prompt: Prompt, context: dict[str, str] = None,
+                             connection: str | None = None) -> str:
         mapping_entity = await self.mapping_entity_service.find_all()
         if context:
             data = context
@@ -44,14 +47,31 @@ class PreviewTemplateService:
             inputs = await self.input_service.find_by_ids(inputs_ids)
 
             data = self._collect_context(inputs)
-        return self.preview(prompt.value, data)
+        return await self.preview(prompt.value, data, connection)
 
     @staticmethod
-    def preview(prompt: str, context: dict[str, Any]):
-        environment = jinja2.Environment()
-        template = environment.from_string(prompt)
+    async def preview(prompt: str, context: dict[str, Any], connection: str | None = None):
+        environment = NativeEnvironment(autoescape=True, enable_async=True)
+        template_ = environment.from_string(prompt)
 
-        return template.render(**context)
+        if connection:
+            var_service = VarService(SETTINGS.connections[connection])
+
+            async def render_template(template_key: str, **kwargs):
+                templ = await var_service.get_var(template_key)
+                templ_ = environment.from_string(templ)
+                return await templ_.render_async(
+                    **context,
+                    **kwargs,
+                    render_template=render_template
+                )
+
+            return await template_.render_async(
+                **context,
+                render_template=render_template
+            )
+        else:
+            return await template_.render_async(**context)
 
     @staticmethod
     async def execute(model_service_info: ModelServiceInfo, prompt: str, history: list[Message],

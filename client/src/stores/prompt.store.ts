@@ -39,6 +39,11 @@ export interface Prompt {
     unitTestData?: {
         unitTest: UnitTest
     }
+
+    templateData?: {
+        key: string,
+        project: string
+    }
 }
 
 
@@ -66,8 +71,8 @@ export const usePromptStore = defineStore({
         async savePrompt(prompt: Prompt) {
             await ApiService.post('/api/prompts/save', prompt)
         },
-        async previewPrompt(prompt: Prompt, context: object | undefined = undefined) {
-            const result = await ApiService.post<string>('/api/prompts/preview', {prompt: prompt, context: context})
+        async previewPrompt(prompt: Prompt, context: object | undefined = undefined, connection: string | undefined = undefined) {
+            const result = await ApiService.post<string>('/api/prompts/preview', {prompt: prompt, context: context, connection: connection})
             const previewPrompt = {...prompt}
             previewPrompt.previewData = {value: result}
             return previewPrompt

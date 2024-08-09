@@ -65,9 +65,9 @@ export const useVarsStore = defineStore({
             projectVars = projectVars.filter(v => v.key != key)
             this.vars.set(project, projectVars)
         },
-        async create(project: string, key: string, value: string) {
-            await ApiService.post('/api/vars/create', {project: project, key: key, value: value})
-            this.vars.get(project)?.push({key: key, value: value})
+        async create(project: string, key: string, value: string, template = false) {
+            await ApiService.post('/api/vars/create', {project: project, key: key, value: value, template: template})
+            this.vars.get(project)?.push({key: key, value: value, template: template})
         }
     }
 })

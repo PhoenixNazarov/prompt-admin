@@ -22,6 +22,7 @@ prompt_load_service = PromptLoadService()
 class PreviewPromptDto(BaseModel):
     prompt: Prompt
     context: dict | None = None
+    connection: str | None = None
 
 
 class ExecutePromptDto(BaseModel):
@@ -43,7 +44,11 @@ async def save(prompt: Prompt, user_data: UserDependsAnnotated):
 
 @router.post('/preview')
 async def preview(preview_prompt_dto: PreviewPromptDto):
-    return await preview_template_service.preview_prompt(preview_prompt_dto.prompt, preview_prompt_dto.context)
+    return await preview_template_service.preview_prompt(
+        preview_prompt_dto.prompt,
+        preview_prompt_dto.context,
+        preview_prompt_dto.connection
+    )
 
 
 @router.post('/execute')

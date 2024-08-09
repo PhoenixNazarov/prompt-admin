@@ -59,6 +59,8 @@ class AnthropicModelService(BaseModelService):
             history.append(Message(content=prompt, role='user'))
         elif self.prompt_position == 'system':
             system = prompt
+            if len(history) ==0:
+                history.append(Message(content=prompt, role='user'))
 
         for message in history:
             if message.role == 'user':

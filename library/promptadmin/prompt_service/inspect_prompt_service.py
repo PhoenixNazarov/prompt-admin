@@ -2,7 +2,7 @@ import inspect
 import logging
 from typing import Callable, Awaitable, Any, get_args
 
-from jinja2 import Environment
+from jinja2.nativetypes import NativeEnvironment
 from polyfactory.factories.pydantic_factory import ModelFactory
 from pydantic import BaseModel
 
@@ -130,16 +130,33 @@ class InspectPromptService:
                 raise ValueError()
             raise NotImplementedError()
 
-        environment = Environment(autoescape=True)
-        template = environment.from_string(prompt)
+        environment = NativeEnvironment(autoescape=True, enable_async=True)
+        template_ = environment.from_string(prompt)
+
         var = await self._collect_vars()
-        return template.render(
+
+        contexts.update(
+            {'var': var}
+        )
+
+        async def render_template(template_key: str):
+            templ = await self.var_service.get_var(template_key)
+            templ_ = environment.from_string(templ)
+            return await templ_.render_async(
+                **contexts,
+                render_template=render_template
+            )
+
+        return await template_.render_async(
             **contexts,
-            var=var
+            render_template=render_template
         )
 
     async def _collect_vars(self) -> dict[str, str]:
         return await self.var_service.collect_vars()
+
+    async def _collect_templates(self) -> dict[str, str]:
+        return await self.var_service.collect_templates()
 
     async def _execute_prompt(self, prompt: str, history: list[Message]) -> ModelResponse:
         model_response = await self.model_service.execute(prompt, history)

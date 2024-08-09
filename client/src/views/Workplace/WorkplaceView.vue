@@ -19,10 +19,12 @@ import {useSyncDataStore} from "../../stores/config/syncData.store.ts";
 import PreviewView from "./Editor/PreviewView.vue";
 import UnitTestView from "./Editor/UnitTestView.vue";
 import {useUnitTestStore} from "../../stores/config/unitTest.store.ts";
+import MainHintView from "./Hint/MainHintView.vue";
 
 export default defineComponent({
   name: "WorkplaceView",
   components: {
+    MainHintView,
     UnitTestView,
     PreviewView,
     FontAwesomeIcon, CompareView, HintView, WorkplaceMenuView, EditorView, MainLayout, Breadcrumb
@@ -78,6 +80,7 @@ export default defineComponent({
       if (prompt.previewData) return `PREVIEW: ${prompt.name}`
       if (prompt.auditData) return `COMPARE: ${prompt.name}`
       if (prompt.unitTestData) return `TEST: ${prompt.name}`
+      if (prompt.templateData) return `TEMPLATE: ${prompt.templateData.key}`
       return prompt.name
     },
     breadcrumbItems() {
@@ -136,12 +139,18 @@ export default defineComponent({
           Select need prompt...
         </div>
         <Breadcrumb v-if="breadcrumbItems().length > 0" :model="breadcrumbItems()"
+                    class="breadcrumb"
                     style="background-color: white; padding: 0.2rem 1rem; height: 2rem"/>
       </div>
 
     </div>
     <div class="hint outer-y">
-      <HintView v-if="selectedPrompt" :prompt="selectedPrompt" @preview="selectPrompt"/>
+      <MainHintView
+          v-if="selectedPrompt"
+          :prompt="selectedPrompt"
+          @preview="selectPrompt"
+          @closePrompt="closePrompt"
+      />
     </div>
   </div>
 </template>

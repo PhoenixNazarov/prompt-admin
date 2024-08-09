@@ -6,6 +6,7 @@ import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
 import {useSettingsStore} from "../../../stores/config/settings.store.ts";
 import PromptUnitTestStatus from "./PromptUnitTestStatus.vue";
 import {useMappingEntityStore} from "../../../stores/config/mappingEntity.store.ts";
+import TemplateMenuView from "./TemplateMenuView.vue";
 
 export function hashCode(str: string | number | undefined): number {
   const newStr = String(str)
@@ -18,7 +19,7 @@ export function hashCode(str: string | number | undefined): number {
 
 export default defineComponent({
   name: "WorkplaceMenuView",
-  components: {PromptUnitTestStatus, FontAwesomeIcon},
+  components: {TemplateMenuView, PromptUnitTestStatus, FontAwesomeIcon},
   setup() {
     const promptStore = usePromptStore()
     const mappingStore = useMappingStore()
@@ -57,20 +58,6 @@ export default defineComponent({
         }
       })
     },
-    doDisable(connectionName: string, table: string, field: string, name: string) {
-      this.mappingEntityStore.save({
-        connection_name: connectionName,
-        table: table,
-        field: field,
-        name: name,
-        entity: 'disable',
-        entity_id: 1
-      })
-    },
-    doUnDisable(mapping: Mapping, prompt: Prompt) {
-      const mappingEntity = this.isDisable(mapping, prompt)
-      if (mappingEntity) this.mappingEntityStore.remove(mappingEntity.id)
-    },
     isDisable(mapping: Mapping, prompt: Prompt) {
       return this.mappingEntityStore.entity.find(
           el =>
@@ -91,11 +78,6 @@ export default defineComponent({
       density="compact"
       v-model:opened="opened"
   >
-    <VSkeletonLoader
-        color="transparent"
-        type="list-item"
-        v-if="mappingStore.loadings.loadAll"
-    ></VSkeletonLoader>
     <VListGroup :value="connection" v-for="[connection, mappingsTable] in mappingStore.getConnections">
       <template v-slot:activator="{ props }">
         <VListItem
@@ -105,6 +87,9 @@ export default defineComponent({
           {{ connection }}
         </VListItem>
       </template>
+
+      <TemplateMenuView :project="connection" @selectPrompt="p => $emit('selectPrompt', p)"/>
+
       <VListGroup :value="mappingTable" v-for="[mappingTable, mappings] in mappingsTable">
         <template v-slot:activator="{ props }">
           <VListItem
@@ -141,22 +126,10 @@ export default defineComponent({
                 <div>
                   {{ prompt.name }}
                 </div>
-                <FontAwesomeIcon
-                    icon="eye"
-                    style="opacity: 0.5"
-                    v-if="prompt.name"
-                    @click.prevent="doUnDisable(mapping, prompt)"
-                />
               </div>
 
             </VListItem>
           </VListGroup>
-
-          <VSkeletonLoader
-              color="transparent"
-              type="list-item"
-              v-if="promptStore.loadings.loadAll"
-          ></VSkeletonLoader>
 
           <VListItem
               v-if="mapping.id"
@@ -168,18 +141,23 @@ export default defineComponent({
                 <PromptUnitTestStatus :prompt="prompt" @selectPrompt="p => $emit('selectPrompt', p)"/>
                 {{ prompt.name }}
               </div>
-              <FontAwesomeIcon
-                  icon="eye-slash"
-                  style="opacity: 0.5"
-                  v-if="prompt.name"
-                  @click.prevent="doDisable(mapping.connection_name, mapping.table, mapping.field, prompt.name)"
-              />
             </div>
-
           </VListItem>
+
+          <VSkeletonLoader
+              color="transparent"
+              type="list-item"
+              v-if="promptStore.loadings.loadAll"
+          ></VSkeletonLoader>
         </VListGroup>
       </VListGroup>
     </VListGroup>
+
+    <VSkeletonLoader
+        color="transparent"
+        type="list-item"
+        v-if="mappingStore.loadings.loadAll"
+    ></VSkeletonLoader>
   </VList>
 </template>
 

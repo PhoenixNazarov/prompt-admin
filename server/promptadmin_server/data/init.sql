@@ -41,20 +41,6 @@ create table pa_mapping
 create unique index pa_mapping_table_field_uind on pa_mapping
     ("table", field, connection_name);
 
-
-create table pa_variable
-(
-    id          serial
-        constraint pa_variable_pk
-            primary key,
-    time_create timestamp default now(),
-    name        varchar(128) not null,
-    description varchar(128) not null,
-    value       varchar(128) not null,
-    template    boolean   default FALSE
-);
-
-
 create table pa_mapping_entity
 (
     id              serial
