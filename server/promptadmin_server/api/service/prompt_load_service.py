@@ -122,7 +122,7 @@ class PromptLoadService:
         sync_data = await self.sync_data_service.find_by_id(mapping_entities[0].entity_id)
         if sync_data is None:
             return
-        unit_test = self.unit_test_service.find_by_sync_data_name(sync_data.id, prompt.name)
+        unit_test = await self.unit_test_service.find_by_sync_data_name(sync_data.id, prompt.name)
         if unit_test is None:
             return
         unit_test.test_status = 'wait'
