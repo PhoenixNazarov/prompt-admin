@@ -85,7 +85,7 @@ class VarService:
             logger.error('Error connection database for get vars', exc_info=e)
             return
 
-        await conn.fetch(f'INSERT INTO pa_var (key, value, template) VALUES (\'{key}\', \'{value}\', \'{template}\')')
+        await conn.fetch('INSERT INTO pa_var (key, value, template) VALUES ($1, $2, $3)', key, value, template)
 
     async def change(self, key: str, value: str):
         try:
@@ -94,7 +94,7 @@ class VarService:
             logger.error('Error connection database for get vars', exc_info=e)
             return
 
-        await conn.fetch(f'UPDATE pa_var SET value=\'{value}\' WHERE key=\'{key}\'')
+        await conn.fetch('UPDATE pa_var SET value=$1 WHERE key=$2', value, key)
 
     async def remove(self, key: str):
         try:
@@ -103,4 +103,4 @@ class VarService:
             logger.error('Error connection database for get vars', exc_info=e)
             return
 
-        await conn.fetch(f'DELETE FROM pa_var WHERE key=\'{key}\'')
+        await conn.fetch('DELETE FROM pa_var WHERE key=$1', key)
