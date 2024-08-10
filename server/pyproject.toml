@@ -20,7 +20,7 @@ starlette = "^0.37.2"
 uvicorn = "^0.29.0"
 Jinja2 = "^3.1.2"
 itsdangerous = "^2.2.0"
-prompt-admin = "^0.1.10"
+prompt-admin = "^0.1.11"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.3"
