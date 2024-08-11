@@ -113,7 +113,7 @@ class PromptUnitTestService:
             context.update(json.loads(sync_data.template_context_default))
 
             prompt = await self.prompt_load_service.load_mapping_name(mapping, unit_test.name)
-            preview = self.preview_template_service.preview(prompt, context)
+            preview = await self.preview_template_service.preview(prompt, context)
             unit_test.test_preview = preview
         except Exception as e:
             unit_test.test_exception = str(e)

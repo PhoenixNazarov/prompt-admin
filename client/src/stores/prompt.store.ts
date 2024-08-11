@@ -13,6 +13,7 @@ export interface PromptExecuteAnthropic {
 export interface PromptExecute {
     response_model: PromptExecuteAnthropic
     parsed_model_error: boolean
+    messages: object
 }
 
 
@@ -32,6 +33,7 @@ export interface Prompt {
     }
 
     previewData?: {
+        history: object | undefined
         value: string
         executeData?: PromptExecute
     }
@@ -72,9 +74,13 @@ export const usePromptStore = defineStore({
             await ApiService.post('/api/prompts/save', prompt)
         },
         async previewPrompt(prompt: Prompt, context: object | undefined = undefined, connection: string | undefined = undefined) {
-            const result = await ApiService.post<string>('/api/prompts/preview', {prompt: prompt, context: context, connection: connection})
+            const result = await ApiService.post<string>('/api/prompts/preview', {
+                prompt: prompt,
+                context: context,
+                connection: connection
+            })
             const previewPrompt = {...prompt}
-            previewPrompt.previewData = {value: result}
+            previewPrompt.previewData = {value: result, history: undefined}
             return previewPrompt
         },
         async execute(prompt: Prompt, syncData: SyncData) {

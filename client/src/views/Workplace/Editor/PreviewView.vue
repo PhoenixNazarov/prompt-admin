@@ -57,7 +57,11 @@ export default defineComponent({
       const syncData = this.syncData()
       if (!syncData) return
       this.loading.execute = true
-      await this.promptStore.execute(this.prompt, syncData)
+      try {
+        await this.promptStore.execute(this.prompt, syncData)
+      } catch (e) {
+        alert('Error execution: ' + e)
+      }
       this.loading.execute = false
     }
   }
@@ -66,6 +70,13 @@ export default defineComponent({
 
 <template>
   <div style="height: calc(100vh - 8rem); background-color: var(--color-3)" class="outer-y">
+
+    <VCard title="History">
+      <VCardText>
+        <VTextarea v-for="obj in prompt.previewData!.history" :label="obj.role" variant="outlined" :model-value="obj.content"></VTextarea>
+      </VCardText>
+    </VCard>
+
     <VCard title="Preview">
       <VCardText>
         <VTabs v-model="previewMode">
@@ -103,6 +114,19 @@ export default defineComponent({
       <VBtn density="comfortable" @click.prevent="execute" :loading="loading.execute" text="Execute"
             style="margin-left: auto; margin-right: auto"/>
     </div>
+
+    <VCard title="Compile messages" class="mt-4" v-if="prompt.previewData?.executeData?.messages">
+      <VCardText>
+        <JsonEditorVue
+            :modelValue="prompt.previewData?.executeData?.messages"
+            mode="tree"
+            :mainMenuBar="false"
+            :navigationBar="false"
+            :read-only="true"
+            class="jse-theme-dark"
+        />
+      </VCardText>
+    </VCard>
 
     <VCard title="Response" class="mt-4" v-if="prompt.previewData?.executeData?.response_model.raw_text">
       <VCardText>

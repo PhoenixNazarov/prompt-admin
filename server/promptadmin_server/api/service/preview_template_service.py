@@ -4,6 +4,7 @@ from typing import Any
 from jinja2.nativetypes import NativeEnvironment
 from promptadmin.output.parser_output_service import ParserOutputService
 from promptadmin.prompt_service.models import build_model
+from promptadmin.prompt_service.models.anthropic import AnthropicModelResponse
 from promptadmin.types import ModelServiceInfo, Message
 from promptadmin.vars.var_service import VarService
 
@@ -86,7 +87,8 @@ class PreviewTemplateService:
 
         return PromptExecute(
             response_model=model_response,
-            parsed_model_error=parsed_model_error
+            parsed_model_error=parsed_model_error,
+            messages=model_response.messages if isinstance(model_response, AnthropicModelResponse) else []
         )
 
     @staticmethod

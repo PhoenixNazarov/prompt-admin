@@ -162,7 +162,7 @@ create table pa_sync_data
 
     service_model_info        varchar(30000)  not null,
     template_context_type     varchar(50000)  not null,
-    template_context_default  varchar(100000) not null,
+    template_context_default  varchar(150000) not null,
     history_context_default   varchar(30000)  not null,
     parsed_model_type         varchar(30000),
     parsed_model_default      varchar(30000),
