@@ -90,7 +90,7 @@ export default defineComponent({
 
       <TemplateMenuView :project="connection" @selectPrompt="p => $emit('selectPrompt', p)"/>
 
-      <VListGroup :value="mappingTable" v-for="[mappingTable, mappings] in mappingsTable">
+      <VListGroup :value="connection + mappingTable" v-for="[mappingTable, mappings] in mappingsTable">
         <template v-slot:activator="{ props }">
           <VListItem
               v-bind="props"
@@ -99,7 +99,7 @@ export default defineComponent({
             {{ mappingTable }}
           </VListItem>
         </template>
-        <VListGroup :value="mapping.field + mapping.id" v-for="mapping in mappings">
+        <VListGroup :value="connection + mapping.field + mapping.id" v-for="mapping in mappings">
           <template v-slot:activator="{ props }">
             <VListItem
                 v-bind="props"
@@ -108,7 +108,7 @@ export default defineComponent({
             </VListItem>
           </template>
 
-          <VListGroup :value="mapping.field + mapping.id + 'disable'">
+          <VListGroup :value="connection + mapping.field + mapping.id + 'disable'">
             <template v-slot:activator="{ props }">
               <VListItem
                   v-bind="props"
