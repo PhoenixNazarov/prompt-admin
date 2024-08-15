@@ -92,7 +92,7 @@ class PromptLoadService:
         return row[0].get(field, '')
 
     async def save(self, prompt: Prompt, user_data: UserData):
-        mapping = await self.mapping_service.find_by_table_field(prompt.table, prompt.field)
+        mapping = await self.mapping_service.find_by_id(prompt.mapping_id)
         conn = await asyncpg.connect(SETTINGS.connections[mapping.connection_name])
         await self.prompt_audit_service.save(
             PromptAudit(
