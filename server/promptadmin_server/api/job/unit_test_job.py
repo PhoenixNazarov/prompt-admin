@@ -1,9 +1,7 @@
 import asyncio
 
 from promptadmin_server.api.service.prompt_unit_test_service import PromptUnitTestService
-from promptadmin_server.commons.dto import ViewParamsBuilder, ViewParamsFilter
 from promptadmin_server.commons.fastapi.background_task import BackgroundTask
-from promptadmin_server.data.entity.sync_data import SyncData
 from promptadmin_server.data.service.mapping_entity_service import MappingEntityService
 from promptadmin_server.data.service.sync_data_service import SyncDataService
 

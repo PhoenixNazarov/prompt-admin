@@ -77,8 +77,6 @@ class PromptUnitTestService:
         if len(mapping_entity_disable) > 0:
             return
         unit_test = await self.unit_test_service.find_by_sync_data_name(sync_data.id, name)
-        if unit_test and unit_test.test_status != 'wait':
-            return
         if unit_test is None:
             unit_test = UnitTest(
                 sync_data_id=sync_data.id,
