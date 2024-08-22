@@ -80,6 +80,18 @@ class PromptSyncService:
             mapping = Mapping(table=table, field=field, description='', field_name=field_name, connection_name=app)
             await self.mapping_service.save(mapping)
 
+        sync_data = SyncData(
+            service_model_info=json.dumps(service_model_info, sort_keys=True, default=str),
+            template_context_type=json.dumps(template_context_type, sort_keys=True, default=str),
+            template_context_default=json.dumps(template_context_default, sort_keys=True, default=str),
+            history_context_default=json.dumps(history_context_default, sort_keys=True, default=str),
+            parsed_model_type=json.dumps(parsed_model_type, sort_keys=True, default=str) if parsed_model_type else None,
+            parsed_model_default=json.dumps(parsed_model_default, sort_keys=True,
+                                            default=str) if parsed_model_default else None,
+            fail_parse_model_strategy=fail_parse_model_strategy
+        )
+        sync_data = await self.sync_data_service.save(sync_data)
+
         view_params = (
             ViewParamsBuilder()
             .filter(ViewParamsFilter(field=MappingEntity.connection_name, value=app))
@@ -90,29 +102,37 @@ class PromptSyncService:
             .build()
         )
         mapping_entities = await self.mapping_entity_service.find_by_view_params(view_params)
+        need_save = True
         if len(mapping_entities) > 0:
-            await self.mapping_entity_service.remove_all(mapping_entities)
             sync_data_ids = [m.entity_id for m in mapping_entities]
-            need_remove = await self.sync_data_service.find_by_ids(sync_data_ids)
-            await self.sync_data_service.remove_all(need_remove)
+            already_sync_datas = await self.sync_data_service.find_by_ids(sync_data_ids)
+            need_remove_sync_datas = []
+            for sd in already_sync_datas:
+                if (
+                        sd.service_model_info == sync_data.service_model_info and
+                        sd.template_context_type == sync_data.template_context_type and
+                        sd.template_context_default == sync_data.template_context_default and
+                        sd.history_context_default == sync_data.history_context_default and
+                        sd.parsed_model_type == sync_data.parsed_model_type and
+                        sd.parsed_model_default == sync_data.parsed_model_default and
+                        sd.fail_parse_model_strategy == sync_data.fail_parse_model_strategy
+                ):
+                    need_save = False
+                else:
+                    need_remove_sync_datas.append(sd)
+            if need_remove_sync_datas:
+                need_remove_ids = [sd.id for sd in need_remove_sync_datas]
+                need_remove_me = [m for m in mapping_entities if m.mapping_id in need_remove_ids]
+                await self.mapping_entity_service.remove_all(need_remove_me)
+                await self.sync_data_service.remove_all(need_remove_sync_datas)
 
-        sync_data = SyncData(
-            service_model_info=json.dumps(service_model_info, sort_keys=True, default=str),
-            template_context_type=json.dumps(template_context_type, sort_keys=True, default=str),
-            template_context_default=json.dumps(template_context_default, sort_keys=True, default=str),
-            history_context_default=json.dumps(history_context_default, sort_keys=True, default=str),
-            parsed_model_type=json.dumps(parsed_model_type, sort_keys=True, default=str) if parsed_model_type else None,
-            parsed_model_default=json.dumps(parsed_model_default, sort_keys=True,
-                                            default=str) if parsed_model_default else None,
-            fail_parse_model_strategy=fail_parse_model_strategy,
-        )
-        sync_data = await self.sync_data_service.save(sync_data)
-        mapping_entity = MappingEntity(
-            connection_name=app,
-            table=table,
-            field=field,
-            name=name,
-            entity='sync_data',
-            entity_id=sync_data.id
-        )
-        await self.mapping_entity_service.save(mapping_entity)
+        if need_save:
+            mapping_entity = MappingEntity(
+                connection_name=app,
+                table=table,
+                field=field,
+                name=name,
+                entity='sync_data',
+                entity_id=sync_data.id
+            )
+            await self.mapping_entity_service.save(mapping_entity)

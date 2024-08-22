@@ -62,7 +62,8 @@ export function createCompletions(mapping: Mapping, prompt: Prompt) {
             options.push({
                 label: `{{ var.${v.key} }}`,
                 type: 'text',
-                apply: `{{ var.${v.key} }}`
+                apply: `{{ var.${v.key} }}`,
+                detail: v.value
             })
         }
     )
@@ -74,7 +75,8 @@ export function createCompletions(mapping: Mapping, prompt: Prompt) {
             options.push({
                 label: `{{ render_template("${v.key}") }}`,
                 type: 'text',
-                apply: `{{ render_template("${v.key}") }}`
+                apply: `{{ render_template("${v.key}") }}`,
+                detail: v.value
             })
         }
     )
