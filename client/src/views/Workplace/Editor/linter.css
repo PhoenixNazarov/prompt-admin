@@ -5,3 +5,11 @@
 .cm-lintRange-jinja > .ͼe {
     color: unset;
 }
+
+.ͼ1 .cm-lintRange-LOW {
+    text-decoration: wavy underline !important;
+}
+
+.ͼ1 .cm-lintRange-HIGH {
+    text-decoration: red wavy underline !important;
+}

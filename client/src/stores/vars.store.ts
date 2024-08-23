@@ -41,7 +41,7 @@ export const useVarsStore = defineStore({
             }
             this.loadings.load = true
             const loadVars = await ApiService.post<Variable[]>('/api/vars/load', {project: project})
-            this.vars.set(project, loadVars)
+            this.vars.set(project, loadVars ? loadVars : [])
             this.loadings.load = false
             return loadVars
         },

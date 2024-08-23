@@ -104,11 +104,15 @@ class PromptSyncService:
         mapping_entities = await self.mapping_entity_service.find_by_view_params(view_params)
         need_save = True
         if len(mapping_entities) > 0:
-            sync_data_ids = [m.entity_id for m in mapping_entities]
-            already_sync_datas = await self.sync_data_service.find_by_ids(sync_data_ids)
             need_remove_sync_datas = []
-            for sd in already_sync_datas:
+            need_remove_mapping_entity = []
+            for me in mapping_entities:
+                sd = await self.sync_data_service.find_by_id(me.entity_id)
+                if sd is None:
+                    need_remove_mapping_entity.append(me)
+                    continue
                 if (
+                        need_save and
                         sd.service_model_info == sync_data.service_model_info and
                         sd.template_context_type == sync_data.template_context_type and
                         sd.template_context_default == sync_data.template_context_default and
@@ -120,11 +124,9 @@ class PromptSyncService:
                     need_save = False
                 else:
                     need_remove_sync_datas.append(sd)
-            if need_remove_sync_datas:
-                need_remove_ids = [sd.id for sd in need_remove_sync_datas]
-                need_remove_me = [m for m in mapping_entities if m.mapping_id in need_remove_ids]
-                await self.mapping_entity_service.remove_all(need_remove_me)
-                await self.sync_data_service.remove_all(need_remove_sync_datas)
+
+            await self.mapping_entity_service.remove_all(need_remove_mapping_entity)
+            await self.sync_data_service.remove_all(need_remove_sync_datas)
 
         if need_save:
             mapping_entity = MappingEntity(

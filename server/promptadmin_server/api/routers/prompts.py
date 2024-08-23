@@ -1,4 +1,7 @@
+import json
 import logging
+import subprocess
+from tempfile import NamedTemporaryFile
 
 from fastapi import APIRouter
 from promptadmin.types import ModelServiceInfo, Message
@@ -30,6 +33,14 @@ class ExecutePromptDto(BaseModel):
     history: list[Message]
     prompt: str
     parsed_model_type: dict | None = None
+
+
+class ValidateJinjaDto(BaseModel):
+    prompt: str
+
+
+class ValidateResponseDto(BaseModel):
+    j2lint: dict | None
 
 
 @router.get('/load_all')
@@ -64,3 +75,22 @@ async def execute(execute_prompt_dto: ExecutePromptDto):
 @router.get('/connections/get_all')
 async def connections_get_all():
     return list(SETTINGS.connections.keys())
+
+
+@router.post('/validate')
+async def validate(validate_jinja_dto: ValidateJinjaDto):
+    tmp = NamedTemporaryFile(suffix='.j2')
+    with open(tmp.name, 'w') as file:
+        file.write(validate_jinja_dto.prompt)
+
+    proc = subprocess.Popen(['j2lint', file.name, '--json'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    out, err = proc.communicate(timeout=120)
+    tmp.close()
+    result_json = None
+    try:
+        result_json = json.loads(out)
+    except Exception:
+        pass
+    return ValidateResponseDto(
+        j2lint=result_json
+    )

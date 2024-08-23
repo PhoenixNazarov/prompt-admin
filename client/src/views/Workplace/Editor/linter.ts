@@ -1,5 +1,6 @@
 import {Diagnostic, linter} from "@codemirror/lint";
 import "./linter.css"
+import {JinjaError} from "../../../stores/prompt.store.ts";
 
 export function buildJinjaVarLinter() {
     return linter(view => {
@@ -19,7 +20,6 @@ export function buildJinjaVarLinter() {
                         from: startInd,
                         to: i + 2,
                         severity: "jinja",
-                        message: 'JinjaVar',
                         actions: [
                             // {
                             // name: "Remove",
@@ -57,7 +57,6 @@ export function buildJinjaListLinter() {
                         from: startInd,
                         to: i + 2,
                         severity: "jinja",
-                        message: 'JinjaVar',
                         actions: [
                             // {
                             // name: "Remove",
@@ -70,6 +69,32 @@ export function buildJinjaListLinter() {
                     startInd = 0
                     open = true
                 }
+            }
+        }
+        return diagnostics
+    })
+}
+
+
+export function buildJinjaSyntaxLinter(errors: JinjaError[]) {
+    return linter(view => {
+        const diagnostics: Diagnostic[] = []
+        const originText = view.state.doc.toString()
+        let prevInd = 0
+        let currentLine = 1
+        for (let i = 0; i < originText.length; i++) {
+            if (originText[i] == '\n') {
+                errors.forEach(e => {
+                    if (e.line_number == currentLine)
+                        diagnostics.push({
+                            from: prevInd,
+                            to: i,
+                            severity: e.severity,
+                            message: e.message
+                        })
+                })
+                currentLine += 1
+                prevInd = i
             }
         }
         return diagnostics

@@ -57,6 +57,12 @@ export default defineComponent({
     return {
       openPrompts: [] as Prompt[],
       selectedPrompt: null as Prompt | null,
+
+      validate: {
+        interval: null as object | null,
+        needUpdate: false,
+        iteration: false
+      }
     }
   },
   methods: {
@@ -92,6 +98,17 @@ export default defineComponent({
         {label: mapping.field},
         {label: this.selectedPrompt?.name}
       ]
+    },
+    async validateIteration() {
+      if (!this.validate.needUpdate || this.validate.iteration) return
+      this.validate.iteration = true
+      this.validate.needUpdate = false
+      try {
+        if (this.selectedPrompt) await this.promptStore.validate(this.selectedPrompt)
+      } catch (e) {
+
+      }
+      this.validate.iteration = false
     }
   },
   mounted() {
@@ -104,7 +121,17 @@ export default defineComponent({
     this.accountStore.loadAll()
     this.syncDataStore.loadAll()
     this.unitTestStore.loadAll()
+
+    this.validate.interval = setInterval(this.validateIteration, 200)
   },
+  unmounted() {
+    if (this.validate.interval) clearInterval(this.validate.interval as unknown as string)
+  },
+  watch: {
+    'selectedPrompt.value'() {
+      this.validate.needUpdate = true
+    }
+  }
 })
 </script>
 

@@ -46,6 +46,23 @@ export interface Prompt {
         key: string,
         project: string
     }
+
+    validate?: {
+        errors: JinjaError[]
+    }
+}
+
+
+interface ValidationResponse {
+    j2lint?: {
+        ERRORS: JinjaError[]
+    }
+}
+
+export interface JinjaError {
+    message: string,
+    line_number: number,
+    severity: string
 }
 
 
@@ -98,6 +115,10 @@ export const usePromptStore = defineStore({
             const result = await ApiService.get<string[]>('/api/prompts/connections/get_all')
             this.loadings.connectionsLoadAll = false
             this.connections = result
+        },
+        async validate(prompt: Prompt) {
+            const result = await ApiService.post<ValidationResponse>('/api/prompts/validate', {prompt: prompt.value})
+            if (result.j2lint) prompt.validate = {errors: result.j2lint.ERRORS}
         }
     }
 })
