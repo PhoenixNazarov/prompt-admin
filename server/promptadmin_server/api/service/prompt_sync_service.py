@@ -123,6 +123,7 @@ class PromptSyncService:
                 ):
                     need_save = False
                 else:
+                    need_remove_mapping_entity.append(me)
                     need_remove_sync_datas.append(sd)
 
             await self.mapping_entity_service.remove_all(need_remove_mapping_entity)
