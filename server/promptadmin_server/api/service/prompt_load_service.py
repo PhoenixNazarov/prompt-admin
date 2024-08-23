@@ -86,7 +86,7 @@ class PromptLoadService:
             logger.error('Error connection database', exc_info=e)
             return ''
 
-        row = await conn.fetch(f'SELECT $1 FROM {table} WHERE $2 = $3', field, field_name, name)
+        row = await conn.fetch(f'SELECT $1 FROM {table} WHERE {field_name} = $2', field, name)
         return row[0].get(field, '')
 
     async def save(self, prompt: Prompt, user_data: UserData):
