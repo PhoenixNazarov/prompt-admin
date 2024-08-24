@@ -86,8 +86,8 @@ class PromptLoadService:
             logger.error('Error connection database', exc_info=e)
             return ''
 
-        row = await conn.fetch(f'SELECT $1 FROM {table} WHERE {field_name} = $2', field, name)
-        return row[0].get(field, '')
+        row = await conn.fetchrow(f'SELECT {field} FROM {table} WHERE {field_name} = $1', name)
+        return row.get(field, '')
 
     async def save(self, prompt: Prompt, user_data: UserData):
         mapping = await self.mapping_service.find_by_id(prompt.mapping_id)

@@ -17,7 +17,7 @@ class UnitTestJob(BackgroundTask):
         self.mapping_entity_service = mapping_entity_service or MappingEntityService()
 
     async def start(self):
-        # await asyncio.sleep(60 * 10)
+        await asyncio.sleep(60 * 10)
         while True:
             sync_datas = await self.sync_data_service.find_all()
             for i in sync_datas:

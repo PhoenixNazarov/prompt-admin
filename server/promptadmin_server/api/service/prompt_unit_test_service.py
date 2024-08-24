@@ -37,6 +37,7 @@ class PromptUnitTestService:
     async def process_sync_data(self, sync_data: SyncData, delay: int):
         mapping_entity = await self.mapping_entity_service.find_by_entity_id('sync_data', sync_data.id)
         if len(mapping_entity) <= 0:
+            await self.sync_data_service.remove(sync_data)
             return
         mapping_entity = mapping_entity[0]
 
