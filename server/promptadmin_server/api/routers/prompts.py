@@ -84,7 +84,7 @@ async def validate(validate_jinja_dto: ValidateJinjaDto):
         file.write(validate_jinja_dto.prompt)
 
     proc = subprocess.Popen(
-        ['j2lint', file.name, '--json', '--ignore', 'S3'],
+        ['j2lint', file.name, '--json', '--ignore', 'S3', 'S6'],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE
     )

@@ -21,14 +21,22 @@ export const useVarsStore = defineStore({
             return (project: string) => {
                 const projectVars = state.vars.get(project)
                 if (!projectVars) return []
-                return projectVars.filter(el => !el.template)
+                try {
+                    return projectVars.filter(el => !el.template)
+                } catch (e) {
+                    return []
+                }
             }
         },
         getTemplateByProject: state => {
             return (project: string) => {
                 const projectVars = state.vars.get(project)
                 if (!projectVars) return []
-                return projectVars.filter(el => el.template)
+                try {
+                    return projectVars.filter(el => el.template)
+                } catch (e) {
+                    return []
+                }
             }
         },
     },

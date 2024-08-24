@@ -83,7 +83,11 @@ class PromptUnitTestService:
                 sync_data_id=sync_data.id,
                 name=name
             )
-        await self.process(unit_test, sync_data, mapping)
+        try:
+            await self.process(unit_test, sync_data, mapping)
+        except Exception as e:
+            unit_test.test_exception = str(e)
+            await self.unit_test_service.save(unit_test)
 
     async def process(self, unit_test: UnitTest, sync_data: SyncData, mapping: Mapping):
         unit_test.test_status = 'process'

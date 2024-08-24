@@ -186,6 +186,6 @@ create table pa_unit_test
 
     test_status         varchar(15) default 'wait' not null,
     test_preview        varchar(50000),
-    test_response_model varchar(30000),
+    test_response_model varchar(50000),
     test_exception      varchar(10000)
 );

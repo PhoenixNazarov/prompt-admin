@@ -83,15 +83,16 @@ export function buildJinjaSyntaxLinter(errors: JinjaError[]) {
         let prevInd = 0
         let currentLine = 1
         for (let i = 0; i < originText.length; i++) {
-            if (originText[i] == '\n') {
+            if (originText[i] == '\n' || i + 1 == originText.length) {
                 errors.forEach(e => {
-                    if (e.line_number == currentLine)
+                    if (e.line_number == currentLine) {
                         diagnostics.push({
                             from: prevInd,
                             to: i,
                             severity: e.severity,
                             message: e.message
                         })
+                    }
                 })
                 currentLine += 1
                 prevInd = i

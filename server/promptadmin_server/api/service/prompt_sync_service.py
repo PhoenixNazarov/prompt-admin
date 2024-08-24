@@ -90,7 +90,6 @@ class PromptSyncService:
                                             default=str) if parsed_model_default else None,
             fail_parse_model_strategy=fail_parse_model_strategy
         )
-        sync_data = await self.sync_data_service.save(sync_data)
 
         view_params = (
             ViewParamsBuilder()
@@ -130,6 +129,7 @@ class PromptSyncService:
             await self.sync_data_service.remove_all(need_remove_sync_datas)
 
         if need_save:
+            sync_data = await self.sync_data_service.save(sync_data)
             mapping_entity = MappingEntity(
                 connection_name=app,
                 table=table,
