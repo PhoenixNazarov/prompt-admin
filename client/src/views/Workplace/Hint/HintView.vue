@@ -42,7 +42,7 @@ export default defineComponent({
   },
   props: {
     prompt: {
-      type: Object as PropType<Prompt>
+      type: Object as PropType<Prompt>,
     }
   },
   setup() {
@@ -163,10 +163,12 @@ export default defineComponent({
 </script>
 
 <template>
-  <div class="hint outer-y">
+  <div>
     <div v-if="prompt">
       <div v-if="!prompt.previewData && !prompt.auditData?.audit">
-        <VBtn variant="tonal" density="comfortable" @click.prevent="save" :loading="loading.save">Save</VBtn>
+        <VBtn variant="tonal" density="comfortable" @click.prevent="save" :loading="loading.save"
+              :disabled="prompt.originValue == prompt.value">Save
+        </VBtn>
         <VBtn v-if="!syncData()" variant="tonal" density="comfortable" @click.prevent="preview"
               :loading="loading.preview"
               style="margin-left: 1rem">Preview
@@ -302,10 +304,5 @@ export default defineComponent({
 
 .circle-info {
   margin-right: 0.25rem
-}
-
-.hint {
-  padding: 1rem;
-  color: var(--color-5);
 }
 </style>

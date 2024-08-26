@@ -23,6 +23,7 @@ export interface Prompt {
     field: string
     id: number
     value: string
+    originValue: string
     name?: string
     preview?: boolean
     sort_value?: any
@@ -85,10 +86,12 @@ export const usePromptStore = defineStore({
         async loadAll() {
             this.loadings.loadAll = true
             this.prompts = await ApiService.get<Prompt[]>('/api/prompts/load_all')
+            this.prompts.forEach(p => p.originValue = p.value)
             this.loadings.loadAll = false
         },
         async savePrompt(prompt: Prompt) {
             await ApiService.post('/api/prompts/save', prompt)
+            prompt.originValue = prompt.value
         },
         async previewPrompt(prompt: Prompt, context: object | undefined = undefined, connection: string | undefined = undefined) {
             const result = await ApiService.post<string>('/api/prompts/preview', {

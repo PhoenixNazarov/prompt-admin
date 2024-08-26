@@ -20,6 +20,7 @@ import PreviewView from "./Editor/PreviewView.vue";
 import UnitTestView from "./Editor/UnitTestView.vue";
 import {useUnitTestStore} from "../../stores/config/unitTest.store.ts";
 import MainHintView from "./Hint/MainHintView.vue";
+import {useSettingsStore} from "../../stores/config/settings.store.ts";
 
 export default defineComponent({
   name: "WorkplaceView",
@@ -54,6 +55,7 @@ export default defineComponent({
     }
   },
   data() {
+    const settingsStore = useSettingsStore()
     return {
       openPrompts: [] as Prompt[],
       selectedPrompt: null as Prompt | null,
@@ -62,7 +64,10 @@ export default defineComponent({
         interval: null as object | null,
         needUpdate: false,
         iteration: false
-      }
+      },
+
+      widthMenu: settingsStore.menu_fold ? '4rem' : '25rem',
+      widthHint: settingsStore.hint_fold ? '4rem' : '25rem',
     }
   },
   methods: {
@@ -109,6 +114,20 @@ export default defineComponent({
 
       }
       this.validate.iteration = false
+    },
+    toggleHint() {
+      if (this.widthHint == '25rem') {
+        this.widthHint = '4rem'
+      } else {
+        this.widthHint = '25rem'
+      }
+    },
+    toggleMenu() {
+      if (this.widthMenu == '25rem') {
+        this.widthMenu = '4rem'
+      } else {
+        this.widthMenu = '25rem'
+      }
     }
   },
   mounted() {
@@ -138,10 +157,9 @@ export default defineComponent({
 <template>
   <div class="workplace">
     <div class="menu outer-y">
-      <WorkplaceMenuView @selectPrompt="selectPrompt"/>
+      <WorkplaceMenuView @selectPrompt="selectPrompt" @toggleFold="toggleMenu"/>
     </div>
     <div class="editor">
-
       <VTabs
           bg-color="var(--color-5)"
           slider-color="var(--color-4)"
@@ -165,9 +183,11 @@ export default defineComponent({
         <div style="color: var(--color-5); padding: 1rem" v-else>
           Select need prompt...
         </div>
-        <Breadcrumb v-if="breadcrumbItems().length > 0" :model="breadcrumbItems()"
-                    class="breadcrumb"
-                    style="background-color: white; padding: 0.2rem 1rem; height: 2rem"/>
+        <Breadcrumb
+            v-if="breadcrumbItems().length > 0" :model="breadcrumbItems()"
+            class="breadcrumb"
+            style="background-color: white; padding: 0.2rem 1rem; height: 2rem"
+        />
       </div>
     </div>
     <div class="hint outer-y">
@@ -175,6 +195,7 @@ export default defineComponent({
           :prompt="selectedPrompt"
           @preview="selectPrompt"
           @closePrompt="closePrompt"
+          @toggleFold="toggleHint"
       />
     </div>
   </div>
@@ -182,24 +203,30 @@ export default defineComponent({
 
 <style scoped>
 .workplace {
+  --menu-width: v-bind(widthMenu);
+  --hint-width: v-bind(widthHint);
+
   display: flex;
   height: 100%;
 }
 
 .menu {
-  width: 25rem;
+  width: var(--menu-width);
   background-color: var(--color-4);
   overflow-x: hidden;
+  transition: 200ms;
 }
 
 .editor {
-  width: calc(100vw - 50rem)
+  width: calc(100vw - var(--menu-width) - var(--hint-width));
+  transition: 200ms;
 }
 
 .hint {
-  width: 25rem;
+  width: var(--hint-width);
   background-color: var(--color-4);
   overflow-x: hidden;
+  transition: 200ms;
 }
 
 </style>

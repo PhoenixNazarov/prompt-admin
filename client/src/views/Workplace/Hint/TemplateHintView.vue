@@ -45,7 +45,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <div class="hint">
+  <div>
     <div>
       <VBtn class="mr-4" variant="tonal" density="comfortable" @click.prevent="save" :loading="loading.save">Save</VBtn>
       <RemoveButton :text="cropText(prompt.value)" density="comfortable" :remove="() => remove()"/>
@@ -62,8 +62,4 @@ export default defineComponent({
 </template>
 
 <style scoped>
-.hint {
-  padding: 1rem;
-  color: var(--color-5);
-}
 </style>

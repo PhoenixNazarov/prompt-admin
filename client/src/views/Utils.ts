@@ -21,3 +21,12 @@ export function parseJson(input: string | undefined) {
     }
     return
 }
+
+export function hashCode(str: string | number | undefined): number {
+    const newStr = String(str)
+    let h: number = 0;
+    for (let i = 0; i < newStr.length; i++) {
+        h = 31 * h + newStr.charCodeAt(i);
+    }
+    return h & 0xFFFFFFFF
+}

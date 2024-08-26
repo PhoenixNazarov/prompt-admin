@@ -7,15 +7,8 @@ import {useSettingsStore} from "../../../stores/config/settings.store.ts";
 import PromptUnitTestStatus from "./PromptUnitTestStatus.vue";
 import {useMappingEntityStore} from "../../../stores/config/mappingEntity.store.ts";
 import TemplateMenuView from "./TemplateMenuView.vue";
+import {hashCode} from "../../Utils.ts";
 
-export function hashCode(str: string | number | undefined): number {
-  const newStr = String(str)
-  let h: number = 0;
-  for (let i = 0; i < newStr.length; i++) {
-    h = 31 * h + newStr.charCodeAt(i);
-  }
-  return h & 0xFFFFFFFF
-}
 
 export default defineComponent({
   name: "WorkplaceMenuView",
@@ -67,101 +60,119 @@ export default defineComponent({
               el.name == prompt.name &&
               el.entity == 'disable'
       )
+    },
+    toggleFold() {
+      this.settingsStore.menu_fold = !this.settingsStore.menu_fold
+      this.$emit('toggleFold')
     }
   }
 })
 </script>
 
 <template>
-  <VList
-      bg-color="var(--color-4)"
-      density="compact"
-      v-model:opened="opened"
-  >
-    <VListGroup :value="connection" v-for="[connection, mappingsTable] in mappingStore.getConnections">
-      <template v-slot:activator="{ props }">
-        <VListItem
-            v-bind="props"
-        >
-          <FontAwesomeIcon icon="diagram-project"/>
-          {{ connection }}
-        </VListItem>
-      </template>
-
-      <TemplateMenuView :project="connection" @selectPrompt="p => $emit('selectPrompt', p)"/>
-
-      <VListGroup :value="connection + mappingTable" v-for="[mappingTable, mappings] in mappingsTable">
+  <div>
+    <div style="display: flex;color: var(--color-5); margin-top: 1rem;justify-content: flex-end; margin-right: 1rem">
+      <VBtn variant="tonal" density="comfortable" style="min-width: 0" @click.prevent="toggleFold">
+        <FontAwesomeIcon icon="caret-right" :rotation="!settingsStore.menu_fold ? 180: undefined"/>
+      </VBtn>
+    </div>
+    <VList
+        bg-color="var(--color-4)"
+        density="compact"
+        v-model:opened="opened"
+        :class="{
+          'hide': settingsStore.menu_fold
+        }"
+    >
+      <VListGroup :value="connection" v-for="[connection, mappingsTable] in mappingStore.getConnections">
         <template v-slot:activator="{ props }">
           <VListItem
               v-bind="props"
           >
-            <FontAwesomeIcon icon="table"/>
-            {{ mappingTable }}
+            <FontAwesomeIcon icon="diagram-project"/>
+            {{ connection }}
           </VListItem>
         </template>
-        <VListGroup :value="connection + mapping.field + mapping.id" v-for="mapping in mappings">
+
+        <TemplateMenuView :project="connection" @selectPrompt="p => $emit('selectPrompt', p)"/>
+
+        <VListGroup :value="connection + mappingTable" v-for="[mappingTable, mappings] in mappingsTable">
           <template v-slot:activator="{ props }">
             <VListItem
                 v-bind="props"
             >
-              {{ mapping.field }}
+              <FontAwesomeIcon icon="table"/>
+              {{ mappingTable }}
             </VListItem>
           </template>
-
-          <VListGroup :value="connection + mapping.field + mapping.id + 'disable'">
+          <VListGroup :value="connection + mapping.field + mapping.id" v-for="mapping in mappings">
             <template v-slot:activator="{ props }">
               <VListItem
                   v-bind="props"
               >
-                <FontAwesomeIcon icon="eye-slash"/>
-                Disabled
+                {{ mapping.field }}
               </VListItem>
             </template>
+
+            <VListGroup :value="connection + mapping.field + mapping.id + 'disable'">
+              <template v-slot:activator="{ props }">
+                <VListItem
+                    v-bind="props"
+                >
+                  <FontAwesomeIcon icon="eye-slash"/>
+                  Disabled
+                </VListItem>
+              </template>
+              <VListItem
+                  v-if="mapping.id"
+                  v-for="prompt in sortPrompts(mapping, promptStore.promptsByMapping(mapping.id)).filter(p => isDisable(mapping, p))"
+                  @click.prevent="$emit('selectPrompt', prompt)"
+              >
+                <div style="display: flex;justify-content: space-between;align-items: center;">
+                  <div>
+                    {{ prompt.name }}
+                  </div>
+                </div>
+
+              </VListItem>
+            </VListGroup>
+
             <VListItem
                 v-if="mapping.id"
-                v-for="prompt in sortPrompts(mapping, promptStore.promptsByMapping(mapping.id)).filter(p => isDisable(mapping, p))"
+                v-for="prompt in sortPrompts(mapping, promptStore.promptsByMapping(mapping.id)).filter(p => !isDisable(mapping, p))"
                 @click.prevent="$emit('selectPrompt', prompt)"
             >
               <div style="display: flex;justify-content: space-between;align-items: center;">
                 <div>
+                  <PromptUnitTestStatus :prompt="prompt" @selectPrompt="p => $emit('selectPrompt', p)"/>
                   {{ prompt.name }}
                 </div>
               </div>
-
             </VListItem>
+
+            <VSkeletonLoader
+                color="transparent"
+                type="list-item"
+                v-if="promptStore.loadings.loadAll"
+            ></VSkeletonLoader>
           </VListGroup>
-
-          <VListItem
-              v-if="mapping.id"
-              v-for="prompt in sortPrompts(mapping, promptStore.promptsByMapping(mapping.id)).filter(p => !isDisable(mapping, p))"
-              @click.prevent="$emit('selectPrompt', prompt)"
-          >
-            <div style="display: flex;justify-content: space-between;align-items: center;">
-              <div>
-                <PromptUnitTestStatus :prompt="prompt" @selectPrompt="p => $emit('selectPrompt', p)"/>
-                {{ prompt.name }}
-              </div>
-            </div>
-          </VListItem>
-
-          <VSkeletonLoader
-              color="transparent"
-              type="list-item"
-              v-if="promptStore.loadings.loadAll"
-          ></VSkeletonLoader>
         </VListGroup>
       </VListGroup>
-    </VListGroup>
 
-    <VSkeletonLoader
-        color="transparent"
-        type="list-item"
-        v-if="mappingStore.loadings.loadAll"
-    ></VSkeletonLoader>
-  </VList>
+      <VSkeletonLoader
+          color="transparent"
+          type="list-item"
+          v-if="mappingStore.loadings.loadAll"
+      ></VSkeletonLoader>
+    </VList>
+  </div>
 </template>
 
 <style scoped>
+
+.hide {
+  opacity: 0;
+}
 
 .v-list-item--density-compact.v-list-item--one-line {
   min-height: unset;
