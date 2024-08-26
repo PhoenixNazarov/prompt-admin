@@ -24,6 +24,8 @@ export default defineComponent({
         <VRadio value="split" label="Split"/>
         <VRadio value="unified" label="Unified"/>
       </VRadioGroup>
+      <VCheckbox density="compact" hide-details v-model="settingsStore.editor_line_wrapping"
+                 label="Line wrapping for editor"/>
     </VCardText>
   </VCard>
 </template>

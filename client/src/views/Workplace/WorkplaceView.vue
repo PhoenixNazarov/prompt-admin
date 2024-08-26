@@ -169,11 +169,9 @@ export default defineComponent({
                     class="breadcrumb"
                     style="background-color: white; padding: 0.2rem 1rem; height: 2rem"/>
       </div>
-
     </div>
     <div class="hint outer-y">
       <MainHintView
-          v-if="selectedPrompt"
           :prompt="selectedPrompt"
           @preview="selectPrompt"
           @closePrompt="closePrompt"

@@ -10,6 +10,9 @@ export const useProjectStore = defineStore({
     actions: {
         async loadProjects() {
             this.projects = await ApiService.get<string[]>('/api/project/main/get')
+        },
+        async sync(project: string) {
+            await ApiService.post('/api/project/main/sync', {project: project})
         }
     }
 })

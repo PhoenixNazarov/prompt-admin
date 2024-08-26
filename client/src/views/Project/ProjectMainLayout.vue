@@ -180,6 +180,11 @@ export default defineComponent({
                 label: 'Variables',
                 icon: 'pi pi-server',
                 command: () => RouterService.goToProjectVars(project)
+              },
+              {
+                label: 'Synchronize',
+                icon: 'pi pi-sync',
+                command: () => projectStore.sync(project)
               }
             ]"/>
         </VCol>

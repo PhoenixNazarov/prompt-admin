@@ -7,7 +7,9 @@ export const useSettingsStore = defineStore({
         changelog_folding: false,
         changelog_different_current: false,
         changelog_mode: 'split' as 'split' | 'unified',
-        menuOpenedItems: [] as string[]
+        menuOpenedItems: [] as string[],
+        editor_line_wrapping: true,
+        editor_fold: false
     }),
     getters: {},
     actions: {},
