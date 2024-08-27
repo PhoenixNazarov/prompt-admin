@@ -31,10 +31,10 @@ export default defineComponent({
 
 <template>
   <div class="hint">
-    <VBtn variant="tonal" class="mb-4" density="comfortable" style="min-width: 0" @click.prevent="toggleFold">
+    <VBtn variant="text" class="mb-4" density="comfortable" style="min-width: 0" @click.prevent="toggleFold">
       <FontAwesomeIcon icon="caret-right" :rotation="!settingsStore.hint_fold ? undefined: 180"/>
     </VBtn>
-    <div v-if="!settingsStore.hint_fold">
+    <div>
       <TemplateHintView :prompt="prompt" v-if="prompt?.templateData" @closePrompt="p => $emit('closePrompt', p)"/>
       <HintView :prompt="prompt" v-else-if="prompt" @preview="p => $emit('preview', p)"/>
     </div>

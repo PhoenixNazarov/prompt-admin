@@ -80,8 +80,8 @@ export default defineComponent({
         bg-color="var(--color-4)"
         density="compact"
         v-model:opened="opened"
-        :class="{
-          'hide': settingsStore.menu_fold
+        :style="{
+          'display': settingsStore.menu_fold ? 'none' : 'block'
         }"
     >
       <VListGroup :value="connection" v-for="[connection, mappingsTable] in mappingStore.getConnections">

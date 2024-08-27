@@ -69,7 +69,9 @@ export default defineComponent({
         save: false,
         preview: false,
         disable: false
-      }
+      },
+      context: undefined as object | undefined,
+      history_context_default: undefined as object | undefined,
     }
   },
   methods: {
@@ -106,11 +108,22 @@ export default defineComponent({
     async preview() {
       if (!this.prompt) return
       this.loading.preview = true
-      try {
-        const previewPrompt = await this.promptStore.previewPrompt(this.prompt)
-        this.$emit('preview', previewPrompt)
-      } catch (e) {
-        alert('Cant preview this prompt. Dont use unsupported jinja fields')
+      const syncData = this.syncData()
+      if (syncData) {
+        try {
+          const previewPrompt = await this.promptStore.previewPrompt(this.prompt, this.context, this.mapping()?.connection_name)
+          previewPrompt.previewData!.history = this.history_context_default
+          this.$emit('preview', previewPrompt)
+        } catch (e) {
+          alert('Cant preview this prompt. Dont use unsupported jinja fields')
+        }
+      } else {
+        try {
+          const previewPrompt = await this.promptStore.previewPrompt(this.prompt)
+          this.$emit('preview', previewPrompt)
+        } catch (e) {
+          alert('Cant preview this prompt. Dont use unsupported jinja fields')
+        }
       }
       this.loading.preview = false
     },
@@ -163,13 +176,81 @@ export default defineComponent({
 </script>
 
 <template>
-  <div>
+  <div v-if="settingsStore.hint_fold">
+    <div v-if="prompt && !prompt.previewData && !prompt.auditData?.audit">
+      <VTooltip text="Save">
+        <template v-slot:activator="{ props }">
+          <VBtn
+              variant="tonal"
+              class="mb-4"
+              density="comfortable"
+              style="min-width: 0"
+              :disabled="prompt.originValue == prompt.value"
+              @click.prevent="save"
+              v-bind="props"
+              :loading="loading.save"
+          >
+            <FontAwesomeIcon icon="floppy-disk"/>
+          </VBtn>
+        </template>
+      </VTooltip>
+      <VTooltip text="Preview">
+        <template v-slot:activator="{ props }">
+          <VBtn
+              v-bind="props"
+              variant="tonal"
+              class="mb-4"
+              density="comfortable"
+              style="min-width: 0"
+              @click.prevent="preview"
+              :loading="loading.preview"
+          >
+            <FontAwesomeIcon icon="magnifying-glass"/>
+          </VBtn>
+        </template>
+      </VTooltip>
+
+      <VTooltip text="Enable" v-if="isDisable() != undefined">
+        <template v-slot:activator="{ props }">
+          <VBtn
+              v-bind="props"
+              variant="tonal"
+              class="mb-4"
+              density="comfortable"
+              style="min-width: 0"
+              @click.prevent="doUnDisable"
+              :loading="loading.disable"
+          >
+            <FontAwesomeIcon icon="eye"/>
+          </VBtn>
+        </template>
+      </VTooltip>
+
+      <VTooltip text="Disable" v-if="isDisable() == undefined">
+        <template v-slot:activator="{ props }">
+          <VBtn
+              v-bind="props"
+              variant="tonal"
+              class="mb-4"
+              density="comfortable"
+              style="min-width: 0"
+              @click.prevent="doDisable"
+              :loading="loading.disable"
+          >
+            <FontAwesomeIcon icon="eye-slash"/>
+          </VBtn>
+        </template>
+      </VTooltip>
+
+    </div>
+  </div>
+  <div :style="{'display': settingsStore.hint_fold ? 'none': 'block'}">
     <div v-if="prompt">
       <div v-if="!prompt.previewData && !prompt.auditData?.audit">
         <VBtn variant="tonal" density="comfortable" @click.prevent="save" :loading="loading.save"
               :disabled="prompt.originValue == prompt.value">Save
         </VBtn>
-        <VBtn v-if="!syncData()" variant="tonal" density="comfortable" @click.prevent="preview"
+        <VBtn variant="tonal" density="comfortable" @click.prevent="preview"
               :loading="loading.preview"
               style="margin-left: 1rem">Preview
         </VBtn>
@@ -179,7 +260,7 @@ export default defineComponent({
         </VBtn>
         <VBtn v-if="isDisable() != undefined"
               variant="tonal" density="comfortable" @click.prevent="doUnDisable()" :loading="loading.disable"
-              style="margin-left: 1rem">UnDisable
+              style="margin-left: 1rem">Enable
         </VBtn>
       </div>
       <h1 v-if="prompt.preview == true">Preview</h1>
@@ -215,7 +296,8 @@ export default defineComponent({
       <HintSyncData
           v-if="syncData() && prompt"
           :prompt="prompt"
-          @preview="p => $emit('preview', p)"
+          @update_context="c => context = c"
+          @update_history_context_default="c => history_context_default = c"
       />
       <div v-else>
         <VCard class="mt-4" variant="tonal">

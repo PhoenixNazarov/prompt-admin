@@ -16,7 +16,7 @@ import CompareView from "./Editor/CompareView.vue";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import Breadcrumb from 'primevue/breadcrumb';
 import {useSyncDataStore} from "../../stores/config/syncData.store.ts";
-import PreviewView from "./Editor/PreviewView.vue";
+import PreviewView from "./Editor/Preview/PreviewView.vue";
 import UnitTestView from "./Editor/UnitTestView.vue";
 import {useUnitTestStore} from "../../stores/config/unitTest.store.ts";
 import MainHintView from "./Hint/MainHintView.vue";

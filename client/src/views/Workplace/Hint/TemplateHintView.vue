@@ -4,6 +4,7 @@ import {Prompt} from "../../../stores/prompt.store.ts";
 import {useVarsStore} from "../../../stores/vars.store.ts";
 import RemoveButton from "../../Tables/Edit/Components/RemoveButton.vue";
 import {cropText} from "../../Utils.ts";
+import {useSettingsStore} from "../../../stores/config/settings.store.ts";
 
 export default defineComponent({
   name: "TemplateHintView",
@@ -16,8 +17,10 @@ export default defineComponent({
   },
   setup() {
     const varsStore = useVarsStore()
+    const settingsStore = useSettingsStore()
     return {
-      varsStore
+      varsStore,
+      settingsStore
     }
   },
   data() {
@@ -45,7 +48,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <div>
+  <div v-if="settingsStore.hint_fold">
     <div>
       <VBtn class="mr-4" variant="tonal" density="comfortable" @click.prevent="save" :loading="loading.save">Save</VBtn>
       <RemoveButton :text="cropText(prompt.value)" density="comfortable" :remove="() => remove()"/>

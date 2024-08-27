@@ -16,7 +16,10 @@ import {
     faEye,
     faEyeSlash,
     faFile,
-    faCaretRight
+    faCaretRight,
+    faFloppyDisk,
+    faRepeat,
+    faMagnifyingGlass
 } from '@fortawesome/free-solid-svg-icons'
 import {faCircle as farCircle} from '@fortawesome/free-regular-svg-icons'
 import {dom, library} from '@fortawesome/fontawesome-svg-core'
@@ -43,6 +46,9 @@ export function installFortAwesome(_: App) {
         faEye,
         faEyeSlash,
         faFile,
-        faCaretRight
+        faCaretRight,
+        faFloppyDisk,
+        faRepeat,
+        faMagnifyingGlass
     )
 }

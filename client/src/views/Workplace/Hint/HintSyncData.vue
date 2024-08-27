@@ -71,6 +71,11 @@ export default defineComponent({
       }
       this.fail_parse_model_strategy = parseJson(syncData.fail_parse_model_strategy)
       this.initVars()
+      this.emitUpdate()
+    },
+    emitUpdate() {
+      this.$emit('update_context', this.context)
+      this.$emit('update_history_context_default', this.history_context_default)
     },
     async initVars() {
       const mapping = this.mapping()
@@ -83,18 +88,6 @@ export default defineComponent({
     mapping(): Mapping | undefined {
       if (this.prompt) return this.mappingStore.getById(this.prompt.mapping_id)
     },
-    async preview() {
-      if (!this.prompt) return
-      this.loading.preview = true
-      try {
-        const previewPrompt = await this.promptStore.previewPrompt(this.prompt, this.context, this.mapping()?.connection_name)
-        previewPrompt.previewData!.history = this.history_context_default
-        this.$emit('preview', previewPrompt)
-      } catch (e) {
-        alert('Cant preview this prompt. Dont use unsupported jinja fields')
-      }
-      this.loading.preview = false
-    },
   },
   mounted() {
     this.initSyncData()
@@ -104,6 +97,9 @@ export default defineComponent({
     prompt() {
       this.initSyncData()
     },
+    context() {
+      this.emitUpdate()
+    }
   }
 })
 </script>
@@ -117,12 +113,14 @@ export default defineComponent({
       </VCardText>
     </VCard>
     <VCard class="mt-4" title="Context" variant="tonal">
-      <VCardTitle>
-        <VBtn variant="tonal" density="comfortable" @click.prevent="preview" :loading="loading.preview" text="Preview"/>
-      </VCardTitle>
       <VCardText>
-        <JsonEditorVue v-model="context" mode="tree" :mainMenuBar="false" :navigationBar="false"
-                       class="jse-theme-dark"/>
+        <JsonEditorVue
+            v-model="context"
+            mode="tree"
+            :mainMenuBar="false"
+            :navigationBar="false"
+            class="jse-theme-dark"
+        />
       </VCardText>
     </VCard>
     <VCard class="mt-4" title="Output" variant="tonal" v-if="parsed_model_default">
