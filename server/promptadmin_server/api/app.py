@@ -6,8 +6,8 @@ from promptadmin_server.commons.fastapi.app import create_app
 
 app = create_app(
     background_tasks=[
-        UnitTestJob(),
-        SyncJob()
+        # UnitTestJob(),
+        # SyncJob()
     ],
     redoc_url='/api/redoc',
     docs_url='/api/docs',

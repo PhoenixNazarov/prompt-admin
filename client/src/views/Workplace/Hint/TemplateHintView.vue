@@ -48,7 +48,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <div v-if="settingsStore.hint_fold">
+  <div v-if="!settingsStore.hint_fold">
     <div>
       <VBtn class="mr-4" variant="tonal" density="comfortable" @click.prevent="save" :loading="loading.save">Save</VBtn>
       <RemoveButton :text="cropText(prompt.value)" density="comfortable" :remove="() => remove()"/>

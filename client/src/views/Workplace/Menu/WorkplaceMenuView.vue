@@ -72,7 +72,7 @@ export default defineComponent({
 <template>
   <div>
     <div style="display: flex;color: var(--color-5); margin-top: 1rem;justify-content: flex-end; margin-right: 1rem">
-      <VBtn variant="tonal" density="comfortable" style="min-width: 0" @click.prevent="toggleFold">
+      <VBtn variant="text" density="comfortable" style="min-width: 0" @click.prevent="toggleFold">
         <FontAwesomeIcon icon="caret-right" :rotation="!settingsStore.menu_fold ? 180: undefined"/>
       </VBtn>
     </div>

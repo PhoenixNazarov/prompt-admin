@@ -26,8 +26,8 @@ class ParserOutputService:
         validator = Draft202012Validator(json_schema)
         try:
             out = self.try_extract_json(result)
-            validator.is_valid(out)
-            return out
+            if validator.is_valid(out):
+                return out
         except StopIteration:
             pass
         except JSONDecodeError:
@@ -36,8 +36,8 @@ class ParserOutputService:
             pass
         try:
             out = self.try_parse_xml(result)
-            validator.is_valid(out)
-            return out
+            if validator.is_valid(out):
+                return out
         except JsonValidationError:
             pass
 
