@@ -16,7 +16,7 @@
     "@fortawesome/vue-fontawesome": "^3.0.8",
     "@mdi/font": "^7.4.47",
     "@primevue/themes": "^4.0.0",
-    "axios": "==1.6.0",
+    "axios": "==1.7.4",
     "dedent": "^1.5.3",
     "json-editor-vue": "^0.15.1",
     "moment": "^2.30.1",
