@@ -338,13 +338,13 @@ files = [
 
 [[package]]
 name = "faker"
-version = "27.4.0"
+version = "28.0.0"
 description = "Faker is a Python package that generates fake data for you."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "Faker-27.4.0-py3-none-any.whl", hash = "sha256:1c44d4bdcad7237516c9a829b6a0bcb031c6a4cb0506207c480c79f74d8922bf"},
-    {file = "faker-27.4.0.tar.gz", hash = "sha256:4ce108fc96053bbba3abf848e3a2885f05faa938deb987f97e4420deaec541c4"},
+    {file = "Faker-28.0.0-py3-none-any.whl", hash = "sha256:6a3a08be54c37e05f7943d7ba5211d252c1de737687a46ad6f29209d8d5db11f"},
+    {file = "faker-28.0.0.tar.gz", hash = "sha256:0d3c0399204aaf8205cc1750db443474ca0436f177126b2c27b798e8336cc74f"},
 ]
 
 [package.dependencies]
@@ -352,13 +352,13 @@ python-dateutil = ">=2.4"
 
 [[package]]
 name = "fast-depends"
-version = "2.4.9"
+version = "2.4.11"
 description = "FastDepends - extracted and cleared from HTTP domain logic FastAPI Dependency Injection System. Async and sync are both supported."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "fast_depends-2.4.9-py3-none-any.whl", hash = "sha256:6e44955523d095148c40aae6ed2ab80e4f6b995157073451e94960c1dd02a957"},
-    {file = "fast_depends-2.4.9.tar.gz", hash = "sha256:ca56542061ba8f8dde12021da3c0b82bc883394211941f03df38527b1d1c2c8a"},
+    {file = "fast_depends-2.4.11-py3-none-any.whl", hash = "sha256:f361d6b6375184a800e93ecaf874a5ebc9905fe4f5fafecc50de2c81acf850d8"},
+    {file = "fast_depends-2.4.11.tar.gz", hash = "sha256:29c8022232d1f67408d41fc251d2756c74ba98298e0502454de9f42df99a2ab0"},
 ]
 
 [package.dependencies]
@@ -574,13 +574,13 @@ trio = ["trio (>=0.22.0,<0.26.0)"]
 
 [[package]]
 name = "httpx"
-version = "0.27.0"
+version = "0.27.2"
 description = "The next generation HTTP client."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "httpx-0.27.0-py3-none-any.whl", hash = "sha256:71d5465162c13681bff01ad59b2cc68dd838ea1f10e51574bac27103f00c91a5"},
-    {file = "httpx-0.27.0.tar.gz", hash = "sha256:a0cb88a46f32dc874e04ee956e4c2764aba2aa228f650b06788ba6bda2962ab5"},
+    {file = "httpx-0.27.2-py3-none-any.whl", hash = "sha256:7bb2708e112d8fdd7829cd4243970f0c223274051cb35ee80c03301ee29a3df0"},
+    {file = "httpx-0.27.2.tar.gz", hash = "sha256:f7c2be1d2f3c3c3160d441802406b206c2b76f5947b11115e6df10c6c65e66c2"},
 ]
 
 [package.dependencies]
@@ -595,6 +595,7 @@ brotli = ["brotli", "brotlicffi"]
 cli = ["click (==8.*)", "pygments (==2.*)", "rich (>=10,<14)"]
 http2 = ["h2 (>=3,<5)"]
 socks = ["socksio (==1.*)"]
+zstd = ["zstandard (>=0.18.0)"]
 
 [[package]]
 name = "huggingface-hub"
@@ -632,13 +633,13 @@ typing = ["types-PyYAML", "types-requests", "types-simplejson", "types-toml", "t
 
 [[package]]
 name = "idna"
-version = "3.7"
+version = "3.8"
 description = "Internationalized Domain Names in Applications (IDNA)"
 optional = false
-python-versions = ">=3.5"
+python-versions = ">=3.6"
 files = [
-    {file = "idna-3.7-py3-none-any.whl", hash = "sha256:82fee1fc78add43492d3a1898bfa6d8a904cc97d8427f683ed8e798d07761aa0"},
-    {file = "idna-3.7.tar.gz", hash = "sha256:028ff3aadf0609c1fd278d8ea3089299412a7a8b9bd005dd08b9f8285bcb5cfc"},
+    {file = "idna-3.8-py3-none-any.whl", hash = "sha256:050b4e5baadcd44d760cedbd2b8e639f2ff89bbc7a5730fcc662954303377aac"},
+    {file = "idna-3.8.tar.gz", hash = "sha256:d838c2c0ed6fced7693d5e8ab8e734d5f8fda53a039c0164afb0b82e771e3603"},
 ]
 
 [[package]]
@@ -1124,13 +1125,13 @@ sqlalchemy = ["sqlalchemy (>=1.4.29)"]
 
 [[package]]
 name = "prompt-admin"
-version = "0.1.11"
+version = "0.1.12"
 description = ""
 optional = false
 python-versions = "<4.0,>=3.11"
 files = [
-    {file = "prompt_admin-0.1.11-py3-none-any.whl", hash = "sha256:a1f82871aa8e080d83578ab7ec4428127d4aaef9d7287bacc0b6ab10a029417e"},
-    {file = "prompt_admin-0.1.11.tar.gz", hash = "sha256:9ca4ea3ba7f0bb5fea9a0cf65b9f61935721ab1d445f03b77e787a290eeef9a1"},
+    {file = "prompt_admin-0.1.12-py3-none-any.whl", hash = "sha256:9ae06589606484cf33b5bab466201fd3af1c35c1a941e8c7f9456b0f9634b230"},
+    {file = "prompt_admin-0.1.12.tar.gz", hash = "sha256:3bb251a4d0e9194d5be0cf0cd772f816d2eebd403a4f96ceb65ba4995e112a1c"},
 ]
 
 [package.dependencies]
@@ -1564,13 +1565,13 @@ use-chardet-on-py3 = ["chardet (>=3.0.2,<6)"]
 
 [[package]]
 name = "rich"
-version = "13.7.1"
+version = "13.8.0"
 description = "Render rich text, tables, progress bars, syntax highlighting, markdown and more to the terminal"
 optional = false
 python-versions = ">=3.7.0"
 files = [
-    {file = "rich-13.7.1-py3-none-any.whl", hash = "sha256:4edbae314f59eb482f54e9e30bf00d33350aaa94f4bfcd4e9e3110e64d0d7222"},
-    {file = "rich-13.7.1.tar.gz", hash = "sha256:9be308cb1fe2f1f57d67ce99e95af38a1e2bc71ad9813b0e247cf7ffbcc3a432"},
+    {file = "rich-13.8.0-py3-none-any.whl", hash = "sha256:2e85306a063b9492dffc86278197a60cbece75bcb766022f3436f567cae11bdc"},
+    {file = "rich-13.8.0.tar.gz", hash = "sha256:a5ac1f1cd448ade0d59cc3356f7db7a7ccda2c8cbae9c7a90c28ff463d3e91f4"},
 ]
 
 [package.dependencies]
@@ -1983,13 +1984,13 @@ telegram = ["requests"]
 
 [[package]]
 name = "typer"
-version = "0.12.4"
+version = "0.12.5"
 description = "Typer, build great CLIs. Easy to code. Based on Python type hints."
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "typer-0.12.4-py3-none-any.whl", hash = "sha256:819aa03699f438397e876aa12b0d63766864ecba1b579092cc9fe35d886e34b6"},
-    {file = "typer-0.12.4.tar.gz", hash = "sha256:c9c1613ed6a166162705b3347b8d10b661ccc5d95692654d0fb628118f2c34e6"},
+    {file = "typer-0.12.5-py3-none-any.whl", hash = "sha256:62fe4e471711b147e3365034133904df3e235698399bc4de2b36c8579298d52b"},
+    {file = "typer-0.12.5.tar.gz", hash = "sha256:f592f089bedcc8ec1b974125d64851029c3b1af145f04aca64d69410f0c9b722"},
 ]
 
 [package.dependencies]
@@ -2240,4 +2241,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "fd00e0e7cc3678094b6c41fb689c648df8ffdb47f43878bf39e58a44a1789793"
+content-hash = "a999cc36f2ea8adf93dfdeea2ee3e80e8919fc6a673bf2796c08e5b1cbb63925"
