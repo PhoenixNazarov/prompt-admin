@@ -46,8 +46,8 @@ export const useMappingStore = defineStore({
             )
             return result
         },
-        getByTableField: state => {
-            return (table: string, field: string) => state.entity.find(e => e.table == table && e.field == field)
+        getByConnectionTableField: state => {
+            return (connection: string, table: string, field: string) => state.entity.find(e => e.connection_name == connection && e.table == table && e.field == field)
         },
         ...abstractStoreFactoryGetters<Mapping>()
     },

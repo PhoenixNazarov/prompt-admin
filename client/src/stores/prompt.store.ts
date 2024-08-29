@@ -80,6 +80,9 @@ export const usePromptStore = defineStore({
     getters: {
         promptsByMapping: state => {
             return (mappingId: number) => state.prompts.filter(p => p.mapping_id == mappingId)
+        },
+        promptByMappingName: state => {
+            return (mappingId: number, name: string) => state.prompts.find(p => p.mapping_id == mappingId && p.name == name)
         }
     },
     actions: {

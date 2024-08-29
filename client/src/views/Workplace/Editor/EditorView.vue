@@ -29,7 +29,7 @@ export default defineComponent({
       if (this.settingsStore.editor_line_wrapping) {
         ext.push(EditorView.lineWrapping)
       }
-      const mapping = this.mappingStore.getByTableField(this.prompt.table, this.prompt.field)
+      const mapping = this.mappingStore.getById(this.prompt.mapping_id)
       ext.push(buildJinjaVarLinter())
       ext.push(buildJinjaListLinter())
       if (this.prompt.validate?.errors) ext.push(buildJinjaSyntaxLinter(this.prompt.validate?.errors))

@@ -74,6 +74,7 @@ export default defineComponent({
     selectPrompt(prompt: Prompt) {
       if (!this.openPrompts.includes(prompt)) this.openPrompts.push(prompt)
       this.selectedPrompt = prompt
+      this.hashPrompt()
     },
     closePrompt(prompt: Prompt) {
       const index = this.openPrompts.indexOf(prompt)
@@ -128,9 +129,47 @@ export default defineComponent({
       } else {
         this.widthMenu = '25rem'
       }
+    },
+    hashPrompt() {
+      if (!this.selectedPrompt) return
+      const mapping = this.mappingStore.getById(this.selectedPrompt.mapping_id)
+      if (!mapping) return;
+      this.$router.push({hash: `#/${mapping.connection_name}/${mapping.table}/${mapping.field}/${this.selectedPrompt.name}`})
+    },
+    hashLoadPrompt() {
+      const hash = this.$route.hash
+      const items = hash.split('/')
+      if (items.length != 5 || items.length <= 0 || items[0] != '#') {
+        this.$router.push({hash: ''})
+        return
+      }
+      const connectionName = items[1]
+      const table = items[2]
+      const field = items[3]
+      const name = items[4]
+      const mapping = this.mappingStore.getByConnectionTableField(connectionName, table, field)
+      if (!mapping || !mapping.id) {
+        this.$router.push({hash: ''})
+        return
+      }
+      const prompt = this.promptStore.promptByMappingName(mapping.id, name)
+      if (!prompt) {
+        this.$router.push({hash: ''})
+        return
+      }
+      this.selectPrompt(prompt)
     }
   },
   mounted() {
+    const loadPrompt = async () => {
+      await Promise.all([
+        this.promptStore.loadAll(),
+        this.mappingStore.loadAll()
+      ])
+      this.hashLoadPrompt()
+    }
+    loadPrompt()
+
     this.promptStore.loadAll()
     this.mappingStore.loadAll()
     this.macroStore.loadAll()
