@@ -33,6 +33,7 @@ class ExecutePromptDto(BaseModel):
     history: list[Message]
     prompt: str
     parsed_model_type: dict | None = None
+    uuid: str | None = None
 
 
 class ValidateJinjaDto(BaseModel):
@@ -63,12 +64,14 @@ async def preview(preview_prompt_dto: PreviewPromptDto):
 
 
 @router.post('/execute')
-async def execute(execute_prompt_dto: ExecutePromptDto):
+async def execute(execute_prompt_dto: ExecutePromptDto, user_data: UserDependsAnnotated):
     return await preview_template_service.execute(
         execute_prompt_dto.service_model_info,
         execute_prompt_dto.prompt,
         execute_prompt_dto.history,
         execute_prompt_dto.parsed_model_type,
+        user_data,
+        execute_prompt_dto.uuid
     )
 
 

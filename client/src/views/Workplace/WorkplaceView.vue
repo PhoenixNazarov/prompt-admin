@@ -28,7 +28,13 @@ export default defineComponent({
     MainHintView,
     UnitTestView,
     PreviewView,
-    FontAwesomeIcon, CompareView, HintView, WorkplaceMenuView, EditorView, MainLayout, Breadcrumb
+    FontAwesomeIcon,
+    CompareView,
+    HintView,
+    WorkplaceMenuView,
+    EditorView,
+    MainLayout,
+    Breadcrumb
   },
   setup() {
     const promptStore = usePromptStore()
@@ -75,6 +81,7 @@ export default defineComponent({
       if (!this.openPrompts.includes(prompt)) this.openPrompts.push(prompt)
       this.selectedPrompt = prompt
       this.hashPrompt()
+      this.validate.needUpdate = true
     },
     closePrompt(prompt: Prompt) {
       const index = this.openPrompts.indexOf(prompt)
@@ -97,8 +104,9 @@ export default defineComponent({
     },
     breadcrumbItems() {
       const mapping = this.mappingStore.getById(this.selectedPrompt?.mapping_id)
-      if (!mapping) return []
+      if (!mapping) return [{label: 'prompt-admin'}]
       return [
+        {label: 'prompt-admin'},
         {label: mapping.connection_name, icon: 'fa fa-diagram-project'},
         {label: mapping.table, icon: 'fa fa-table'},
         {label: mapping.field},
@@ -219,14 +227,24 @@ export default defineComponent({
         <PreviewView :prompt='selectedPrompt' v-else-if="selectedPrompt && selectedPrompt.previewData"/>
         <UnitTestView :prompt="selectedPrompt" v-else-if="selectedPrompt && selectedPrompt.unitTestData"/>
         <EditorView :prompt='selectedPrompt' v-else-if="selectedPrompt"/>
-        <div style="color: var(--color-5); padding: 1rem" v-else>
+        <div style="color: var(--color-5); padding: 1rem; height: calc(100vh - 8rem);" v-else>
           Select need prompt...
         </div>
-        <Breadcrumb
-            v-if="breadcrumbItems().length > 0" :model="breadcrumbItems()"
-            class="breadcrumb"
-            style="background-color: white; padding: 0.2rem 1rem; height: 2rem"
-        />
+        <div class="breadcrumb-status">
+          <Breadcrumb
+              v-if="breadcrumbItems().length > 0" :model="breadcrumbItems()"
+              class="breadcrumb"
+              style="background-color: white; padding: 0.2rem 1rem; height: 2rem"
+          />
+          <div class="mr-2">
+            <FontAwesomeIcon :spin="true" v-if="validate.needUpdate || validate.iteration || !selectedPrompt?.validate"
+                             icon="spinner"
+                             style="color: var(--color-4)"/>
+            <FontAwesomeIcon v-else-if="selectedPrompt?.validate.errors.length <= 0" icon="check" style="color: green"/>
+            <FontAwesomeIcon v-else-if="selectedPrompt?.validate.errors.length > 0" icon="xmark"
+                             style="color: var(--color-1)"/>
+          </div>
+        </div>
       </div>
     </div>
     <div class="hint outer-y">
@@ -266,6 +284,14 @@ export default defineComponent({
   background-color: var(--color-4);
   overflow-x: hidden;
   transition: 200ms;
+}
+
+.breadcrumb-status {
+  background-color: white;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 </style>

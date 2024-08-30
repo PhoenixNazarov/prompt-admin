@@ -4,10 +4,12 @@ from pydantic import BaseModel
 from promptadmin_server.api.routers.dependency import UserDependsAnnotated
 from promptadmin_server.api.service.user_data import UserData
 from promptadmin_server.api.service.user_manager_service import UserManagerService
+from promptadmin_server.api.service.ws_manager import WsManager
 from promptadmin_server.data.service.access_token_service import AccessTokenService
 
 um_service = UserManagerService()
 access_token_service = AccessTokenService()
+ws_manager = WsManager()
 
 router = APIRouter()
 
@@ -15,6 +17,10 @@ router = APIRouter()
 class LoginDto(BaseModel):
     login: str
     password: str
+
+
+class WsTokenResponse(BaseModel):
+    token: str
 
 
 @router.get('/me')
@@ -33,3 +39,9 @@ async def login_view(request: Request, login_dto: LoginDto):
 async def logout(user_data: UserDependsAnnotated):
     access_token = await access_token_service.find_by_id(user_data.access_token.id)
     await access_token_service.remove(access_token)
+
+
+@router.get('/ws/token')
+async def ws_token(user_data: UserDependsAnnotated):
+    token = await ws_manager.generate_auth_token(user_data)
+    return WsTokenResponse(token=token)

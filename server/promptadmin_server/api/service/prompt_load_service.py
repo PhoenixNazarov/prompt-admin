@@ -36,6 +36,8 @@ class PromptLoadService:
     @staticmethod
     async def load_mapping(mapping: Mapping) -> list[Prompt]:
         try:
+            if mapping.connection_name not in SETTINGS.connections:
+                return []
             conn = await asyncpg.connect(SETTINGS.connections[mapping.connection_name])
         except Exception as e:
             logger.error('Error connection database', exc_info=e)
@@ -81,6 +83,8 @@ class PromptLoadService:
     @staticmethod
     async def load(connection_name: str, field: str, table: str, field_name: str, name: str) -> str:
         try:
+            if connection_name not in SETTINGS.connections:
+                return ''
             conn = await asyncpg.connect(SETTINGS.connections[connection_name])
         except Exception as e:
             logger.error('Error connection database', exc_info=e)
@@ -91,6 +95,8 @@ class PromptLoadService:
 
     async def save(self, prompt: Prompt, user_data: UserData):
         mapping = await self.mapping_service.find_by_id(prompt.mapping_id)
+        if mapping.connection_name not in SETTINGS.connections:
+            return ''
         conn = await asyncpg.connect(SETTINGS.connections[mapping.connection_name])
         await self.prompt_audit_service.save(
             PromptAudit(

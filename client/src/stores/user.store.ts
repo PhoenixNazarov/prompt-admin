@@ -1,6 +1,7 @@
 import {defineStore} from "pinia";
 import {ApiService} from "../api/ApiService.ts";
 import {BaseEntity} from "./config/abstractStoreFactory.ts";
+import {WsService} from "../api/WsService.ts";
 
 
 export interface Account extends BaseEntity {
@@ -35,6 +36,7 @@ export const useAccountStore = defineStore({
     actions: {
         async loadMe() {
             if (this.loadings.loadMe) return await this.loadings.loadMe
+            if (this.account) return this.account
             this.loadings.loadMe = ApiService.get<Account | undefined>('/api/auth/me')
             this.account = await this.loadings.loadMe
             this.loadings.loadMe = undefined
@@ -51,6 +53,7 @@ export const useAccountStore = defineStore({
                     }
                 )
                 this.auth = true
+                WsService.connect(true).then()
             } catch (e) {
                 this.auth = false
             }
@@ -60,6 +63,10 @@ export const useAccountStore = defineStore({
         },
         async logout() {
             await ApiService.get('/api/auth/logout')
+        },
+        async getWsToken() {
+            await this.loadMe()
+            return await ApiService.get<{ token: string }>('/api/auth/ws/token')
         }
     }
 })

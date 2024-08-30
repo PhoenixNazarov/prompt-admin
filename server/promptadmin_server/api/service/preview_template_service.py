@@ -10,6 +10,8 @@ from promptadmin.vars.var_service import VarService
 
 from promptadmin_server.api.dto.prompt import Prompt
 from promptadmin_server.api.dto.prompt_execute import PromptExecute
+from promptadmin_server.api.service.user_data import UserData
+from promptadmin_server.api.service.ws_streamer import WsStreamer
 from promptadmin_server.data.entity.input import Input
 from promptadmin_server.data.service.input_service import InputService
 from promptadmin_server.data.service.mapping_entity_service import MappingEntityService
@@ -75,9 +77,18 @@ class PreviewTemplateService:
             return await template_.render_async(**context)
 
     @staticmethod
-    async def execute(model_service_info: ModelServiceInfo, prompt: str, history: list[Message],
-                      parsed_model_type: dict | None) -> PromptExecute:
-        model_response = await build_model(model_service_info).execute(prompt, history)
+    async def execute(
+            model_service_info: ModelServiceInfo,
+            prompt: str,
+            history: list[Message],
+            parsed_model_type: dict | None,
+            user_data: UserData = None,
+            uuid: str = None
+    ) -> PromptExecute:
+        streamer = None
+        if user_data and uuid:
+            streamer = WsStreamer(user_data.access_token.token, uuid)
+        model_response = await build_model(model_service_info).execute(prompt, history, streamer)
         parsed_model_error = False
         if parsed_model_type:
             parsed_model = ParserOutputService().parse_for_json_schema(parsed_model_type, model_response.raw_text)

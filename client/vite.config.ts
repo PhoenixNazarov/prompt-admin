@@ -10,6 +10,10 @@ export default defineConfig({
         target: 'http://0.0.0.0:8080',
         secure: false
       },
+      '/api/ws': {
+        target: 'ws://0.0.0.0:8080',
+        ws: true,
+      }
     }
   }
 })

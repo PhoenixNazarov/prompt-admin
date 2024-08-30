@@ -162,6 +162,9 @@ export default defineComponent({
               <div style="white-space: pre-wrap;" v-if="prompt.previewData?.executeData?.response_model.raw_text">
                 {{ prompt.previewData?.executeData?.response_model.raw_text }}
               </div>
+              <div style="white-space: pre-wrap;" v-if="prompt.previewData?.executeStream">
+                {{ prompt.previewData?.executeStream }}
+              </div>
               <div v-else>
                 Empty
               </div>

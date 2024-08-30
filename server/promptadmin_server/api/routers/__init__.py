@@ -7,6 +7,7 @@ from .dependency import UserDepends
 from .format import router as format_router
 from .project import router as project_router
 from .vars import router as vars_router
+from .ws import router as ws_router
 
 router = APIRouter(prefix='/api')
 
@@ -21,3 +22,4 @@ protect_router.include_router(project_router, prefix='/project')
 protect_router.include_router(vars_router, prefix='/vars')
 
 router.include_router(protect_router)
+router.include_router(ws_router, prefix='/ws')

@@ -3,6 +3,7 @@ import {ApiService} from "../api/ApiService.ts";
 import {PromptAudit} from "./config/promptAudit.store.ts";
 import {SyncData} from "./config/syncData.store.ts";
 import {UnitTest} from "./config/unitTest.store.ts";
+import {randomString} from "../views/Utils.ts";
 
 export interface PromptExecuteAnthropic {
     origin_message: object
@@ -36,7 +37,8 @@ export interface Prompt {
     previewData?: {
         history: object | undefined
         value: string
-        executeData?: PromptExecute
+        executeData?: PromptExecute,
+        executeStream?: string
     }
 
     unitTestData?: {
@@ -75,7 +77,8 @@ export const usePromptStore = defineStore({
             loadAll: false,
             connectionsLoadAll: false
         },
-        connections: [] as string[]
+        connections: [] as string[],
+        executionStream: new Map<string, Prompt>
     }),
     getters: {
         promptsByMapping: state => {
@@ -108,12 +111,24 @@ export const usePromptStore = defineStore({
         },
         async execute(prompt: Prompt, syncData: SyncData) {
             if (!prompt.previewData) return
+            const uuid = randomString(20)
+            this.executionStream.set(uuid, prompt)
             prompt.previewData.executeData = await ApiService.post<PromptExecute>('/api/prompts/execute', {
                 service_model_info: JSON.parse(syncData.service_model_info),
                 history: JSON.parse(syncData.history_context_default),
                 prompt: prompt.previewData.value,
-                parsed_model_type: syncData.parsed_model_type ? JSON.parse(syncData.parsed_model_type) : undefined
+                parsed_model_type: syncData.parsed_model_type ? JSON.parse(syncData.parsed_model_type) : undefined,
+                uuid: uuid
             })
+        },
+        executeStream(uuid: string, text: string) {
+            const prompt = this.executionStream.get(uuid)
+            if (!prompt || !prompt.previewData) return
+            if (!prompt.previewData.executeStream) {
+                prompt.previewData.executeStream = text
+            } else {
+                prompt.previewData.executeStream += text
+            }
         },
         async connectionsLoadAll() {
             if (this.connections.length > 0) return

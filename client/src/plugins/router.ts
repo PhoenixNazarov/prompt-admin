@@ -8,6 +8,7 @@ import {usePromptStore} from "../stores/prompt.store.ts";
 import {useMacroStore} from "../stores/config/macro.store.ts";
 import {useInputStore} from "../stores/config/input.store.ts";
 import {useVarsStore} from "../stores/vars.store.ts";
+import {WsService} from "../api/WsService.ts";
 
 
 function tableIdProp(id: string): number | undefined {
@@ -45,6 +46,7 @@ const router = createRouter({
                     async beforeEnter(_to, _from, next) {
                         const accountStore = useAccountStore()
                         await accountStore.loadMe()
+                        WsService.connect().then()
                         if (!accountStore.logged) {
                             next('/authorization')
                         } else {
