@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "prompt-admin"
-version = "0.1.12"
+version = "0.1.13"
 description = ""
 authors = ["phoenix <vova24848@gmail.com>"]
 readme = "README.md"
