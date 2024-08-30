@@ -4,6 +4,7 @@ from typing import Literal, Generic
 from anthropic import AsyncAnthropic, NOT_GIVEN
 from anthropic.types.message import Message as AnthropicMessage
 
+from promptadmin.prompt_service.models.abstract_streamer import AbstractStreamer
 from promptadmin.prompt_service.models.base_model_service import BaseModelService
 from promptadmin.types import ModelResponse, Message, ModelServiceInfo
 from promptadmin.types.model_response import T
@@ -52,7 +53,12 @@ class AnthropicModelService(BaseModelService):
             temperature=model_service_info.config.get('temperature'),
         )
 
-    async def execute(self, prompt: str, history: list[Message]) -> AnthropicModelResponse:
+    async def execute(
+            self,
+            prompt: str,
+            history: list[Message],
+            streamer: AbstractStreamer = None
+    ) -> AnthropicModelResponse:
         messages = []
         system = NOT_GIVEN
         if self.prompt_position == 'user':
@@ -76,13 +82,25 @@ class AnthropicModelService(BaseModelService):
                 else:
                     messages.append({'role': 'assistant', 'content': message.content})
 
-        anthropic_message = await self.anthropic.messages.create(
-            max_tokens=self.max_tokens,
-            messages=messages,
-            system=system,
-            model=self.model,
-            temperature=self.temperature
-        )
+        if streamer:
+            async with self.anthropic.messages.stream(
+                    max_tokens=self.max_tokens,
+                    messages=messages,
+                    system=system,
+                    model=self.model,
+                    temperature=self.temperature
+            ) as stream:
+                async for text in stream.text_stream:
+                    await streamer.stream(text)
+                anthropic_message = await stream.get_final_message()
+        else:
+            anthropic_message = await self.anthropic.messages.create(
+                max_tokens=self.max_tokens,
+                messages=messages,
+                system=system,
+                model=self.model,
+                temperature=self.temperature
+            )
 
         return AnthropicModelResponse(
             raw_text=anthropic_message.content[0].text,
