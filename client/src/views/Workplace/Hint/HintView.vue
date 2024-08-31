@@ -204,6 +204,7 @@ export default defineComponent({
               style="min-width: 0"
               @click.prevent="preview"
               :loading="loading.preview"
+              :disabled="syncDataStore.loadings.loadAll != undefined"
           >
             <FontAwesomeIcon icon="magnifying-glass"/>
           </VBtn>

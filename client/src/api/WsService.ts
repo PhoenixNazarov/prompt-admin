@@ -29,12 +29,12 @@ class _WsService {
         const data: string = event.data
         let dataJson
         try {
-            dataJson = JSON.parse(data)
+            dataJson = JSON.parse(JSON.parse(data))
         } catch (e) {
             return
         }
         if (!dataJson) return
-        const type = dataJson.type
+        const type = dataJson["type"]
         const handler = handlers.get(type)
         if (handler) {
             await handler(dataJson)
