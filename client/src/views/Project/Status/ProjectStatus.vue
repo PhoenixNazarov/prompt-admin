@@ -125,7 +125,8 @@ export default defineComponent({
         Date: {{ dateFormat(showDate(selectDate)) }}
       </VCardTitle>
       <VCardText>
-        <TestResultView class="mb-4" :test-result="tr" v-for="tr in getDateResults(selectDate)" @selectTestResult="doSelectTestResult"/>
+        <TestResultView class="mb-4" :test-result="tr" v-for="tr in getDateResults(selectDate)"
+                        @selectTestResult="doSelectTestResult"/>
       </VCardText>
     </VCard>
     <TestResultFullView :test-result="selectTestResult" v-if="selectTestResult" @back="doSelectDate(selectDate)"/>

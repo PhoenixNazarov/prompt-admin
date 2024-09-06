@@ -33,33 +33,45 @@ export default defineComponent({
 </script>
 
 <template>
-  <VSheet class="mx-auto" max-width="300">
-    <VForm>
-      <VTextField
-          v-model="form.login"
-          type="login"
-          label="Login"
-      ></VTextField>
-      <VTextField
-          v-model="form.password"
-          type="password"
-          label="Password"
-      ></VTextField>
+  <VContainer>
+    <VRow>
+      <VCol style="width: 100vh">
+        <VCard class="mx-auto authorization" title="Prompt-Admin" variant="flat">
+          <VCardText>
+            <VTextField
+                v-model="form.login"
+                type="login"
+                label="Login"
+                variant="outlined"
+            />
+            <VTextField
+                v-model="form.password"
+                type="password"
+                label="Password"
+                variant="outlined"
+            />
 
-      <v-btn
-          :loading="loading"
-          text="Submit"
-          type="submit"
-          @click.prevent="login"
-          block
-      ></v-btn>
-    </VForm>
-  </VSheet>
+            <VBtn
+                :loading="loading"
+                text="Submit"
+                type="submit"
+                @click.prevent="login"
+                block
+            />
+          </VCardText>
+        </VCard>
+      </VCol>
+    </VRow>
+  </VContainer>
 </template>
 
 <style scoped>
-.form {
-  color: var(--color-5);
-  padding: 2rem;
+
+.authorization {
+  width: 300px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 </style>
