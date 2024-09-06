@@ -16,6 +16,5 @@ class WsStreamer(AbstractStreamer):
         self.ws_manager = ws_manager or WsManager()
 
     async def stream(self, text: str):
-        print('stream')
         response = PromptExecuteResponse(text=text, uuid=self.uuid)
         await self.ws_manager.send_to_access_token(self.access_token, response)

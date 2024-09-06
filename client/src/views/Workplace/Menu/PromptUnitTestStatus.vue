@@ -71,7 +71,7 @@ export default defineComponent({
       <FontAwesomeIcon @click.stop="selectPrompt" v-else :spin="true" icon="spinner" v-bind="props"/>
     </template>
     <div>
-      <span v-if="unitTest()?.test_exception">{{ unitTest()?.test_exception }}</span>
+      <span v-if="unitTest()?.test_exception && unitTest()?.test_status != 'wait'">{{ unitTest()?.test_exception }}</span>
       <span v-else-if="unitTest()?.test_status == 'execution'">Complete</span>
       <span v-else-if="unitTest()?.test_status == 'wait'">Waiting</span>
       <span v-else>Processing</span>

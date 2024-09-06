@@ -80,6 +80,9 @@ create table pa_account
     password    varchar(64)
 );
 
+create unique index pa_account__login__uindex
+    on pa_account (login);
+
 
 -- PA_ACCESS_TOKEN
 create table pa_access_token
@@ -96,6 +99,8 @@ create table pa_access_token
             references pa_account
 );
 
+create unique index pa_access_token__token__uindex
+    on pa_access_token (token);
 
 -- PA_PROMPT_AUDIT
 create table pa_prompt_audit
@@ -189,3 +194,108 @@ create table pa_unit_test
     test_response_model varchar(50000),
     test_exception      varchar(10000)
 );
+
+create unique index pa_unit_test__sync_data_id__uindex
+    on pa_unit_test (sync_data_id, "name");
+
+
+-- PA_TEST_RESULT
+create table pa_test_result
+(
+    id              serial
+        constraint pa_test_result_pk
+            primary key,
+    time_create     timestamp default now(),
+
+    connection_name varchar(128) not null,
+
+    created         float        not null,
+    duration        float        not null,
+    passed          integer      not null,
+    skipped         integer      not null,
+    "error"         integer      not null,
+    failed          integer      not null,
+    total           integer      not null,
+    collected       integer      not null
+);
+
+
+-- PA_TEST_RESULT_RAW
+create table pa_test_result_raw
+(
+    id             serial
+        constraint pa_test_result_raw_pk
+            primary key,
+    time_create    timestamp default now(),
+
+    test_result_id integer
+        constraint pa_test_result_raw__test_res_fk
+            references pa_test_result
+            on delete CASCADE      not null,
+    raw_file       varchar(300000) not null
+);
+
+create unique index pa_test_result_raw__test_res__uindex
+    on pa_test_result_raw (test_result_id);
+
+
+-- PA_TEST_CASE
+create table pa_test_case
+(
+    id                serial
+        constraint pa_test_case_pk
+            primary key,
+    time_create       timestamp default now(),
+
+    test_result_id    integer
+        constraint pa_test_case__test_res_fk
+            references pa_test_result
+            on delete CASCADE      not null,
+
+    nodeid            varchar(200) not null,
+    lineno            integer      not null,
+    outcome           varchar(12)  not null,
+
+    metadata_url      varchar(200),
+    metadata_scenario varchar(200),
+
+    setup_duration    float        not null,
+    setup_outcome     varchar(12)  not null,
+
+    call_duration     float,
+    call_outcome      varchar(12),
+
+    teardown_duration float        not null,
+    teardown_outcome  varchar(12)  not null
+);
+
+create index pa_test_case__test_result__index
+    on pa_test_case (test_result_id);
+
+create unique index pa_test_case__test_result_node__uindex
+    on pa_test_case (test_result_id, nodeid);
+
+
+-- PA_TEST_CASE_INFO
+create table pa_test_case_info
+(
+    id                 serial
+        constraint pa_test_case_info_pk
+            primary key,
+    time_create        timestamp default now(),
+
+    test_case_id       integer
+        constraint pa_test_case_info__test_case_fk
+            references pa_test_case
+            on delete CASCADE not null,
+
+    setup_longrepr     varchar(5000),
+    call_crash_path    varchar(200),
+    call_crash_lineno  integer,
+    call_crash_message varchar(300),
+    request            varchar(10000),
+    response           varchar(10000)
+);
+
+create unique index pa_test_case_info__test_case__index
+    on pa_test_case_info (test_case_id);

@@ -256,6 +256,16 @@ const router = createRouter({
                                                 }
                                             }
                                         },
+                                        {
+                                            name: 'ProjectStatus',
+                                            path: 'status',
+                                            component: () => import('../views/Project/Status/ProjectStatus.vue'),
+                                            props: route => {
+                                                return {
+                                                    project: route.params.project as string,
+                                                }
+                                            }
+                                        },
                                     ]
                                 }
                             ]
@@ -307,6 +317,10 @@ export class RouterService {
 
     static async goToProjectVars(project: string) {
         await router.push(`/project/${project}/vars`)
+    }
+
+    static async goToProjectStatus(project: string) {
+        await router.push(`/project/${project}/status`)
     }
 }
 

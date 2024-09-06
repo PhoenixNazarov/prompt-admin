@@ -114,6 +114,7 @@ export const usePromptStore = defineStore({
             const uuid = randomString(20)
             this.executionStream.set(uuid, prompt)
             prompt.previewData.executeStream = undefined
+            prompt.previewData.executeData = undefined
             prompt.previewData.executeData = await ApiService.post<PromptExecute>('/api/prompts/execute', {
                 service_model_info: JSON.parse(syncData.service_model_info),
                 history: JSON.parse(syncData.history_context_default),

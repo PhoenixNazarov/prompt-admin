@@ -33,21 +33,6 @@ export default defineComponent({
         Editor
       </a>
 
-      <a href="/format" class="case" @click.prevent="RouterService.goToFormat()">
-        <FontAwesomeIcon icon="calculator"/>
-        Format
-      </a>
-
-      <a href="/table/mapping" class="case" @click.prevent="RouterService.goToTableList()">
-        <FontAwesomeIcon icon="table"/>
-        Table
-      </a>
-
-      <a href="/account" class="case" @click.prevent="RouterService.goToAccount()">
-        <FontAwesomeIcon icon="user"/>
-        Account
-      </a>
-
       <VMenu>
         <template v-slot:activator="{ props }">
           <div class="case" v-bind="props">
@@ -66,6 +51,17 @@ export default defineComponent({
           </div>
         </div>
       </VMenu>
+
+      <a href="/table/mapping" class="case" @click.prevent="RouterService.goToTableList()">
+        <FontAwesomeIcon icon="table"/>
+        Table
+      </a>
+
+      <a href="/account" class="case" @click.prevent="RouterService.goToAccount()">
+        <FontAwesomeIcon icon="user"/>
+        Account
+      </a>
+
     </div>
     <div class="inner">
       <RouterView/>

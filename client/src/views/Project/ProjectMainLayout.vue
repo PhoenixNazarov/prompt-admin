@@ -182,6 +182,11 @@ export default defineComponent({
                 command: () => RouterService.goToProjectVars(project)
               },
               {
+                label: 'Status',
+                icon: 'pi pi-heart',
+                command: () => RouterService.goToProjectStatus(project)
+              },
+              {
                 label: 'Synchronize',
                 icon: 'pi pi-sync',
                 command: () => projectStore.sync(project)

@@ -100,12 +100,22 @@ class InspectPromptService:
             *args,
             prompt: str | None = None,
             history: list[Message] | None = None,
+            mapping_name: str | None = None,
             **kwargs
     ) -> ModelResponse:
+        """
+
+        :param args:
+        :param prompt:
+        :param history:
+        :param mapping_name: For logging
+        :param kwargs:
+        :return:
+        """
         contexts = self._collect_contexts(*args, **kwargs)
         prompt = await self._collect_prompt(prompt, contexts)
         history = history or []
-        return await self._execute_prompt(prompt, history)
+        return await self._execute_prompt(prompt, history, mapping_name)
 
     def _collect_contexts(self, *args, **kwargs):
         contexts = {}
@@ -158,7 +168,12 @@ class InspectPromptService:
     async def _collect_templates(self) -> dict[str, str]:
         return await self.var_service.collect_templates()
 
-    async def _execute_prompt(self, prompt: str, history: list[Message]) -> ModelResponse:
+    async def _execute_prompt(
+            self,
+            prompt: str,
+            history: list[Message],
+            mapping_name: str | None = None,
+    ) -> ModelResponse:
         model_response = await self.model_service.execute(prompt, history)
 
         logger.info(
@@ -170,7 +185,7 @@ class InspectPromptService:
                     'table': self.table,
                     'field': self.field,
                     'field_name': self.field_name,
-                    'name': self.name,
+                    'name': mapping_name or self.name,
                 },
                 'model': {
                     'config': self.model_service.info().model_dump(),
@@ -199,9 +214,12 @@ class InspectPromptService:
                         'table': self.table,
                         'field': self.field,
                         'field_name': self.field_name,
-                        'name': self.name,
+                        'name': mapping_name or self.name,
                     },
                     'model': {
+                        'response': {
+                            'uuid': model_response.uuid
+                        },
                         'parsed_model_type': str(self.parsed_model_type),
                         'raw_text': str(model_response.raw_text),
                         'parsed_model': str(model_response.parsed_model)

@@ -10,7 +10,7 @@ import {useAccountStore} from "../../../stores/user.store.ts";
 import {useSettingsStore} from "../../../stores/config/settings.store.ts";
 import CodeText from "../../../components/CodeText.vue";
 import ChangesHistory from "./ChangesHistory.vue";
-import {dateFormat} from "../../Utils.ts";
+import {dateTimeFormat} from "../../Utils.ts";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {RouterService} from "../../../plugins/router.ts";
 import SettingsEditView from "../../Account/SettingsEditView.vue";
@@ -75,7 +75,7 @@ export default defineComponent({
     }
   },
   methods: {
-    dateFormat,
+    dateFormat: dateTimeFormat,
     mapping(): Mapping | undefined {
       if (this.prompt) return this.mappingStore.getById(this.prompt.mapping_id)
     },
@@ -267,7 +267,7 @@ export default defineComponent({
       <h1 v-if="prompt.preview == true">Preview</h1>
       <h1 v-if="prompt.auditData?.audit">Change history</h1>
       <h2 v-if="prompt.auditData?.audit"><b>Time change: </b>
-        {{ dateFormat(prompt.auditData?.audit.time_create) }}</h2>
+        {{ dateTimeFormat(prompt.auditData?.audit.time_create) }}</h2>
       <h2 v-if="prompt.auditData?.audit"><b>Account: </b>
         {{ accountStore.getLoginById(prompt.auditData?.audit.account_id) }}</h2>
 
@@ -289,7 +289,7 @@ export default defineComponent({
         <VCardText>
           {{ mapping()?.description }}
           <div v-if="syncData()?.time_create">
-            <b>Last time synchronization: </b> {{ dateFormat(syncData()?.time_create) }}
+            <b>Last time synchronization: </b> {{ dateTimeFormat(syncData()?.time_create) }}
           </div>
         </VCardText>
       </VCard>

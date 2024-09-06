@@ -1,8 +1,7 @@
 import json
 import logging
 
-import httpx
-
+from promptadmin_server.api.service.sync.client_service import ClientService
 from promptadmin_server.commons.dto import ViewParamsBuilder, ViewParamsFilter
 from promptadmin_server.data.entity.mapping import Mapping
 from promptadmin_server.data.entity.mapping_entity import MappingEntity
@@ -19,19 +18,20 @@ class PromptSyncService:
             self,
             mapping_service: MappingService = None,
             sync_data_service: SyncDataService = None,
-            mapping_entity_service: MappingEntityService = None
+            mapping_entity_service: MappingEntityService = None,
+            client_service: ClientService = None
     ):
         self.mapping_service = mapping_service or MappingService()
         self.sync_data_service = sync_data_service or SyncDataService()
         self.mapping_entity_service = mapping_entity_service or MappingEntityService()
+        self.client_service = client_service or ClientService()
 
-    async def sync_endpoint(self, endpoint: str, secret: str):
-        async with httpx.AsyncClient() as client:
-            try:
-                r = await client.get(endpoint, headers={'Prompt-Admin-Secret': secret})
-                await self.sync_json(r.json())
-            except Exception as e:
-                logger.error('Sync exception', exc_info=e)
+    async def sync_endpoint(self, connection: str):
+        try:
+            response_json = await self.client_service.request_json(connection, '/collect')
+            await self.sync_json(response_json)
+        except Exception as e:
+            logger.error('Sync exception', exc_info=e)
 
     async def sync_json(self, result: dict):
         app = result['app']

@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
 
-from promptadmin_server.api.service.prompt_sync_service import PromptSyncService
+from promptadmin_server.api.service.sync.prompt_sync_service import PromptSyncService
 from settings import SETTINGS
 
 router = APIRouter()
@@ -20,7 +20,4 @@ async def get():
 
 @router.post('/sync')
 async def sync(project_dto: ProjectDto):
-    endpoint = SETTINGS.sync_edpoints.get(project_dto.project)
-    secret = SETTINGS.sync_secrets.get(project_dto.project)
-    if endpoint and secret:
-        return await prompt_sync_service.sync_endpoint(endpoint, secret)
+    return await prompt_sync_service.sync_endpoint(project_dto.project)

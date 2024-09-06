@@ -1,8 +1,14 @@
 import moment from "moment";
 
-export function dateFormat(input: Date | string | undefined): string {
+export function dateTimeFormat(input: Date | string | undefined): string {
     if (!input) return ""
     return moment(input).format('MM/DD/YYYY HH:mm')
+}
+
+
+export function dateFormat(input: Date | string | undefined): string {
+    if (!input) return ""
+    return moment(input).format('DD MMM YYYY')
 }
 
 export function cropText(input: string, size = 100): string {

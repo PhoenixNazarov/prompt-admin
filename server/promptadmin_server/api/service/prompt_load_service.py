@@ -130,4 +130,7 @@ class PromptLoadService:
         if unit_test is None:
             return
         unit_test.test_status = 'wait'
+        unit_test.test_preview = None
+        unit_test.test_response_model = None
+        unit_test.test_exception = None
         await self.unit_test_service.save(unit_test)

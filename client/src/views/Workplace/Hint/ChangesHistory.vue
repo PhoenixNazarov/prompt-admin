@@ -3,7 +3,7 @@ import {defineComponent, PropType} from 'vue'
 import {Prompt} from "../../../stores/prompt.store.ts";
 import {PromptAudit, usePromptAuditStore} from "../../../stores/config/promptAudit.store.ts";
 import {useAccountStore} from "../../../stores/user.store.ts";
-import {dateFormat} from "../../Utils.ts";
+import {dateTimeFormat} from "../../Utils.ts";
 
 export default defineComponent({
   name: "ChangesHistory",
@@ -32,7 +32,7 @@ export default defineComponent({
     }
   },
   methods: {
-    dateFormat,
+    dateFormat: dateTimeFormat,
     changes(): PromptAudit[] | undefined {
       if (this.prompt) return this.promptAuditStore.getByPrompt(this.prompt)
     },
@@ -101,7 +101,7 @@ export default defineComponent({
         @click:row="previewPromptAudit"
     >
       <template v-slot:[`item.time_create`]="{ item }">
-        {{ dateFormat(new Date(item.time_create)) }}
+        {{ dateTimeFormat(new Date(item.time_create)) }}
       </template>
       <template v-slot:[`item.account_id`]="{ item }">
         {{ accountStore.getLoginById(item.account_id) }}
