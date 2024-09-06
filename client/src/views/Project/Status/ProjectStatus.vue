@@ -48,7 +48,7 @@ export default defineComponent({
       secondComp.setHours(24)
       const prevT = now.getTime() / 1000
       const nextT = secondComp.getTime() / 1000
-      return this.testResultStore.entity.filter(el => prevT <= el.created && el.created < nextT)
+      return this.testResultStore.entity.filter(el => prevT <= el.created && el.created < nextT).sort((a, b) => b.created - a.created)
     },
     showPercentage(d: number) {
       const currentResults = this.getDateResults(d)

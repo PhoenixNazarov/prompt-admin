@@ -5,7 +5,7 @@ from settings import SETTINGS
 
 
 class TestRunJob:
-    def __init__(self, test_run_service: TestRunService):
+    def __init__(self, test_run_service: TestRunService = None):
         self.test_run_service = test_run_service or TestRunService()
 
     async def start(self):

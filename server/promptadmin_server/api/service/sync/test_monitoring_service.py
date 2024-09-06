@@ -43,16 +43,15 @@ class TestMonitoringService:
         for k, created in response_json_list.items():
             if await self.find_already(connection, created):
                 continue
-            # try:
-            response_json_resport = await self.client_service.request_json(connection, f'/status/test/{k}')
-            report = response_json_resport.get('test_case')
-            if report:
-                await self.load_report(report, connection)
-            # finally:
-            #     pass
+            try:
+                response_json_resport = await self.client_service.request_json(connection, f'/status/test/{k}')
+                report = response_json_resport.get('test_case')
+                if report:
+                    await self.load_report(report, connection)
+            finally:
+                pass
 
     async def find_already(self, connection_name: str, created: float):
-        print(connection_name, created)
         view_params = (
             ViewParamsBuilder()
             .filter(ViewParamsFilter(field=TestResult.connection_name, value=connection_name))
@@ -62,7 +61,6 @@ class TestMonitoringService:
         return await self.test_result_service.find_by_view_params_first(view_params)
 
     async def load_report(self, report: dict, connection: str):
-        print(report)
         test_result = TestResult(
             connection_name=connection,
             created=report['created'],
@@ -106,7 +104,7 @@ class TestMonitoringService:
         await self.test_case_info_service.save(
             TestCaseInfo(
                 test_case_id=test_case.id,
-                setup_longrepr=raw_testcase['setup'].get('longrepr'),
+                setup_longrepr=raw_testcase['setup'].get('longrepr', '')[:4999],
                 call_crash_path=raw_testcase.get('call', {}).get('crash', {}).get('path'),
                 call_crash_lineno=raw_testcase.get('call', {}).get('crash', {}).get('lineno'),
                 call_crash_message=raw_testcase.get('call', {}).get('crash', {}).get('message'),

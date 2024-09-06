@@ -176,37 +176,20 @@ class InspectPromptService:
     ) -> ModelResponse:
         model_response = await self.model_service.execute(prompt, history)
 
-        logger.info(
-            'Model processing',
-            extra={
-                'prompt': prompt,
-                'history': history,
-                'mapping': {
-                    'table': self.table,
-                    'field': self.field,
-                    'field_name': self.field_name,
-                    'name': mapping_name or self.name,
-                },
-                'model': {
-                    'config': self.model_service.info().model_dump(),
-                    'response': model_response.model_dump()
-                }
-            }
-        )
-
-        if self.parsed_model_type:
-            model_response.parsed_model = self.parser_output_service.parse(
-                self.parsed_model_type,
-                model_response.raw_text
-            )
-            if model_response.parsed_model is None:
-                if self.fail_parse_model_strategy == 'exception':
-                    raise ValueError()
-                elif self.fail_parse_model_strategy == 'default':
-                    model_response.parsed_model = self.parsed_model_default
-
+        try:
+            if self.parsed_model_type:
+                model_response.parsed_model = self.parser_output_service.parse(
+                    self.parsed_model_type,
+                    model_response.raw_text
+                )
+                if model_response.parsed_model is None:
+                    if self.fail_parse_model_strategy == 'exception':
+                        raise ValueError()
+                    elif self.fail_parse_model_strategy == 'default':
+                        model_response.parsed_model = self.parsed_model_default
+        finally:
             logger.info(
-                'Parsed model',
+                'Model processing',
                 extra={
                     'prompt': prompt,
                     'history': history,
@@ -217,9 +200,10 @@ class InspectPromptService:
                         'name': mapping_name or self.name,
                     },
                     'model': {
-                        'response': {
-                            'uuid': model_response.uuid
-                        },
+                        'config': self.model_service.info().model_dump(),
+                        'response': model_response.model_dump(),
+                    },
+                    'parsing': {
                         'parsed_model_type': str(self.parsed_model_type),
                         'raw_text': str(model_response.raw_text),
                         'parsed_model': str(model_response.parsed_model)
