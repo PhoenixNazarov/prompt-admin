@@ -2,6 +2,7 @@ import datetime
 
 from fastapi import APIRouter
 
+from promptadmin_server.api.service.sync.test_monitoring_service import TestMonitoringService
 from promptadmin_server.commons.dto import ViewParamsBuilder, ViewParamsComparison, ViewParamsFilter
 from promptadmin_server.commons.dto.view_params_comparison import ComparisonType
 from promptadmin_server.data.entity.status.test_result import TestResult
@@ -10,6 +11,7 @@ from promptadmin_server.data.service.status.test_result_service import TestResul
 router = APIRouter()
 
 service = TestResultService()
+monitoring_service = TestMonitoringService()
 
 
 @router.get('/load_30/{project}')
@@ -30,3 +32,8 @@ async def load_30(project: str):
     )
 
     return await service.find_by_view_params(view_params)
+
+
+@router.get('/start/{project}')
+async def start(project: str):
+    return await monitoring_service.start_endpoint(project)

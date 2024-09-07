@@ -35,6 +35,9 @@ export const useTestResultStore = defineStore({
             this.entity = await ApiService.get<TestResult[]>(`/api/project/status/test_result/load_30/${project}`)
             this.loading.load30 = false
             return this.entity
+        },
+        async start(project: string) {
+            this.entity = await ApiService.get<TestResult[]>(`/api/project/status/test_result/start/${project}`)
         }
     }
 })

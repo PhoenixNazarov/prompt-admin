@@ -1,7 +1,6 @@
 import os
+import subprocess
 import uuid
-
-import pytest
 
 _process = False
 
@@ -17,6 +16,6 @@ class TestRunService:
             return
         _process = True
         try:
-            pytest.main(['--json-report', f'--json-report-file=test_reports/{uuid.uuid4()}.json'])
+            subprocess.Popen(['pytest', '--json-report', f'--json-report-file=test_reports/{uuid.uuid4()}.json'])
         finally:
             _process = False

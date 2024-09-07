@@ -9,6 +9,7 @@ class TestRunJob:
         self.test_run_service = test_run_service or TestRunService()
 
     async def start(self):
+        await asyncio.sleep(20)
         while True:
             self.test_run_service.run_test()
             await asyncio.sleep(SETTINGS.test_rerun_timeout)

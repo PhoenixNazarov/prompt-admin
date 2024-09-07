@@ -81,6 +81,10 @@ export default defineComponent({
       } catch (e) {
         this.$router.push({hash: ''})
       }
+    },
+    doTest() {
+      this.testResultStore.start(this.project)
+      alert('Test result will show later')
     }
   },
   async mounted() {
@@ -123,6 +127,7 @@ export default defineComponent({
     <VCard variant="text" v-if="!testResultStore.loading.load30 && selectTestResult == undefined">
       <VCardTitle style="color: black">
         Date: {{ dateFormat(showDate(selectDate)) }}
+        <VBtn text="Run test" @click.prevent="doTest"/>
       </VCardTitle>
       <VCardText>
         <TestResultView class="mb-4" :test-result="tr" v-for="tr in getDateResults(selectDate)"
