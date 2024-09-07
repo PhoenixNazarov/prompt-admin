@@ -217,6 +217,22 @@ export default defineComponent({
                 />
               </VExpansionPanelText>
             </VExpansionPanel>
+            <VExpansionPanel
+                title="Required JSON output schema"
+                class="mt-4"
+                :disabled="syncData()?.parsed_model_type == undefined"
+            >
+              <VExpansionPanelText>
+                <JsonEditorVue
+                    :modelValue="parseJson(syncData()?.parsed_model_type)"
+                    mode="tree"
+                    :mainMenuBar="false"
+                    :navigationBar="false"
+                    :read-only="true"
+                    class="jse-theme-dark"
+                />
+              </VExpansionPanelText>
+            </VExpansionPanel>
           </VExpansionPanels>
         </VCol>
       </VRow>
