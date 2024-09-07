@@ -34,13 +34,13 @@ class UnitTestJob(BackgroundTask):
                 if sync_data is None:
                     break
                 try:
-                    await self.prompt_unit_test_service.process_sync_data(sync_data, delay=5)
+                    await self.prompt_unit_test_service.process_sync_data(sync_data, delay=10)
                 except Exception as e:
                     logger.error("Exception unit testing for sync data", exc_info=e, extra={'sync_data': sync_data})
-                await asyncio.sleep(5)
+                await asyncio.sleep(10)
                 position += 1
 
-            await asyncio.sleep(60 * 10)
+            await asyncio.sleep(60 * 60 * 6)
 
     async def stop(self):
         pass
