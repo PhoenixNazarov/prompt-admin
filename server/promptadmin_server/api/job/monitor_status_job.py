@@ -17,7 +17,7 @@ class MonitorStatusJob(BackgroundTask):
             for connection in SETTINGS.sync_edpoints.keys():
                 await self.test_monitoring_service.sync_endpoint(connection)
                 await asyncio.sleep(10)
-            await asyncio.sleep(60 * 60 * 24)
+            await asyncio.sleep(60)
 
     async def stop(self):
         pass

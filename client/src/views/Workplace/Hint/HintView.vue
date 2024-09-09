@@ -75,6 +75,7 @@ export default defineComponent({
     }
   },
   methods: {
+    dateTimeFormat,
     dateFormat: dateTimeFormat,
     mapping(): Mapping | undefined {
       if (this.prompt) return this.mappingStore.getById(this.prompt.mapping_id)

@@ -32,6 +32,7 @@ export default defineComponent({
     }
   },
   methods: {
+    dateTimeFormat,
     dateFormat: dateTimeFormat,
     changes(): PromptAudit[] | undefined {
       if (this.prompt) return this.promptAuditStore.getByPrompt(this.prompt)
@@ -61,7 +62,8 @@ export default defineComponent({
         auditData: {
           audit: promptAudit,
           prevAudit: prevPromptAudit
-        }
+        },
+        originValue: ''
       }
       this.$emit('preview', prompt)
     },
@@ -101,7 +103,7 @@ export default defineComponent({
         @click:row="previewPromptAudit"
     >
       <template v-slot:[`item.time_create`]="{ item }">
-        {{ dateTimeFormat(new Date(item.time_create)) }}
+        {{ dateTimeFormat(item.time_create) }}
       </template>
       <template v-slot:[`item.account_id`]="{ item }">
         {{ accountStore.getLoginById(item.account_id) }}

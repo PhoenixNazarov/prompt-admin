@@ -55,7 +55,6 @@ export default defineComponent({
       if (currentResults.length <= 0) return -1
       const total = currentResults.reduce((sm, el) => sm += el.total, 0)
       const passed = currentResults.reduce((sm, el) => sm += el.passed + el.skipped, 0)
-      console.log(total, passed)
       if (total == 0) return -1
       return 1 - passed / total
     },

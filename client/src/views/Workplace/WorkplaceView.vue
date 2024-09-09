@@ -78,7 +78,11 @@ export default defineComponent({
   },
   methods: {
     selectPrompt(prompt: Prompt) {
-      if (!this.openPrompts.includes(prompt)) this.openPrompts.push(prompt)
+      if (prompt.templateData) {
+        if (this.openPrompts.findIndex(el => el.templateData?.key == prompt.templateData?.key) == -1) this.openPrompts.push(prompt)
+      } else if (prompt.unitTestData) {
+        if (this.openPrompts.findIndex(el => el.unitTestData?.unitTest.id == prompt.unitTestData?.unitTest.id) == -1) this.openPrompts.push(prompt)
+      } else if (!this.openPrompts.includes(prompt)) this.openPrompts.push(prompt)
       this.selectedPrompt = prompt
       this.hashPrompt()
       this.validate.needUpdate = true
