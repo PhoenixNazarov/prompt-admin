@@ -12,7 +12,7 @@ class TestRunJob:
         await asyncio.sleep(20)
         while True:
             self.test_run_service.run_test()
-            await asyncio.sleep(SETTINGS.test_rerun_timeout)
+            await asyncio.sleep(SETTINGS.prompt_admin_settings.test_rerun_timeout)
 
     async def stop(self):
         pass
