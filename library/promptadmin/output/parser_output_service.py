@@ -1,10 +1,15 @@
 import json
+import os
 import re
 from json import JSONDecodeError
+import os.path
+from pathlib import Path
 
+from datamodel_code_generator import generate, InputFileType, PythonVersion
+import importlib
+from tempfile import NamedTemporaryFile
 import xmltodict
 from pydantic import BaseModel, ValidationError
-from jsonschema import Draft202012Validator, ValidationError as JsonValidationError
 
 
 class ParserOutputService:
@@ -23,23 +28,28 @@ class ParserOutputService:
             pass
 
     def parse_for_json_schema(self, json_schema: dict, result: str) -> dict | None:
-        validator = Draft202012Validator(json_schema)
-        try:
-            out = self.try_extract_json(result)
-            if validator.is_valid(out):
-                return out
-        except StopIteration:
-            pass
-        except JSONDecodeError:
-            pass
-        except JsonValidationError:
-            pass
-        try:
-            out = self.try_parse_xml(result)
-            if validator.is_valid(out):
-                return out
-        except JsonValidationError:
-            pass
+        model = self.load_model_from_schema(json_schema)
+        if model:
+            return self.parse(model, result)
+
+    @staticmethod
+    def load_model_from_schema(schema: dict) -> type(BaseModel) | None:
+        title = schema['title']
+
+        if not os.path.exists('_models'):
+            os.mkdir('_models')
+        file_model = NamedTemporaryFile(dir='_models', suffix='.py')
+
+        generate(
+            str(schema),
+            input_file_type=InputFileType.JsonSchema,
+            output=Path(file_model.name),
+            target_python_version=PythonVersion.PY_311,
+        )
+
+        module = importlib.import_module(f'_models.{file_model.name.split("/")[-1].removesuffix(".py")}')
+        model = getattr(module, title)
+        return model
 
     @staticmethod
     def try_extract_json(s: str):
