@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "prompt-admin"
-version = "0.1.20"
+version = "0.1.21"
 description = ""
 authors = ["phoenix <vova24848@gmail.com>"]
 readme = "README.md"
@@ -9,7 +9,8 @@ packages = [{ include = "promptadmin" }]
 [tool.poetry.dependencies]
 python = "^3.11"
 Jinja2 = "^3.1.2"
-anthropic = "^0.31.2"
+anthropic = "^0.34.2"
+boto3 = "^1.35.24"
 pydantic = "^2.8.2"
 polyfactory = "^2.16.2"
 sqlmodel = "^0.0.21"
