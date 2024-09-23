@@ -1,7 +1,7 @@
 <script lang="ts">
 import {defineComponent} from 'vue'
 import ProjectMainView from "../ProjectMainLayout.vue";
-import {ComponentContextSchema, EventSchema,} from "./types";
+import {ComponentContextSchema, EventSchema, ReferenceGroupSchema,} from "./types";
 import NavigationBuilder from "./Components/Navigation/NavigationBuilder.vue";
 import EventDispatcher from "./EventDispatcher.ts";
 import {useTableStore} from "../../../stores/project/tables/table.store.ts";
@@ -18,7 +18,7 @@ export default defineComponent({
   },
   data() {
     return {
-      schema: undefined,
+      schema: undefined as ReferenceGroupSchema | undefined,
     }
   },
   setup() {

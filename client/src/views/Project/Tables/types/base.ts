@@ -19,6 +19,7 @@ export interface BaseComponentSchema {
         | 'item-row'
         | 'select'
         | 'image'
+        | 'date'
 }
 
 export interface BaseEventSchema {

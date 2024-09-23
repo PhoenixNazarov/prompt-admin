@@ -70,6 +70,10 @@ export interface ImageSchema extends DataElementComponentSchema {
     size: 's' | 'm' | 'l'
 }
 
+export interface DateSchema extends DataElementComponentSchema {
+    type: 'date'
+}
+
 
 export type ElementSchema =
     | ButtonSchema
@@ -80,3 +84,4 @@ export type ElementSchema =
     | ItemRowSchema
     | SelectSchema
     | ImageSchema
+    | DateSchema

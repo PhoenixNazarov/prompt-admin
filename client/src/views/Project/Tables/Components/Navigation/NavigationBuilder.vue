@@ -13,12 +13,12 @@ export default defineComponent({
   },
   data() {
     return {
-      componentContext: this.componentContext as ComponentContextSchema
+      selfComponentContext: this.componentContext as ComponentContextSchema
     }
   },
   methods: {
     onEventSchema(event: EventSchema) {
-      if (!EventDispatcher.onContextEvent(event, this.componentContext)) {
+      if (!EventDispatcher.onContextEvent(event, this.selfComponentContext)) {
         this.$emit('event-schema', event)
       }
     }
@@ -30,7 +30,7 @@ export default defineComponent({
   <ReferenceGroupSchemaComponent
       v-if="componentSchema.type == 'reference-window'"
       :component-schema="componentSchema"
-      :component-context="componentContext"
+      :component-context="selfComponentContext"
       @event-schema="onEventSchema"
   />
 </template>

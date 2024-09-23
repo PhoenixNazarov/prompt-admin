@@ -22,6 +22,7 @@ export default defineComponent({
     // ItemRowSchemaComponent: defineAsyncComponent(() => import("./ItemRowSchemaComponent.vue")),
     SelectSchemaComponent: defineAsyncComponent(() => import("./SelectSchemaComponent.vue")),
     ImageSchemaComponent: defineAsyncComponent(() => import("./ImageSchemaComponent.vue")),
+    DateSchemaComponent: defineAsyncComponent(() => import("./DateSchemaComponent.vue")),
   }
 })
 </script>
@@ -77,6 +78,12 @@ export default defineComponent({
   />
   <ImageSchemaComponent
       v-if="componentSchema.type == 'image'"
+      :component-schema="componentSchema"
+      :component-context="componentContext"
+      @event-schema="doEmitEventSchema"
+  />
+  <DateSchemaComponent
+      v-if="componentSchema.type == 'date'"
       :component-schema="componentSchema"
       :component-context="componentContext"
       @event-schema="doEmitEventSchema"
