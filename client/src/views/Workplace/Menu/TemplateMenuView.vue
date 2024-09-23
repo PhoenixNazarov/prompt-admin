@@ -40,6 +40,7 @@ export default defineComponent({
         field: "",
         table: "",
         value: template.value,
+        originValue: template.value,
         mapping_id: -1,
         templateData: {
           key: template.key,

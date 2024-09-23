@@ -99,8 +99,8 @@ export default defineComponent({
         :loading="loading"
         item-value="id"
         @update:options="loadItems"
-        density="compact"
         @click:row="previewPromptAudit"
+        density="compact"
     >
       <template v-slot:[`item.time_create`]="{ item }">
         {{ dateTimeFormat(item.time_create) }}

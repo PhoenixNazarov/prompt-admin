@@ -190,7 +190,26 @@ export default defineComponent({
                 label: 'Synchronize',
                 icon: 'pi pi-sync',
                 command: () => projectStore.sync(project)
-              }
+              },
+              {
+                label: 'Tables',
+                icon: 'pi pi-table',
+                items: [[
+                    {
+                      label: 'Tables Navigation',
+                      items: [
+                          {
+                            label: 'Go To Tables',
+                            command: () => RouterService.goToProjectTables(project)
+                          },
+                          {
+                            label: 'Edit Tables',
+                            command: () => RouterService.goToProjectTableEdit(project)
+                          }
+                      ]
+                    },
+                ]]
+              },
             ]"/>
         </VCol>
       </VRow>

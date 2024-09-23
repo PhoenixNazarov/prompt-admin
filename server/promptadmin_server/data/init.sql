@@ -299,3 +299,18 @@ create table pa_test_case_info
 
 create unique index pa_test_case_info__test_case__index
     on pa_test_case_info (test_case_id);
+
+
+create table pa_table_schema
+(
+    id           serial
+        constraint pa_table_schema_pk
+            primary key,
+    time_create  timestamp default now(),
+
+    project      varchar(100) not null,
+    table_schema json         not null
+);
+
+create unique index pa_table_schema__project_uindex
+    on pa_table_schema (project);

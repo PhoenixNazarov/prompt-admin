@@ -266,6 +266,27 @@ const router = createRouter({
                                                 }
                                             }
                                         },
+                                        {
+                                            name: 'ProjectTables',
+                                            path: 'tables',
+                                            component: () => import('../views/Project/Tables/ProjectTableView.vue'),
+                                            props: route => {
+                                                return {
+                                                    project: route.params.project as string,
+                                                }
+                                            }
+                                        },
+                                        {
+                                            name: 'ProjectTablesEdit',
+                                            path: 'edit_tables',
+                                            component: () => import('../views/Project/Tables/EditTableView.vue'),
+                                            props: route => {
+                                                return {
+                                                    project: route.params.project as string,
+                                                }
+                                            }
+                                        }
+
                                     ]
                                 }
                             ]
@@ -321,6 +342,14 @@ export class RouterService {
 
     static async goToProjectStatus(project: string) {
         await router.push(`/project/${project}/status`)
+    }
+
+    static async goToProjectTables(project: string) {
+        await router.push(`/project/${project}/tables`)
+    }
+
+    static async goToProjectTableEdit(project: string) {
+        await router.push(`/project/${project}/edit_tables`)
     }
 }
 
