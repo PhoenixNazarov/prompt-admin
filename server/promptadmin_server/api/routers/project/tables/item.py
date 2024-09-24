@@ -81,6 +81,8 @@ async def create(save_item_request: SaveItemRequest):
         values ({sql_statement_values})
         returning id
         """
+    print(sql)
+    print(values)
     return await connection.fetchrow(sql, *values)
 
 

@@ -4,6 +4,9 @@ import {BlogPost, useBlogPostStore} from "../../stores/project/blogPost.store.ts
 import Editor from 'primevue/editor';
 import RemoveButton from "../Tables/Edit/Components/RemoveButton.vue";
 
+import "quill/dist/quill.core.css"
+import "quill/dist/quill.snow.css"
+
 export default defineComponent({
   name: "BlogPost",
   components: {RemoveButton, Editor},
@@ -72,11 +75,12 @@ export default defineComponent({
       </div>
     </VCardTitle>
     <VCardText>
-      <div v-if="!edit" v-html="content"></div>
+      <div class="ql-editor ql-snow" v-if="!edit" v-html="content"></div>
       <Editor v-if="edit" v-model="content" editorStyle="height: 500px"/>
     </VCardText>
   </VCard>
 </template>
 
 <style scoped>
+
 </style>
