@@ -1,6 +1,6 @@
 import {ComponentContextSchema, ComponentContextType} from "../types";
 
-const contextRegexp = new RegExp('\\$[_a-zA-Z][a-zA-Z0-9]*(.[_a-zA-Z][a-zA-Z0-9]*)*')
+const contextRegexp = new RegExp('\\$[_a-zA-Z][_a-zA-Z0-9]*(\\.[_a-zA-Z][_a-zA-Z0-9]*)*')
 
 class UtilSchema {
     getProject(contextSchema: ComponentContextSchema | undefined): string {

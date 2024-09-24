@@ -199,7 +199,7 @@ export default defineComponent({
                       label: 'Tables Navigation',
                       items: [
                           {
-                            label: 'Go To Tables',
+                            label: 'Data',
                             command: () => RouterService.goToProjectTables(project)
                           },
                           {
