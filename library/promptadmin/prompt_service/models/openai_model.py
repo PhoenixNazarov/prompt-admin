@@ -1,41 +1,41 @@
 import logging
 from typing import Literal, Generic
 
-from anthropic import AsyncAnthropic, NOT_GIVEN
-from anthropic.types.message import Message as AnthropicMessage
+from openai.types.chat import ChatCompletion
 
 from promptadmin.prompt_service.models.abstract_streamer import AbstractStreamer
 from promptadmin.prompt_service.models.base_model_service import BaseModelService
 from promptadmin.types import ModelResponse, Message, ModelServiceInfo
 from promptadmin.types.model_response import T
 from settings import SETTINGS
+from openai import AsyncOpenAI, NOT_GIVEN
 
 logger = logging.getLogger(__name__)
 
 
-class AnthropicModelResponse(ModelResponse[T], Generic[T]):
-    origin_message: AnthropicMessage | None = None
+class OpenaiModelResponse(ModelResponse[T], Generic[T]):
+    origin_message: ChatCompletion | None = None
     messages: list[dict[str, str]]
 
 
-class AnthropicModelService(BaseModelService):
+class OpenaiModelService(BaseModelService):
     def __init__(
             self,
-            anthropic: AsyncAnthropic = None,
+            openai: AsyncOpenAI = None,
             prompt_position: Literal['system', 'user'] = None,
             max_tokens: int = None,
             model: str = None,
             temperature: float = None
     ):
-        self.anthropic = anthropic or AsyncAnthropic(api_key=SETTINGS.prompt_admin_settings.anthropic_key)
+        self.openai = openai or AsyncOpenAI(api_key=SETTINGS.prompt_admin_settings.openapi_key)
         self.prompt_position = prompt_position or 'system'
         self.max_tokens = max_tokens or 2048
-        self.model = model or 'claude-3-5-sonnet-20240620'
+        self.model = model or 'gpt-4o-mini'
         self.temperature = temperature or NOT_GIVEN
 
-    def info(self, _service='anthropic') -> ModelServiceInfo:
+    def info(self) -> ModelServiceInfo:
         return ModelServiceInfo(
-            service=_service,
+            service='anthropic',
             model=self.model,
             config={
                 'max_tokens': self.max_tokens,
@@ -46,7 +46,7 @@ class AnthropicModelService(BaseModelService):
 
     @staticmethod
     def from_info(model_service_info: ModelServiceInfo):
-        return AnthropicModelService(
+        return OpenaiModelService(
             prompt_position=model_service_info.config.get('prompt_position'),
             max_tokens=model_service_info.config.get('max_position'),
             model=model_service_info.model,
@@ -58,52 +58,42 @@ class AnthropicModelService(BaseModelService):
             prompt: str,
             history: list[Message],
             streamer: AbstractStreamer = None
-    ) -> AnthropicModelResponse:
+    ) -> OpenaiModelResponse:
         messages = []
-        system = NOT_GIVEN
         if self.prompt_position == 'user':
             history.append(Message(content=prompt, role='user'))
         elif self.prompt_position == 'system':
-            system = prompt
-            if len(history) == 0:
-                history.append(Message(content="Hello", role='user'))
+            history.append(Message(content=prompt, role='system'))
 
         for message in history:
             if message.role == 'user':
-                if len(messages) > 0 and messages[-1]['role'] == 'user':
-                    messages[-1]['content'] += '\n\n' + message.content
-                else:
-                    messages.append({'role': 'user', 'content': message.content})
+                messages.append({'role': 'user', 'content': message.content})
             if message.role == 'assistant':
-                if len(messages) <= 0:
-                    messages.append({'role': 'user', 'content': 'Hello'})
-                if messages[-1]['role'] == 'assistant':
-                    messages[-1]['content'] += '\n\n' + message.content
-                else:
-                    messages.append({'role': 'assistant', 'content': message.content})
+                messages.append({'role': 'assistant', 'content': message.content})
+            if message.role == 'system':
+                messages.append({'role': 'system', 'content': message.content})
 
         if streamer:
-            async with self.anthropic.messages.stream(
+            async with self.openai.beta.chat.completions.stream(
                     max_tokens=self.max_tokens,
                     messages=messages,
-                    system=system,
                     model=self.model,
                     temperature=self.temperature
             ) as stream:
-                async for text in stream.text_stream:
-                    await streamer.stream(text)
-                anthropic_message = await stream.get_final_message()
+                async for event in stream:
+                    if event.type == 'content.delta':
+                        text = event.delta
+                        await streamer.stream(text)
+                openapi_message = await stream.get_final_completion()
         else:
-            anthropic_message = await self.anthropic.messages.create(
-                max_tokens=self.max_tokens,
+            openapi_message = await self.openai.chat.completions.create(
                 messages=messages,
-                system=system,
                 model=self.model,
-                temperature=self.temperature
+                temperature=self.temperature,
+                max_tokens=self.max_tokens
             )
-
-        return AnthropicModelResponse(
-            raw_text=anthropic_message.content[0].text,
-            origin_message=anthropic_message,
+        return OpenaiModelResponse(
+            raw_text=openapi_message.choices[0].message.content,
+            origin_message=openapi_message,
             messages=messages
         )
