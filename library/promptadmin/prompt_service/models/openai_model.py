@@ -35,7 +35,7 @@ class OpenaiModelService(BaseModelService):
 
     def info(self) -> ModelServiceInfo:
         return ModelServiceInfo(
-            service='anthropic',
+            service='openai',
             model=self.model,
             config={
                 'max_tokens': self.max_tokens,
