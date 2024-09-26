@@ -18,7 +18,7 @@ export default defineComponent({
         }
     },
     methods: {
-        doWrite(newModel: string | undefined) {
+        doWrite(newModel: string | number | boolean | undefined) {
             const event: ChangeContextEvent = {
                 eventType: 'change-context',
                 contextKey: this.componentSchema.reference,

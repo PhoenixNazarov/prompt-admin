@@ -14,6 +14,15 @@ export default defineComponent({
       type: Object as PropType<TextFieldSchema>,
       required: true
     }
+  },
+  methods: {
+    write(newModel: string | undefined) {
+      if (this.componentSchema.format == 'number') {
+        this.doWrite(Number(newModel))
+      } else {
+        this.doWrite(newModel)
+      }
+    },
   }
 })
 </script>
@@ -31,7 +40,7 @@ export default defineComponent({
       :base-color="changeColor()"
       density="compact"
       variant="outlined"
-      @update:model-value="doWrite"
+      @update:model-value="write"
 
       :append-icon="componentSchema.popup ? 'mdi-eye' : ''"
       @click:append="doPopup"
