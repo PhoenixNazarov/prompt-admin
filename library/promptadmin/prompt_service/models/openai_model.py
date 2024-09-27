@@ -63,7 +63,7 @@ class OpenaiModelService(BaseModelService):
         if self.prompt_position == 'user':
             history.append(Message(content=prompt, role='user'))
         elif self.prompt_position == 'system':
-            history.append(Message(content=prompt, role='system'))
+            history = [Message(content=prompt, role='system')] + history
 
         for message in history:
             if message.role == 'user':
