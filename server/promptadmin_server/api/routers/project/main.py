@@ -15,7 +15,7 @@ class ProjectDto(BaseModel):
 
 @router.get('/get')
 async def get():
-    return list(SETTINGS.connections.keys())
+    return list(SETTINGS.sync_edpoints.keys())
 
 
 @router.post('/sync')
