@@ -17,7 +17,9 @@ export const useTableStore = defineStore({
             if (alreadyProject) {
                 return alreadyProject
             }
-            const result = (await ApiService.post<{table_schema: any} | undefined>('/api/project/tables/main/schema/download',
+            const result = (await ApiService.post<{
+                table_schema: any
+            } | undefined>('/api/project/tables/main/schema/download',
                 {
                     project: project,
                 }
@@ -43,11 +45,11 @@ export const useTableStore = defineStore({
                 key: string,
                 order: 'ask' | 'desc'
             }[] | undefined = undefined,
-            filter: {
-                key: string | undefined,
-                value: string | undefined,
-                like: boolean | undefined
-            } | undefined = undefined
+            filters: {
+                key: string,
+                value?: string | number | boolean | undefined,
+                operator: string
+            }[] | undefined = undefined
         ) {
             return await ApiService.post<any[]>('/api/project/tables/list/load',
                 {
@@ -57,7 +59,7 @@ export const useTableStore = defineStore({
                     page: page - 1,
                     count: count,
                     order_by: orderBy,
-                    filter: filter?.key ? filter : undefined
+                    filter: filters
                 }
             )
         },
@@ -65,18 +67,32 @@ export const useTableStore = defineStore({
             project: string,
             table: string,
             columns: string[],
-            filter: {
-                key: string | undefined,
-                value: string | undefined,
-                like: boolean | undefined
-            } | undefined = undefined
+            filters: {
+                key: string,
+                value?: string | number | boolean | undefined,
+                operator: string
+            }[] | undefined = undefined
         ) {
             return await ApiService.post<{ count: number }>('/api/project/tables/list/count',
                 {
                     project: project,
                     table: table,
                     columns: columns,
-                    filter: filter?.key ? filter : undefined
+                    filter: filters
+                }
+            )
+        },
+        async fetchColumns(
+            project: string,
+            table: string
+        ) {
+            return await ApiService.post<{
+                column_name: string,
+                data_type: string
+            }[]>('/api/project/tables/list/fetch_columns',
+                {
+                    project: project,
+                    table: table,
                 }
             )
         },

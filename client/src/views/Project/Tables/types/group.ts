@@ -27,6 +27,11 @@ export interface CardSchema extends BaseComponentSchema {
     reference?: string
 }
 
+export interface Filter {
+    key: string
+    value: string | number | boolean | undefined
+    operator: '=' | '!=' | '>' | '>=' | '<' | '<=' | 'like%' | '%like' | '%like%' | 'is'
+}
 
 export interface ListSchema extends BaseComponentSchema {
     type: 'list'
@@ -36,11 +41,11 @@ export interface ListSchema extends BaseComponentSchema {
     columns: Column[]
 
     filter?: {
-        columns: {
-            key: string,
+        columns?: {
+            key: string
             like?: boolean
-        }[]
-        startValue?: string,
+        }[] // DEPRECATED
+        startFilters?: Filter[]
         hideFilterField?: boolean
     }
 
@@ -50,6 +55,11 @@ export interface ListSchema extends BaseComponentSchema {
     editElementName?: string
     createElementName?: string
     deleteElementName?: string
+
+    fetchColumn?: {
+        filter?: boolean                // Default True
+        headers?: boolean              // Default True
+    }
 }
 
 
