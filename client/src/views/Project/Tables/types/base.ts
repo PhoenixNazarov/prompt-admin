@@ -49,8 +49,9 @@ export interface BaseInputSchema {
 export interface Column {
     title: string
     column: string
+    columnDbms?: string
 
-    display?: 'text' | 'image'
+    display?: 'text' | 'image' | 'none'
     imageSize?: 's' | 'm' | 'l'
     ident?: {
         name: string,

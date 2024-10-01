@@ -25,6 +25,12 @@ class FilterColumn(BaseModel):
     operator: str
 
 
+class JoinColumn(BaseModel):
+    table: str
+    pseudo: str | None = None
+    condition: str
+
+
 class LoadRequest(ProjectRequest):
     columns: list[str]
 
@@ -32,6 +38,7 @@ class LoadRequest(ProjectRequest):
     page: int | None = None
     order_by: list[SortByColumn] | None = None,
     filter: list[FilterColumn] | None = None
+    joins: list[JoinColumn] | None = None
 
 
 def build_filter(load_request: LoadRequest):
@@ -58,6 +65,14 @@ def build_filter(load_request: LoadRequest):
     return statement.removesuffix('and')
 
 
+def build_join(load_request: LoadRequest):
+    statement = ''
+    if load_request.joins:
+        for join in load_request.joins:
+            statement += f'join {join.table} {join.pseudo if join.pseudo else ""} on {join.condition} '
+    return statement
+
+
 @router.post('/load')
 async def load(load_request: LoadRequest):
     connection = await get_connection(load_request.project)
@@ -68,6 +83,7 @@ async def load(load_request: LoadRequest):
     offset = f'offset {load_request.count * load_request.page}' if load_request.count and load_request.page else ''
     order_by = ''
     where = build_filter(load_request)
+    join = build_join(load_request)
 
     if load_request.order_by:
         first_el = load_request.order_by[0]
@@ -75,6 +91,7 @@ async def load(load_request: LoadRequest):
 
     statement = (
         f'select {",".join(load_request.columns)} from {load_request.table} '
+        f'{join} '
         f'{where} '
         f'{order_by} '
         f'{limit} '
@@ -91,7 +108,8 @@ async def count(load_request: LoadRequest):
         return -1
 
     where = build_filter(load_request)
-    return await connection.fetchrow(f'select count(*) from {load_request.table} {where}')
+    join = build_join(load_request)
+    return await connection.fetchrow(f'select count(*) from {load_request.table} {join} {where}')
 
 
 @router.post('/fetch_columns')

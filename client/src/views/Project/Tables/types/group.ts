@@ -49,6 +49,12 @@ export interface ListSchema extends BaseComponentSchema {
         hideFilterField?: boolean
     }
 
+    joins?: {
+        table: string
+        pseudo?: string
+        condition: string
+    }[]
+
     hideBottom?: boolean
     border?: boolean
     itemsPerPage?: number

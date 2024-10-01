@@ -49,6 +49,11 @@ export const useTableStore = defineStore({
                 key: string,
                 value?: string | number | boolean | undefined,
                 operator: string
+            }[] | undefined = undefined,
+            joins: {
+                table: string
+                pseudo?: string
+                condition: string
             }[] | undefined = undefined
         ) {
             return await ApiService.post<any[]>('/api/project/tables/list/load',
@@ -59,7 +64,8 @@ export const useTableStore = defineStore({
                     page: page - 1,
                     count: count,
                     order_by: orderBy,
-                    filter: filters
+                    filter: filters,
+                    joins: joins
                 }
             )
         },
@@ -71,6 +77,11 @@ export const useTableStore = defineStore({
                 key: string,
                 value?: string | number | boolean | undefined,
                 operator: string
+            }[] | undefined = undefined,
+            joins: {
+                table: string
+                pseudo?: string
+                condition: string
             }[] | undefined = undefined
         ) {
             return await ApiService.post<{ count: number }>('/api/project/tables/list/count',
@@ -78,7 +89,8 @@ export const useTableStore = defineStore({
                     project: project,
                     table: table,
                     columns: columns,
-                    filter: filters
+                    filter: filters,
+                    joins: joins
                 }
             )
         },

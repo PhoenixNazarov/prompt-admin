@@ -51,7 +51,7 @@ export default defineComponent({
           value?: string | number | boolean,
           operator?: string
         }[],
-        additionalHeaders: this.componentSchema.columns.map(el => {
+        additionalHeaders: this.componentSchema.columns.filter(el => el.display != 'none').map(el => {
           return {
             title: el.title,
             key: el.column,
@@ -75,14 +75,13 @@ export default defineComponent({
     loadDataWatcher() {
       if (!this.exit) {
         setTimeout(this.loadDataWatcher, 1000)
-        console.log('LOADDATA')
         this.loadData()
       }
     },
     initStartFilter() {
       if (this.componentSchema.filter?.startFilters) {
         this.lastSearch.filters = this.componentSchema.filter?.startFilters.map(el => {
-          return {...el, value: this.doRenderContextText(el.value)}
+          return {...el, value: this.doRenderContextText(String(el.value))}
         })
       }
     },
@@ -113,7 +112,8 @@ export default defineComponent({
             this._lastSearch.page,
             this._lastSearch.itemsPerPage,
             this._lastSearch.sortBy,
-            this.getFilters()
+            this.getFilters(),
+            this.componentSchema.joins
         )
       } finally {
         this.loading = false
@@ -127,7 +127,8 @@ export default defineComponent({
             this.PROJECT,
             this.componentSchema.table,
             this.getColumns(),
-            this.getFilters()
+            this.getFilters(),
+            this.componentSchema.joins
         )
         this.count = response.count
       } finally {
@@ -138,7 +139,16 @@ export default defineComponent({
       this.columns = await this.tableStore.fetchColumns(this.PROJECT, this.componentSchema.table)
     },
     getColumns(base: any = undefined) {
-      return (base || this._lastSearch.additionalHeaders).map(i => i.key)
+      return (base || this._lastSearch.additionalHeaders).map(i => {
+        const columnDb = this.componentSchema.columns.find(el => {
+          return el.title == i.title
+        })
+        console.log(columnDb, i)
+        if (columnDb?.columnDbms) {
+          return columnDb?.columnDbms
+        }
+        return i.key
+      })
     },
     getFilters(base: any = undefined) {
       return (base || this._lastSearch.filters).filter(el => el.key && el.operator) as {
