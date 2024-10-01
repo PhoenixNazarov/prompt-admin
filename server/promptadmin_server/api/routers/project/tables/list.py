@@ -97,7 +97,6 @@ async def load(load_request: LoadRequest):
         f'{limit} '
         f'{offset} '
     )
-    print(statement)
     return await connection.fetch(statement)
 
 

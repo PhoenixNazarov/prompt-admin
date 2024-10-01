@@ -1,3 +1,4 @@
+import re
 from typing import Any
 
 from fastapi import APIRouter
@@ -15,9 +16,14 @@ class LoadItemRequest(BaseModel):
     id: int
 
 
+class TypeColumn(BaseModel):
+    type: str
+    value: Any
+
+
 class Column(BaseModel):
     key: str
-    value: Any
+    value: TypeColumn | Any
 
 
 class SaveItemRequest(LoadItemRequest):
@@ -47,6 +53,10 @@ async def update(save_item_request: SaveItemRequest):
         if i > 0:
             sql_statement += ', '
         sql_statement += f'{save_item_request.columns[i].key} = ${i + 1}'
+        if isinstance(save_item_request.columns[i].value, TypeColumn):
+            if save_item_request.columns[i].value.type == 'bytes':
+                values.append(str(save_item_request.columns[i].value.value).encode())
+            continue
         values.append(save_item_request.columns[i].value)
 
     sql = f"""
@@ -74,6 +84,10 @@ async def create(save_item_request: SaveItemRequest):
             sql_statement_values += ', '
         sql_statement_columns += f'{save_item_request.columns[i].key}'
         sql_statement_values += f'${i + 1}'
+        if isinstance(save_item_request.columns[i].value, TypeColumn):
+            if save_item_request.columns[i].value.type == 'bytes':
+                values.append(str(save_item_request.columns[i].value.value).encode())
+            continue
         values.append(save_item_request.columns[i].value)
 
     sql = f"""
@@ -81,8 +95,6 @@ async def create(save_item_request: SaveItemRequest):
         values ({sql_statement_values})
         returning id
         """
-    print(sql)
-    print(values)
     return await connection.fetchrow(sql, *values)
 
 

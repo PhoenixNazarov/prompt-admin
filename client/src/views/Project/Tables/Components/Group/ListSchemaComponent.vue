@@ -143,7 +143,6 @@ export default defineComponent({
         const columnDb = this.componentSchema.columns.find(el => {
           return el.title == i.title
         })
-        console.log(columnDb, i)
         if (columnDb?.columnDbms) {
           return columnDb?.columnDbms
         }
