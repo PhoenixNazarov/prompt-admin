@@ -8,6 +8,12 @@ import re
 router = APIRouter()
 
 
+class ProjectRequest(BaseModel):
+    project: str
+
+    table: str
+
+
 class SortByColumn(BaseModel):
     key: str
     order: str
@@ -15,32 +21,56 @@ class SortByColumn(BaseModel):
 
 class FilterColumn(BaseModel):
     key: str
-    value: str | None = None
-    like: bool | None = None
+    value: str | int | bool | None = None
+    operator: str
 
 
-class LoadRequest(BaseModel):
-    project: str
-
+class JoinColumn(BaseModel):
     table: str
+    pseudo: str | None = None
+    condition: str
+
+
+class LoadRequest(ProjectRequest):
     columns: list[str]
 
     count: int | None = None
     page: int | None = None
     order_by: list[SortByColumn] | None = None,
-    filter: FilterColumn | None = None
+    filter: list[FilterColumn] | None = None
+    joins: list[JoinColumn] | None = None
 
 
 def build_filter(load_request: LoadRequest):
-    filter = ''
+    statement = ''
     if load_request.filter:
-        if load_request.filter.value is None:
-            filter = f"where {load_request.filter.key} is null  "
-        elif load_request.filter.like:
-            filter = f"where {load_request.filter.key} like E'{re.escape(load_request.filter.value + '%')}' "
-        else:
-            filter = f"where {load_request.filter.key} = E'{re.escape(load_request.filter.value)}' "
-    return filter
+        if len(load_request.filter) > 0:
+            statement = 'where '
+        for filter_ in load_request.filter:
+            if filter_.value is None:
+                value = 'null'
+            elif filter_.operator == 'like%':
+                value = re.escape("'" + str(filter_.value) + "%'")
+                filter_.operator = 'like'
+            elif filter_.operator == '%like':
+                value = re.escape("'%" + str(filter_.value) + "'")
+                filter_.operator = 'like'
+            elif filter_.operator == '%like%':
+                value = re.escape("'%" + str(filter_.value) + "%'")
+                filter_.operator = 'like'
+            else:
+                value = re.escape(filter_.value)
+
+            statement += f' {filter_.key} {filter_.operator} {value} and'
+    return statement.removesuffix('and')
+
+
+def build_join(load_request: LoadRequest):
+    statement = ''
+    if load_request.joins:
+        for join in load_request.joins:
+            statement += f'join {join.table} {join.pseudo if join.pseudo else ""} on {join.condition} '
+    return statement
 
 
 @router.post('/load')
@@ -52,7 +82,8 @@ async def load(load_request: LoadRequest):
     limit = f'limit {load_request.count}' if load_request.count else ''
     offset = f'offset {load_request.count * load_request.page}' if load_request.count and load_request.page else ''
     order_by = ''
-    filter = build_filter(load_request)
+    where = build_filter(load_request)
+    join = build_join(load_request)
 
     if load_request.order_by:
         first_el = load_request.order_by[0]
@@ -60,7 +91,8 @@ async def load(load_request: LoadRequest):
 
     statement = (
         f'select {",".join(load_request.columns)} from {load_request.table} '
-        f'{filter} '
+        f'{join} '
+        f'{where} '
         f'{order_by} '
         f'{limit} '
         f'{offset} '
@@ -74,5 +106,15 @@ async def count(load_request: LoadRequest):
     if not connection:
         return -1
 
-    filter = build_filter(load_request)
-    return await connection.fetchrow(f'select count(*) from {load_request.table} {filter}')
+    where = build_filter(load_request)
+    join = build_join(load_request)
+    return await connection.fetchrow(f'select count(*) from {load_request.table} {join} {where}')
+
+
+@router.post('/fetch_columns')
+async def fetch_columns(project_request: ProjectRequest):
+    connection = await get_connection(project_request.project)
+    if not connection:
+        return []
+    statement = 'select column_name, data_type from information_schema.columns where table_name = $1'
+    return await connection.fetch(statement, project_request.table)

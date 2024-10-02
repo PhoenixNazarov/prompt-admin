@@ -24,7 +24,7 @@ export default defineComponent({
       reader.readAsDataURL(file)
       reader.onload = () => {
         const bytes = reader?.result?.split(',')[1]
-        this.doWrite(bytes)
+        this.doWrite({type: 'bytes', value: bytes})
       }
     }
   }
@@ -38,7 +38,12 @@ export default defineComponent({
       @update:model-value="doWriteFile"
   />
   <img
-      v-if="model"
+      v-if="(model as any)?.value"
+      :src="'data:image/png;base64,'+ (model as any).value"
+      :height="componentSchema.size ? CONST_SCHEMA_COMPONENT.image_size[componentSchema.size] : CONST_SCHEMA_COMPONENT.image_size_default"
+  />
+  <img
+      v-else-if="model"
       :src="'data:image/png;base64,'+ model"
       :height="componentSchema.size ? CONST_SCHEMA_COMPONENT.image_size[componentSchema.size] : CONST_SCHEMA_COMPONENT.image_size_default"
   />

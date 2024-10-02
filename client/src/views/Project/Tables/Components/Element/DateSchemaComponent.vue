@@ -15,11 +15,6 @@ export default defineComponent({
       required: true
     }
   },
-  data() {
-    return {
-      on: false
-    }
-  },
   watch: {
     model(newVal) {
       this.doWrite(newVal)
