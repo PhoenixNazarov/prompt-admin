@@ -83,8 +83,8 @@ class PromptUnitTestService:
                 sync_data_id=sync_data.id,
                 name=name
             )
-        # elif unit_test.test_status == 'execution' and unit_test.test_exception is None:
-        #     return
+        elif unit_test.test_status == 'execution':
+            return
         try:
             await self.process(unit_test, sync_data, mapping)
         except Exception as e:
