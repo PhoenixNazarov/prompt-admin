@@ -5,8 +5,10 @@ from promptadmin_server.commons.dto.base_settings import (
     DatabaseCred
 )
 
+from promptadmin.types import Settings
 
-class _Settings(BaseSettings):
+
+class _Settings(BaseSettings, Settings):
     app: str = 'prompt-admin'
 
     database: list[DatabaseCred] = [
@@ -25,11 +27,6 @@ class _Settings(BaseSettings):
 
     sync_edpoints: dict[str, str] = {}
     sync_secrets: dict[str, str] = {}
-
-    anthropic_key: str = os.getenv('PA_ANTHROPIC_KEY')
-    aws_secret_key: str = os.getenv('AWS_SECRET_KEY')
-    aws_access_key: str = os.getenv('AWS_ACCESS_KEY')
-    aws_region: str = os.getenv('AWS_REGION')
 
 
 SETTINGS = _Settings()
