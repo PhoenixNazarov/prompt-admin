@@ -39,6 +39,7 @@ export default defineComponent({
       color="transparent"
       density="compact"
       :title="componentSchema.title"
+      style="{z-index: 0}"
   >
     <VBtn
         v-if="componentSchema.createElementName"
@@ -47,7 +48,7 @@ export default defineComponent({
         @click.prevent="$emit('doNewElement')"
     />
   </VToolbar>
-  <VExpansionPanels v-if="!componentSchema.filter?.hideFilterField">
+  <VExpansionPanels v-if="!componentSchema.filter?.hideFilterField" >
     <VExpansionPanel title="Filters">
       <VExpansionPanelText>
         <VRow v-for="(filter, i) in filters">
@@ -134,5 +135,9 @@ export default defineComponent({
 .center {
   display: flex;
   align-items: center;
+}
+
+.v-expansion-panels {
+  z-index: 0
 }
 </style>

@@ -31,6 +31,7 @@ export default defineComponent({
       v-if="componentSchema.type == 'reference-window'"
       :component-schema="componentSchema"
       :component-context="selfComponentContext"
+      :input-schema="inputSchema"
       @event-schema="onEventSchema"
   />
 </template>

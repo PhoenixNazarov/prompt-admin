@@ -37,7 +37,7 @@ class TestMonitoringService:
             logger.error('Sync monitor status exception', exc_info=e)
 
     async def start_endpoint(self, connection: str):
-        await self.client_service.request(connection, '/status/run_test')
+        await self.client_service.get_request(connection, '/status/run_test')
 
     async def sync(self, connection: str):
         response_json_list = await self.client_service.request_json(connection, '/status/test_list')

@@ -6,6 +6,12 @@ import GroupSchemaMixin from "../Mixins/GroupSchemaMixin.ts";
 import {useTableStore} from "../../../../../stores/project/tables/table.store.ts";
 import ListSchemaToolbarElement from "./ListSchemaToolbarElement.vue";
 
+type SortItem = {
+  key: string;
+  order?: boolean | 'asc' | 'desc';
+}
+
+
 export default defineComponent({
   name: "ListSchemaComponent",
   mixins: [GroupSchemaMixin],
@@ -31,11 +37,40 @@ export default defineComponent({
         sortable: false
       })
     }
+
+    const startLastSearch = {
+      filters: [] as {
+        key?: string,
+        value?: string | number | boolean,
+        operator?: string
+      }[],
+      additionalHeaders: this.componentSchema.columns.filter(el => el.display != 'none').map(el => {
+        return {
+          title: el.title,
+          key: el.column,
+          sortable: true
+        }
+      }),
+      sortBy: [{key: 'id', order: 'desc'}] as SortItem[],
+      page: 1,
+      itemsPerPage: this.componentSchema.itemsPerPage ? this.componentSchema.itemsPerPage : 10,
+    }
+    if (this.inputSchema?.inputType == 'parameters-list') {
+      if (this.inputSchema.page) startLastSearch.page = this.inputSchema.page
+      if (this.inputSchema.itemsPerPage) startLastSearch.itemsPerPage = this.inputSchema.itemsPerPage
+      if (this.inputSchema.sortBy && this.inputSchema.sortBy.length > 0) startLastSearch.sortBy = this.inputSchema.sortBy as SortItem[]
+      if (this.inputSchema.additionalHeaders && this.inputSchema.additionalHeaders.length > 0) startLastSearch.additionalHeaders = this.inputSchema.additionalHeaders
+      if (this.inputSchema.filters && this.inputSchema.filters.length > 0) startLastSearch.filters = this.inputSchema.filters
+    }
+
     return {
       headers: actionHeader,
       items: [] as any[],
       count: 0,
-      loading: false,
+      loading: {
+        data: false,
+        count: false
+      },
 
       _lastSearch: {
         filters: [] as { key?: string, value?: string | number | boolean, operator?: string }[],
@@ -45,30 +80,14 @@ export default defineComponent({
         itemsPerPage: this.componentSchema.itemsPerPage ? this.componentSchema.itemsPerPage : 10,
       },
 
-      lastSearch: {
-        filters: [] as {
-          key?: string,
-          value?: string | number | boolean,
-          operator?: string
-        }[],
-        additionalHeaders: this.componentSchema.columns.filter(el => el.display != 'none').map(el => {
-          return {
-            title: el.title,
-            key: el.column,
-            sortable: true
-          }
-        }),
-        sortBy: [] as { key: string, order: 'ask' | 'desc' }[],
-        page: 1,
-        itemsPerPage: this.componentSchema.itemsPerPage ? this.componentSchema.itemsPerPage : 10,
-      },
+      lastSearch: startLastSearch,
 
       columns: undefined as undefined | { column_name: string, data_type: string }[],
       exit: false
     }
   },
   methods: {
-    updateOptions({sortBy}: { sortBy: { key: string, order: 'ask' | 'desc' }[] }) {
+    updateOptions({sortBy}: { sortBy: SortItem[] }) {
       this.lastSearch.sortBy = sortBy
       this.loadData()
     },
@@ -102,8 +121,8 @@ export default defineComponent({
       this._lastSearch.page = this.lastSearch.page
       this._lastSearch.itemsPerPage = this.lastSearch.itemsPerPage
 
-      this.loading = true
       this.loadCount()
+      this.loading.data = true
       try {
         this.items = await this.tableStore.listLoad(
             this.PROJECT,
@@ -116,12 +135,12 @@ export default defineComponent({
             this.componentSchema.joins
         )
       } finally {
-        this.loading = false
+        this.loading.data = false
       }
     },
     async loadCount() {
       if (this.componentSchema.hideBottom) return
-      this.loading = true
+      this.loading.count = true
       try {
         const response = await this.tableStore.listCount(
             this.PROJECT,
@@ -132,14 +151,14 @@ export default defineComponent({
         )
         this.count = response.count
       } finally {
-        this.loading = false
+        this.loading.count = false
       }
     },
     async fetchColumns() {
       this.columns = await this.tableStore.fetchColumns(this.PROJECT, this.componentSchema.table)
     },
     getColumns(base: any = undefined) {
-      return (base || this._lastSearch.additionalHeaders).map(i => {
+      return (base || this._lastSearch.additionalHeaders).map((i: any) => {
         const columnDb = this.componentSchema.columns.find(el => {
           return el.title == i.title
         })
@@ -150,7 +169,7 @@ export default defineComponent({
       })
     },
     getFilters(base: any = undefined) {
-      return (base || this._lastSearch.filters).filter(el => el.key && el.operator) as {
+      return (base || this._lastSearch.filters).filter((el: any) => el.key && el.operator) as {
         key: string,
         value?: string | number | boolean | undefined,
         operator: string
@@ -215,7 +234,7 @@ export default defineComponent({
     },
     doClickRow(_: any, row: any) {
       if (this.inputSchema?.inputType == 'list-row-click') {
-        const eventRow = row.columns.map(el => {
+        const eventRow = row.columns.map((el: any) => {
           return {
             column: {
               title: el.title,
@@ -241,7 +260,7 @@ export default defineComponent({
           this.doEmitEventSchema({eventType: 'close-popup-reference'})
         }
       }
-    }
+    },
   },
   watch: {
     componentContext: {
@@ -251,9 +270,21 @@ export default defineComponent({
         }
       },
       deep: true
+    },
+    _lastSearch: {
+      handler() {
+        if (this.inputSchema?.inputType == 'parameters-list') {
+          this.inputSchema.page = this._lastSearch.page
+          this.inputSchema.itemsPerPage = this._lastSearch.itemsPerPage
+          this.inputSchema.sortBy = this._lastSearch.sortBy
+          this.inputSchema.filters = this._lastSearch.filters
+          this.inputSchema.additionalHeaders = this._lastSearch.additionalHeaders
+        }
+      },
+      deep: true
     }
   },
-  beforeMount() {
+  mounted() {
     this.initStartFilter()
     this.fetchColumns()
     this.loadDataWatcher()
@@ -269,6 +300,7 @@ export default defineComponent({
       v-if="inputSchema?.inputType == 'select' || inputSchema?.inputType == 'list-row-click'"
       v-model:page="lastSearch.page"
       v-model:items-per-page="lastSearch.itemsPerPage"
+      v-model:sort-by="lastSearch.sortBy"
       :headers="[...lastSearch.additionalHeaders, ...headers]"
       item-value="id"
       :items="items"
@@ -318,11 +350,12 @@ export default defineComponent({
       v-else
       v-model:page="lastSearch.page"
       v-model:items-per-page="lastSearch.itemsPerPage"
+      v-model:sort-by="lastSearch.sortBy"
       :headers="[...lastSearch.additionalHeaders, ...headers]"
       item-value="id"
       :items="items"
       :items-length="count"
-      :loading="loading"
+      :loading="loading.count || loading.data"
       @update:options="updateOptions"
       density="compact"
       :class="{
