@@ -9,27 +9,30 @@ import UtilSchema from "./Components/UtilSchema.ts";
 import {useTableStore} from "../../../stores/project/tables/table.store.ts";
 
 class EventDispatcher {
-    onProjectEvent(event: EventSchema): boolean | undefined {
-        switch (event.eventType) {
-            case "request-project":
-                this.onRequestProjectEvent(event)
-                return true
-        }
-    }
 
     onContextEvent(event: EventSchema, componentContext: ComponentContextSchema): boolean | undefined {
         switch (event.eventType) {
-            // case "save-item":
-            //     this.onSaveItemEvent(event, componentContext)
-            //     return true
             case "change-context":
                 this.onChangeContext(event.contextKey, event.value, componentContext)
+                return true
+            case "request-project":
+                this.onRequestProjectEvent(event, componentContext)
                 return true
         }
     }
 
-    onRequestProjectEvent(_: RequestProjectEvent) {
-        return
+    async onRequestProjectEvent(requestProjectEvent: RequestProjectEvent, componentContext: ComponentContextSchema) {
+        const tableStore = useTableStore()
+        const project = UtilSchema.getProject(componentContext)
+        try {
+            if (requestProjectEvent.method == 'get') {
+                await tableStore.executeGet(project, requestProjectEvent.url)
+            } else {
+                await tableStore.executePost(project, requestProjectEvent.url, UtilSchema.renderObject(requestProjectEvent.data, componentContext))
+            }
+        } catch (e) {
+            alert('Error on execute: ' + String(requestProjectEvent))
+        }
     }
 
     async onUpdateItemEvent(

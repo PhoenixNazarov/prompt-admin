@@ -144,6 +144,23 @@ export const useTableStore = defineStore({
                     id: id
                 }
             )
+        },
+        async executeGet(project: string, url: string) {
+            return await ApiService.post('/api/project/tables/execute/get',
+                {
+                    project: project,
+                    url: url
+                }
+            )
+        },
+        async executePost(project: string, url: string, data: any) {
+            return await ApiService.post('/api/project/tables/execute/post',
+                {
+                    project: project,
+                    url: url,
+                    data: data
+                }
+            )
         }
     }
 })

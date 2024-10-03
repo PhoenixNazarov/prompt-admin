@@ -7,6 +7,21 @@ class UtilSchema {
         return this.renderReference('$project', contextSchema) as string
     }
 
+    renderObject(obj: any, contextSchema: ComponentContextSchema | undefined) {
+        if (typeof obj == 'object') {
+            const newObj = {}
+            for (let key in obj) {
+                newObj[key] = this.renderReference(obj[key], contextSchema)
+                console.log(key)
+            }
+            return newObj
+        } else if (typeof obj == 'string') {
+            console.log('string', obj)
+            return this.renderReference(obj, contextSchema)
+        }
+        return obj
+    }
+
     renderReference(text: string, contextSchema: ComponentContextSchema | undefined) {
         const regexpExec = contextRegexp.exec(text)
         if (regexpExec && regexpExec[0] == text) {
