@@ -61,7 +61,7 @@ export default defineComponent({
       this.referencePopup = undefined
     },
     doGoToReference(index: number) {
-      this.referenceHistory = this.referenceHistory.slice(0, index + 1)
+      this.referenceHistory = this.referenceHistory.slice(0, index)
     },
     onEventSchema(event: EventSchema) {
       if (event.eventType == 'render-reference') {
@@ -91,10 +91,17 @@ export default defineComponent({
     },
     doSetMainRef() {
       const startName = this.componentSchema.mainRefName ? this.componentSchema.mainRefName : this.componentSchema.refs[0].name
-      this.doSetReference(startName, undefined)
+      // this.doSetReference(startName, undefined)
+    },
+    getMainRef() {
+      const startName = this.componentSchema.mainRefName ? this.componentSchema.mainRefName : this.componentSchema.refs[0].name
+      return this.getNamedGroup(startName)
     },
     doLoadHashPath(historyInput: HistoryInput) {
       const referenceHistory = [] as typeof this.referenceHistory
+      if (historyInput.history.length <= 0) {
+        return this.doSetMainRef()
+      }
       for (let i of historyInput.history) {
 
         const nameGroup = this.getNamedGroup(i.name)
@@ -123,8 +130,7 @@ export default defineComponent({
     if (this.inputSchema?.inputType == 'history') {
       this.doLoadHashPath(this.inputSchema)
     } else {
-      const startName = this.componentSchema.mainRefName ? this.componentSchema.mainRefName : this.componentSchema.refs[0].name
-      this.doSetReference(startName, undefined)
+      this.doSetMainRef()
     }
   },
   watch: {
@@ -151,13 +157,19 @@ export default defineComponent({
 <template>
   <div>
     <VBreadcrumbs bg-color="var(--color-4)" class="mb-5" density="compact"
-                  :items="referenceHistory.map((el, ind) => { return { title: el.group.name, index: ind}})">
+                  :items="[{group: getMainRef()!}, ...referenceHistory].map((el, ind) => { return { title: el.group.name, index: ind}})">
       <template v-slot:item="{ item }">
         <VBreadcrumbsItem @click="doGoToReference(item.index)">
           {{ item.title }}
         </VBreadcrumbsItem>
       </template>
     </VBreadcrumbs>
+    <GroupBuilder
+        v-if="referenceHistory.length <= 0"
+        :component-schema="getMainRef()!.group"
+        :component-context="componentContext"
+        @event-schema="onEventSchema"
+    />
     <GroupBuilder
         v-if="referenceHistory[referenceHistory.length - 1]?.group"
         :component-schema="referenceHistory[referenceHistory.length - 1]?.group.group"

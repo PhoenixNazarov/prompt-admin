@@ -273,7 +273,7 @@ const router = createRouter({
                                             props: route => {
                                                 return {
                                                     project: route.params.project as string,
-                                                    hash: route.params.pathMatch
+                                                    hash: typeof route.params.pathMatch == 'string' ? [] : route.params.pathMatch
                                                 }
                                             }
                                         },
