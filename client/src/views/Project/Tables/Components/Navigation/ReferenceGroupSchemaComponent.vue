@@ -1,6 +1,15 @@
 <script lang="ts">
 import {defineComponent, PropType} from 'vue'
-import {ChangeContextEvent, EventSchema, InputSchema, NamedGroup, ReferenceGroupSchema} from "../../types";
+import {
+  ChangeContextEvent,
+  EventSchema,
+  HistoryInput,
+  InputSchema,
+  inputToString,
+  NamedGroup,
+  ReferenceGroupSchema,
+  SEPARATORS
+} from "../../types";
 import GroupBuilder from "../Group/GroupBuilder.vue";
 import ComponentSchemaMixin from "../Mixins/ComponentSchemaMixin.ts";
 
@@ -22,18 +31,23 @@ export default defineComponent({
     }
   },
   methods: {
+    getNamedGroup(name: string) {
+      return this.componentSchema.refs.find(s => s.name == name)
+    },
     doSetReference(name: string, inputSchema: InputSchema | undefined) {
-      const namedGroup = this.componentSchema.refs.find(s => s.name == name)
-      if (namedGroup)
+      const namedGroup = this.getNamedGroup(name)
+      if (namedGroup) {
         this.referenceHistory = [{group: namedGroup, input: inputSchema}]
+      }
     },
     doOverlappingReference(name: string, inputSchema: InputSchema | undefined) {
-      const namedGroup = this.componentSchema.refs.find(s => s.name == name)
-      if (namedGroup)
+      const namedGroup = this.getNamedGroup(name)
+      if (namedGroup) {
         this.referenceHistory.push({group: namedGroup, input: inputSchema})
+      }
     },
     doPopup(name: string, inputSchema: InputSchema | undefined) {
-      const namedGroup = this.componentSchema.refs.find(s => s.name == name)
+      const namedGroup = this.getNamedGroup(name)
       if (namedGroup) {
         this.referencePopup = {group: namedGroup, input: inputSchema}
         this.referencePopupShow = true
@@ -74,12 +88,63 @@ export default defineComponent({
       } else {
         this.doEmitEventSchema(event)
       }
+    },
+    doSetMainRef() {
+      const startName = this.componentSchema.mainRefName ? this.componentSchema.mainRefName : this.componentSchema.refs[0].name
+      this.doSetReference(startName, undefined)
+    },
+    doLoadHashPath(historyInput: HistoryInput) {
+      const referenceHistory = [] as typeof this.referenceHistory
+      for (let i of historyInput.history) {
+
+        const nameGroup = this.getNamedGroup(i.name)
+        const parsedInput = i.input
+        if (!nameGroup) {
+          return this.doSetMainRef()
+        }
+        referenceHistory.push({
+          group: nameGroup,
+          input: parsedInput
+        })
+      }
+      this.referenceHistory = referenceHistory
+    },
+    doDumpHashPath() {
+      const hash = this.referenceHistory.map(el => {
+        if (el.input)
+          return `${el.group.name}${SEPARATORS.INNER}${inputToString(el.input)}`
+        else
+          return `${el.group.name}`
+      })
+      this.$router.push(`/project/${this.PROJECT}/tables/${hash.join(SEPARATORS.EXTERNAL)}`)
     }
   },
   mounted() {
-    const startName = this.componentSchema.mainRefName ? this.componentSchema.mainRefName : this.componentSchema.refs[0].name
-    this.doSetReference(startName, undefined)
+    if (this.inputSchema?.inputType == 'history') {
+      this.doLoadHashPath(this.inputSchema)
+    } else {
+      const startName = this.componentSchema.mainRefName ? this.componentSchema.mainRefName : this.componentSchema.refs[0].name
+      this.doSetReference(startName, undefined)
+    }
   },
+  watch: {
+    referenceHistory: {
+      handler() {
+        setTimeout(this.doDumpHashPath, 100)
+      },
+      deep: true
+    },
+    inputSchema: {
+      handler() {
+        if (this.inputSchema?.inputType == 'history') {
+          if (JSON.stringify(this.inputSchema.history.map(el => el.name)) != JSON.stringify(this.referenceHistory.map(el => el.group.name))) {
+            this.doLoadHashPath(this.inputSchema)
+          }
+        }
+      },
+      deep: true
+    }
+  }
 })
 </script>
 

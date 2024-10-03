@@ -44,6 +44,8 @@ export interface BaseInputSchema {
         | 'list-row-click'
         | 'create-item'
         | 'delete-item'
+        | 'parameters-list'
+        | 'history'
 }
 
 export interface Column {

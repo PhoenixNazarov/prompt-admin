@@ -8,6 +8,7 @@ export * from './group.ts'
 export * from './element.ts'
 export * from './event.ts'
 export * from './input.ts'
+export * from './hasher.ts'
 
 export type GroupElementSchema = GroupSchema | ElementSchema
 export type ComponentSchema = NavigationSchema | GroupElementSchema

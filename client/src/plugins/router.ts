@@ -268,11 +268,12 @@ const router = createRouter({
                                         },
                                         {
                                             name: 'ProjectTables',
-                                            path: 'tables',
+                                            path: 'tables/:pathMatch(.*)*',
                                             component: () => import('../views/Project/Tables/ProjectTableView.vue'),
                                             props: route => {
                                                 return {
                                                     project: route.params.project as string,
+                                                    hash: route.params.pathMatch
                                                 }
                                             }
                                         },
@@ -286,7 +287,6 @@ const router = createRouter({
                                                 }
                                             }
                                         }
-
                                     ]
                                 }
                             ]

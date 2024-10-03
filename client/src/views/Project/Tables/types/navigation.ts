@@ -1,6 +1,7 @@
 import {BaseComponentSchema} from "./base.ts";
 import {GroupSchema} from "./group.ts";
 
+
 export type ComponentContextType = ComponentContextDict | ComponentContextValueType
 export type ComponentContextDict = { [key: string]: ComponentContextType }
 export type ComponentContextValueType = number | string | undefined | boolean
