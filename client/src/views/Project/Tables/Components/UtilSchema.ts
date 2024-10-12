@@ -12,11 +12,9 @@ class UtilSchema {
             const newObj = {}
             for (let key in obj) {
                 newObj[key] = this.renderReference(obj[key], contextSchema)
-                console.log(key)
             }
             return newObj
         } else if (typeof obj == 'string') {
-            console.log('string', obj)
             return this.renderReference(obj, contextSchema)
         }
         return obj
