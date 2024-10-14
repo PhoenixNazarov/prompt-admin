@@ -74,7 +74,7 @@ export const usePromptStore = defineStore({
     state: () => ({
         prompts: [] as Prompt[],
         loadings: {
-            loadAll: false,
+            loadAll: undefined as undefined | Promise<Prompt[]>,
             connectionsLoadAll: false
         },
         connections: [] as string[],
@@ -90,10 +90,12 @@ export const usePromptStore = defineStore({
     },
     actions: {
         async loadAll() {
-            this.loadings.loadAll = true
-            this.prompts = await ApiService.get<Prompt[]>('/api/prompts/load_all')
+            if (this.loadings.loadAll) return await this.loadings.loadAll
+            this.loadings.loadAll = ApiService.get<Prompt[]>('/api/prompts/load_all')
+            this.prompts = await this.loadings.loadAll
             this.prompts.forEach(p => p.originValue = p.value)
-            this.loadings.loadAll = false
+            this.loadings.loadAll = undefined
+            return this.prompts
         },
         async savePrompt(prompt: Prompt) {
             await ApiService.post('/api/prompts/save', prompt)

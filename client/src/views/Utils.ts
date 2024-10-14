@@ -37,7 +37,7 @@ export function hashCode(str: string | number | undefined): number {
     return h & 0xFFFFFFFF
 }
 
-export function randomString(length: number) {
+export function randomString(length: number = 20) {
     let result = '';
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     const charactersLength = characters.length;
@@ -48,3 +48,10 @@ export function randomString(length: number) {
     }
     return result;
 }
+
+export function chunk<T>(arr: T[], size: number): T[][] {
+    return Array.from({length: Math.ceil(arr.length / size)}, (_: any, i: number) =>
+        arr.slice(i * size, i * size + size)
+    );
+}
+

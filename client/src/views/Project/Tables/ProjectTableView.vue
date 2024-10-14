@@ -10,8 +10,8 @@ import {
   SEPARATORS,
 } from "./types";
 import NavigationBuilder from "./Components/Navigation/NavigationBuilder.vue";
-import EventDispatcher from "./EventDispatcher.ts";
 import {useTableStore} from "../../../stores/project/tables/table.store.ts";
+import {DefaultSchema} from "./default.ts";
 
 
 export default defineComponent({
@@ -38,8 +38,7 @@ export default defineComponent({
     }
   },
   methods: {
-    onEventSchema(event: EventSchema) {
-      EventDispatcher.onProjectEvent(event)
+    onEventSchema(_: EventSchema) {
     },
     context(): ComponentContextSchema {
       return {

@@ -60,23 +60,29 @@ export default defineComponent({
   >
     <template v-slot:activator="{ props }">
       <FontAwesomeIcon @click.stop="selectPrompt" v-if="unitTest()?.test_exception" :icon="['fas', 'circle']"
-                       style="color: var(--color-1)"
+                       style="color: var(--color-1); width: 1rem"
                        v-bind="props"/>
       <FontAwesomeIcon @click.stop="selectPrompt" v-else-if="unitTest()?.test_status == 'execution'"
-                       :icon="['fas', 'circle']" style="color: green"
+                       :icon="['fas', 'circle']" style="color: green; width: 1rem"
                        v-bind="props"/>
       <FontAwesomeIcon @click.stop="selectPrompt" v-else-if="unitTest()?.test_status == 'wait'"
                        :icon="['far', 'circle']"
+                       style="width: 1rem"
                        v-bind="props"/>
-      <FontAwesomeIcon @click.stop="selectPrompt" v-else :spin="true" icon="spinner" v-bind="props"/>
+      <FontAwesomeIcon @click.stop="selectPrompt" v-else :spin="true" icon="spinner" v-bind="props"
+                       style="width: 1rem"/>
     </template>
     <div>
-      <span v-if="unitTest()?.test_exception && unitTest()?.test_status != 'wait'">{{ unitTest()?.test_exception }}</span>
+      <span v-if="unitTest()?.test_exception && unitTest()?.test_status != 'wait'">{{
+          unitTest()?.test_exception
+        }}</span>
       <span v-else-if="unitTest()?.test_status == 'execution'">Complete</span>
       <span v-else-if="unitTest()?.test_status == 'wait'">Waiting</span>
       <span v-else>Processing</span>
     </div>
   </VTooltip>
+  <FontAwesomeIcon v-else :icon="['far', 'circle']"
+                   style="width: 1rem; opacity: 0.5"/>
 </template>
 
 <style scoped>

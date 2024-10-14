@@ -90,8 +90,7 @@ export default defineComponent({
       }
     },
     doSetMainRef() {
-      const startName = this.componentSchema.mainRefName ? this.componentSchema.mainRefName : this.componentSchema.refs[0].name
-      // this.doSetReference(startName, undefined)
+      this.referenceHistory = []
     },
     getMainRef() {
       const startName = this.componentSchema.mainRefName ? this.componentSchema.mainRefName : this.componentSchema.refs[0].name

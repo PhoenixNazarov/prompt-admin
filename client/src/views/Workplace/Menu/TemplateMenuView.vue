@@ -71,29 +71,7 @@ export default defineComponent({
     </template>
 
     <VListItem density="compact">
-      <VDialog max-width="350px">
-        <template v-slot:activator="{ props: activatorProps }">
-          <div class="pointer" v-bind="activatorProps">
-            Create new template
-            <FontAwesomeIcon icon="plus"/>
-          </div>
-        </template>
-        <template v-slot:default="{ isActive }">
-          <VContainer>
-            <VCard>
-              <VCardText>
-                <VRow>
-                  <VTextField v-model="newVar.key" label="Key"/>
-                </VRow>
-                <VRow>
-                  <VBtn :loading="loadingSave" class="mr-2" color="success" text="Save"
-                        @click.prevent="save(isActive)"/>
-                </VRow>
-              </VCardText>
-            </VCard>
-          </VContainer>
-        </template>
-      </VDialog>
+
     </VListItem>
 
     <VListItem

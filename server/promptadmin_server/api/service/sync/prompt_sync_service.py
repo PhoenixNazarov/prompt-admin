@@ -114,10 +114,10 @@ class PromptSyncService:
                         need_save and
                         sd.service_model_info == sync_data.service_model_info and
                         sd.template_context_type == sync_data.template_context_type and
-                        sd.template_context_default == sync_data.template_context_default and
-                        sd.history_context_default == sync_data.history_context_default and
+                        # sd.template_context_default == sync_data.template_context_default and
+                        # sd.history_context_default == sync_data.history_context_default and
                         sd.parsed_model_type == sync_data.parsed_model_type and
-                        sd.parsed_model_default == sync_data.parsed_model_default and
+                        # sd.parsed_model_default == sync_data.parsed_model_default and
                         sd.fail_parse_model_strategy == sync_data.fail_parse_model_strategy
                 ):
                     need_save = False

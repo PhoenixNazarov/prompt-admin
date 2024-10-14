@@ -305,7 +305,7 @@ export default defineComponent({
       item-value="id"
       :items="items"
       :items-length="count"
-      :loading="loading"
+      :loading="loading.count || loading.data"
       @update:options="updateOptions"
       @click:row="doClickRow"
       density="compact"

@@ -218,7 +218,8 @@ create table pa_test_result
     total           integer      not null,
     collected       integer      not null
 );
-
+create unique index pa_test_result_ident_uindex
+    on pa_test_result (connection_name, created, duration);
 
 -- PA_TEST_RESULT_RAW
 create table pa_test_result_raw
