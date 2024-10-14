@@ -1,28 +1,30 @@
 import {
+    faAngleRight,
+    faArrowLeft,
     faCalculator,
+    faCalendarPlus,
+    faCaretRight,
     faCheck,
     faCircle,
     faCirclePlus,
+    faClock,
     faDiagramProject,
-    faInfoCircle,
-    faPen,
-    faPlus,
-    faTable,
-    faTerminal,
-    faTrash,
-    faUser,
-    faXmark,
-    faSpinner,
     faEye,
     faEyeSlash,
     faFile,
-    faCaretRight,
     faFloppyDisk,
-    faRepeat,
+    faInfoCircle,
     faMagnifyingGlass,
-    faCalendarPlus,
-    faClock,
-    faArrowLeft
+    faPen,
+    faPlus,
+    faRepeat,
+    faSpinner,
+    faTable,
+    faTableColumns,
+    faTerminal,
+    faTrash,
+    faUser,
+    faXmark
 } from '@fortawesome/free-solid-svg-icons'
 import {faCircle as farCircle} from '@fortawesome/free-regular-svg-icons'
 import {dom, library} from '@fortawesome/fontawesome-svg-core'
@@ -55,6 +57,8 @@ export function installFortAwesome(_: App) {
         faMagnifyingGlass,
         faCalendarPlus,
         faClock,
-        faArrowLeft
+        faArrowLeft,
+        faAngleRight,
+        faTableColumns
     )
 }
