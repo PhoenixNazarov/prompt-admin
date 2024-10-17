@@ -82,20 +82,12 @@ export default defineComponent({
 
       lastSearch: startLastSearch,
 
-      columns: undefined as undefined | { column_name: string, data_type: string }[],
-      exit: false
+      columns: undefined as undefined | { column_name: string, data_type: string }[]
     }
   },
   methods: {
     updateOptions({sortBy}: { sortBy: SortItem[] }) {
       this.lastSearch.sortBy = sortBy
-      this.loadData()
-    },
-    loadDataWatcher() {
-      if (!this.exit) {
-        setTimeout(this.loadDataWatcher, 1000)
-        this.loadData()
-      }
     },
     initStartFilter() {
       if (this.componentSchema.filter?.startFilters) {
@@ -282,16 +274,19 @@ export default defineComponent({
         }
       },
       deep: true
+    },
+    lastSearch: {
+      handler() {
+        this.loadData()
+      },
+      deep: true
     }
   },
   mounted() {
     this.initStartFilter()
+    this.loadData()
     this.fetchColumns()
-    this.loadDataWatcher()
-  },
-  unmounted() {
-    this.exit = true
-  },
+  }
 })
 </script>
 
