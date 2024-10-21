@@ -1,39 +1,20 @@
-import datetime
-
 from fastapi import APIRouter
 
-from promptadmin_server.api.service.sync.test_monitoring_service import TestMonitoringService
-from promptadmin_server.commons.dto import ViewParamsBuilder, ViewParamsComparison, ViewParamsFilter
-from promptadmin_server.commons.dto.view_params_comparison import ComparisonType
-from promptadmin_server.data.entity.status.test_result import TestResult
-from promptadmin_server.data.service.status.test_result_service import TestResultService
+from promptadmin_server.api.routers.dependency import UserDependsAnnotated
+from promptadmin_server.api.service.permission.permission_status_service import (
+    PermissionStatusService,
+)
 
 router = APIRouter()
 
-service = TestResultService()
-monitoring_service = TestMonitoringService()
+permission_status_service = PermissionStatusService()
 
 
-@router.get('/load_30/{project}')
-async def load_30(project: str):
-    now_date = datetime.datetime.now()
-    ago_date = now_date - datetime.timedelta(days=30, hours=now_date.hour, minutes=now_date.minute,
-                                             seconds=now_date.second)
-
-    view_params = (
-        ViewParamsBuilder()
-        .comparison(
-            ViewParamsComparison(field=TestResult.created, value=ago_date.timestamp(), comparison=ComparisonType.GE)
-        )
-        .filter(
-            ViewParamsFilter(field=TestResult.connection_name, value=project)
-        )
-        .build()
-    )
-
-    return await service.find_by_view_params(view_params)
+@router.get("/load_30/{project}")
+async def load_30(project: str, user_data: UserDependsAnnotated):
+    return await permission_status_service.load_30(project, user_data)
 
 
-@router.get('/start/{project}')
-async def start(project: str):
-    return await monitoring_service.start_endpoint(project)
+@router.get("/start/{project}")
+async def start(project: str, user_data: UserDependsAnnotated):
+    return await permission_status_service.start(project, user_data)

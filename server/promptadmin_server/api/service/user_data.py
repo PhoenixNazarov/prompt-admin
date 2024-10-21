@@ -17,6 +17,3 @@ class UserData(BaseModel):
     @property
     def is_anonim(self):
         return self.account is None
-
-
-

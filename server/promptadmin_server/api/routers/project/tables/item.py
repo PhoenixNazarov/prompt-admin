@@ -1,110 +1,71 @@
-from typing import Any
-
 from fastapi import APIRouter
-from pydantic import BaseModel
 
-from promptadmin_server.api.utlis import get_connection
+from promptadmin_server.api.dto.project_request import ProjectRequest
+from promptadmin_server.api.routers.dependency import UserDependsAnnotated
+from promptadmin_server.api.service.permission.permission_table_service import (
+    PermissionTableService,
+)
+from promptadmin_server.api.service.tables.dto import Column
 
 router = APIRouter()
 
+permission_table_service = PermissionTableService()
 
-class LoadItemRequest(BaseModel):
-    project: str
 
+class LoadItemRequest(ProjectRequest):
     table: str
     id: int
 
 
-class TypeColumn(BaseModel):
-    type: str
-    value: Any
-
-
-class Column(BaseModel):
-    key: str
-    value: TypeColumn | Any
-
-
-class SaveItemRequest(LoadItemRequest):
-    id: int | None = None
+class SaveItemRequest(ProjectRequest):
+    table: str
     columns: list[Column]
 
 
-@router.post('/load')
-async def load_id(load_item_request: LoadItemRequest):
-    connection = await get_connection(load_item_request.project)
-    if not connection:
-        return {}
-
-    return dict(await connection.fetchrow(f'select * from {load_item_request.table} where id={load_item_request.id}'))
+class UpdateItemRequest(ProjectRequest):
+    table: str
+    id: int
+    columns: list[Column]
 
 
-@router.post('/update')
-async def update(save_item_request: SaveItemRequest):
-    connection = await get_connection(save_item_request.project)
-    if not connection:
-        return
-
-    sql_statement = ''
-    values = []
-
-    for i in range(len(save_item_request.columns)):
-        if i > 0:
-            sql_statement += ', '
-        sql_statement += f'{save_item_request.columns[i].key} = ${i + 1}'
-        if isinstance(save_item_request.columns[i].value, TypeColumn):
-            if save_item_request.columns[i].value.type == 'bytes':
-                values.append(str(save_item_request.columns[i].value.value).encode())
-            continue
-        values.append(save_item_request.columns[i].value)
-
-    sql = f"""
-        UPDATE {save_item_request.table}
-        SET {sql_statement}
-        WHERE id = {save_item_request.id}
-        """
-
-    await connection.fetch(sql, *values)
+@router.post("/load")
+async def load_id(load_item_request: LoadItemRequest, user_data: UserDependsAnnotated):
+    return await permission_table_service.item_load(
+        load_item_request.project,
+        load_item_request.table,
+        load_item_request.id,
+        user_data,
+    )
 
 
-@router.post('/create')
-async def create(save_item_request: SaveItemRequest):
-    connection = await get_connection(save_item_request.project)
-    if not connection:
-        return
-
-    sql_statement_columns = ''
-    sql_statement_values = ''
-    values = []
-
-    for i in range(len(save_item_request.columns)):
-        if i > 0:
-            sql_statement_columns += ', '
-            sql_statement_values += ', '
-        sql_statement_columns += f'{save_item_request.columns[i].key}'
-        sql_statement_values += f'${i + 1}'
-        if isinstance(save_item_request.columns[i].value, TypeColumn):
-            if save_item_request.columns[i].value.type == 'bytes':
-                values.append(str(save_item_request.columns[i].value.value).encode())
-            continue
-        values.append(save_item_request.columns[i].value)
-
-    sql = f"""
-        insert into {save_item_request.table} ({sql_statement_columns})
-        values ({sql_statement_values})
-        returning id
-        """
-    return await connection.fetchrow(sql, *values)
+@router.post("/update")
+async def update(
+    update_item_request: UpdateItemRequest, user_data: UserDependsAnnotated
+):
+    return await permission_table_service.item_update(
+        update_item_request.project,
+        update_item_request.table,
+        update_item_request.id,
+        update_item_request.columns,
+        user_data,
+    )
 
 
-@router.post('/delete')
-async def delete(load_item_request: LoadItemRequest):
-    connection = await get_connection(load_item_request.project)
-    if not connection:
-        return
+@router.post("/create")
+async def create(save_item_request: SaveItemRequest, user_data: UserDependsAnnotated):
+    return await permission_table_service.item_create(
+        save_item_request.project,
+        save_item_request.table,
+        save_item_request.columns,
+        user_data,
+    )
 
-    sql = f"""
-        delete from {load_item_request.table} where id = $1
-    """
 
-    await connection.fetch(sql, load_item_request.id)
+@router.post("/delete")
+async def delete(load_item_request: LoadItemRequest, user_data: UserDependsAnnotated):
+    return await permission_table_service.item_delete(
+        load_item_request.project,
+        load_item_request.table,
+        load_item_request.id,
+        user_data,
+    )

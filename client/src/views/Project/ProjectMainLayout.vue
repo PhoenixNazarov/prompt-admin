@@ -97,7 +97,7 @@ export default defineComponent({
     }
   },
   mounted() {
-    this.blogGroupStore.loadAll()
+    this.blogGroupStore.findByKey('project', this.project)
   },
 })
 </script>

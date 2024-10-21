@@ -9,11 +9,6 @@ import {useVarsStore} from "../../../stores/vars.store.ts";
 
 export default defineComponent({
   name: "MenuPromptList",
-  computed: {
-    c() {
-      return c
-    }
-  },
   components: {PromptUnitTestStatus, FontAwesomeIcon},
   props: {
     filter: {

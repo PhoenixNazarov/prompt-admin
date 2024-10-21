@@ -315,3 +315,22 @@ create table pa_table_schema
 
 create unique index pa_table_schema__project_uindex
     on pa_table_schema (project);
+
+
+create table pa_permission
+(
+    id          serial
+        constraint pa_permission_pk
+            primary key,
+    time_create timestamp default now(),
+    account_id  integer
+        constraint pa_permission_account_fk
+            references pa_account
+            on delete CASCADE not null,
+    key         varchar(50)   not null,
+    value       int           not null,
+    project     varchar(100)
+);
+
+create unique index pa_permission__ident_uindex
+    on pa_permission (account_id, key, project)
