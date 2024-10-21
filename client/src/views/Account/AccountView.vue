@@ -3,10 +3,12 @@ import {defineComponent} from 'vue'
 import {useAccountStore} from "../../stores/user.store.ts";
 import {RouterService} from "../../plugins/router.ts";
 import SettingsEditView from "./SettingsEditView.vue";
+import AccountPermissionsView from "./AccountPermissionsView.vue";
+import ModeratePermissionsView from "./ModeratePermissionsView.vue";
 
 export default defineComponent({
   name: "AccountView",
-  components: {SettingsEditView},
+  components: {ModeratePermissionsView, AccountPermissionsView, SettingsEditView},
   setup() {
     const accountStore = useAccountStore()
     return {
@@ -33,8 +35,8 @@ export default defineComponent({
 </script>
 
 <template>
-  <VContainer>
-    <VCard>
+  <VContainer class="outer-y" style="height: 100%">
+    <VCard class="mb-5">
       <VCardTitle>
         Account
       </VCardTitle>
@@ -56,6 +58,8 @@ export default defineComponent({
         </VRow>
       </VCardText>
     </VCard>
+    <AccountPermissionsView class="mb-5"/>
+    <ModeratePermissionsView/>
   </VContainer>
 </template>
 

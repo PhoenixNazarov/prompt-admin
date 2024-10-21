@@ -1,12 +1,12 @@
 from fastapi import APIRouter
 
+from .account import router as account_router
+from .input import router as input_router
 from .macro import router as macro_router
 from .mapping import router as mapping_router
-from .output import router as output_router
 from .mapping_entity import router as mapping_entity_router
-from .input import router as input_router
+from .output import router as output_router
 from .prompt_audit import router as prompt_audit_router
-from .account import router as account_router
 from .sync_data import router as sync_data_router
 from .unit_test import router as unit_test_router
 

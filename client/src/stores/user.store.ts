@@ -8,14 +8,28 @@ export interface Account extends BaseEntity {
     login: string
 }
 
+
+export interface Permission extends BaseEntity {
+    account_id: number
+
+    key: string
+    value: number
+    project?: string
+}
+
 export const useAccountStore = defineStore({
     id: 'account',
     state: () => ({
         auth: false,
         account: undefined as undefined | Account,
         entity: [] as Account[],
+        permissions: undefined as undefined | Permission[],
+
+        projects: undefined as undefined | string[],
+
         loadings: {
-            loadMe: undefined as undefined | Promise<Account | undefined>
+            loadMe: undefined as undefined | Promise<Account | undefined>,
+            loadPermissions: false
         }
     }),
     getters: {
@@ -41,6 +55,7 @@ export const useAccountStore = defineStore({
             this.account = await this.loadings.loadMe
             this.loadings.loadMe = undefined
             this.auth = this.account != null
+            if (this.auth) this.loadPermissions().then()
             return this.account
         },
         async login(login: string, password: string) {
@@ -67,6 +82,37 @@ export const useAccountStore = defineStore({
         async getWsToken() {
             await this.loadMe()
             return await ApiService.get<{ token: string }>('/api/auth/ws/token')
+        },
+        async loadPermissions() {
+            if (this.loadings.loadPermissions) return
+            this.loadings.loadPermissions = true
+            this.permissions = await ApiService.get<Permission[]>('/api/permission/get')
+
+            const permissionValue = this.permissions.find(el => el.key == 'config_accounts')?.value
+            if (permissionValue && permissionValue > 0) {
+                this.loadProjects().then()
+            }
+            this.loadings.loadPermissions = false
+        },
+        async loadPermission(accountId: number) {
+            return await ApiService.post<Permission[]>('/api/permission/get/user', {account_id: accountId})
+        },
+        async loadProjects() {
+            if (this.projects) return
+            this.projects = await ApiService.get<string[]>('/api/permission/get/projects')
+        },
+        async setPermission(
+            account_id: number,
+            key: string,
+            value: number,
+            project: string | undefined
+        ) {
+            await ApiService.post('/api/permission/set/user', {
+                account_id: account_id,
+                key: key,
+                value: value,
+                project: project
+            })
         }
     }
 })

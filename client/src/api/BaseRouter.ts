@@ -18,4 +18,8 @@ export class BaseRouter<T> {
     remove(id: number) {
         return ApiService.get<T[]>(`${this.baseUrl}/remove/${id}`);
     }
+
+    findByKey(key: string, value: string | number | boolean) {
+        return ApiService.post<T[]>(`${this.baseUrl}/find_by_key`, {key: key, value: value});
+    }
 }

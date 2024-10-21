@@ -1,23 +1,23 @@
 from fastapi import APIRouter
-from pydantic import BaseModel
 
-from promptadmin_server.api.service.sync.prompt_sync_service import PromptSyncService
-from settings import SETTINGS
+from promptadmin_server.api.dto.project_request import ProjectRequest
+from promptadmin_server.api.routers.dependency import UserDependsAnnotated
+from promptadmin_server.api.service.permission.permission_project_service import (
+    PermissionProjectService,
+)
 
 router = APIRouter()
 
-prompt_sync_service = PromptSyncService()
+permission_project_service = PermissionProjectService()
 
 
-class ProjectDto(BaseModel):
-    project: str
+@router.get("/get")
+async def get(user_data: UserDependsAnnotated):
+    return await permission_project_service.get_projects(user_data)
 
 
-@router.get('/get')
-async def get():
-    return list(SETTINGS.sync_edpoints.keys())
-
-
-@router.post('/sync')
-async def sync(project_dto: ProjectDto):
-    return await prompt_sync_service.sync_endpoint(project_dto.project)
+@router.post("/sync")
+async def sync(project_request: ProjectRequest, user_data: UserDependsAnnotated):
+    return await permission_project_service.synchronize(
+        project_request.project, user_data
+    )

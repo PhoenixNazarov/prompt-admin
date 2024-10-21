@@ -1,6 +1,6 @@
 <script lang="ts">
 import {defineComponent} from 'vue'
-import {Prompt} from "../../../stores/prompt.store.ts";
+import {Prompt, usePromptStore} from "../../../stores/prompt.store.ts";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {useSettingsStore} from "../../../stores/config/settings.store.ts";
 import PromptUnitTestStatus from "./PromptUnitTestStatus.vue";
@@ -9,11 +9,6 @@ import {useVarsStore} from "../../../stores/vars.store.ts";
 
 export default defineComponent({
   name: "MenuPromptList",
-  computed: {
-    c() {
-      return c
-    }
-  },
   components: {PromptUnitTestStatus, FontAwesomeIcon},
   props: {
     filter: {
@@ -23,9 +18,11 @@ export default defineComponent({
   setup() {
     const settingsStore = useSettingsStore()
     const varsStore = useVarsStore()
+    const promptStore = usePromptStore()
     return {
       settingsStore,
-      varsStore
+      varsStore,
+      promptStore
     }
   },
   data() {
@@ -97,8 +94,9 @@ export default defineComponent({
       this.createTemplate.show = false
     },
   },
-  mounted() {
-    this.listItemBuilder.build()
+  async mounted() {
+    await this.promptStore.connectionsLoadAll()
+    await this.listItemBuilder.build()
   },
 })
 </script>

@@ -1,13 +1,15 @@
 from fastapi import APIRouter
 
-from promptadmin_server.data.entity.status.test_case import TestCase
-from promptadmin_server.data.service.status.test_case_service import TestCaseService
+from promptadmin_server.api.routers.dependency import UserDependsAnnotated
+from promptadmin_server.api.service.permission.permission_status_service import (
+    PermissionStatusService,
+)
 
 router = APIRouter()
 
-service = TestCaseService()
+permission_status_service = PermissionStatusService()
 
 
-@router.get('/load/test_result/{_id}')
-async def load_test_result(_id: int):
-    return await service.find_by_key(TestCase.test_result_id, _id)
+@router.get("/load/test_result/{id_}")
+async def load_test_result(id_: int, user_data: UserDependsAnnotated):
+    return await permission_status_service.load_test_result(id_, user_data)
