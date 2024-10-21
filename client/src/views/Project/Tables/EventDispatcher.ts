@@ -24,14 +24,10 @@ class EventDispatcher {
     async onRequestProjectEvent(requestProjectEvent: RequestProjectEvent, componentContext: ComponentContextSchema) {
         const tableStore = useTableStore()
         const project = UtilSchema.getProject(componentContext)
-        try {
-            if (requestProjectEvent.method == 'get') {
-                await tableStore.executeGet(project, requestProjectEvent.url)
-            } else {
-                await tableStore.executePost(project, requestProjectEvent.url, UtilSchema.renderObject(requestProjectEvent.data, componentContext))
-            }
-        } catch (e) {
-            alert('Error on execute: ' + String(requestProjectEvent))
+        if (requestProjectEvent.method == 'get') {
+            await tableStore.executeGet(project, requestProjectEvent.url)
+        } else {
+            await tableStore.executePost(project, requestProjectEvent.url, UtilSchema.renderObject(requestProjectEvent.data, componentContext))
         }
     }
 
@@ -57,11 +53,8 @@ class EventDispatcher {
                 }
             })
         const project = UtilSchema.getProject(componentContext)
-        try {
-            await tableStore.updateItem(project, table, id, keys)
-        } catch (e) {
-            alert('Error, when update item')
-        }
+        await tableStore.updateItem(project, table, id, keys)
+
     }
 
     async onCreateItemEvent(
@@ -79,12 +72,7 @@ class EventDispatcher {
                 }
             })
 
-        try {
-            return await tableStore.createItem(project, table, items)
-        } catch (e) {
-            alert('Error, when create item')
-            throw new Error('Error, when create item')
-        }
+        return await tableStore.createItem(project, table, items)
     }
 
     async onDeleteItemEvent(

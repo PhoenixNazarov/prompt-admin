@@ -8,9 +8,10 @@ export default defineComponent({
     return {
       queue: notifications,
 
-      snackbar: true,
-      text: 'test',
-      timeout: 2000 as number | undefined
+      snackbar: false,
+      text: '',
+      timeout: 0 as number | undefined,
+      level: ''
     }
   },
   methods: {
@@ -25,6 +26,7 @@ export default defineComponent({
       this.snackbar = true
       this.text = notifications.message
       this.timeout = notifications.timeout
+      this.level = notifications.level
     }
   },
   watch: {
@@ -45,12 +47,12 @@ export default defineComponent({
   <VSnackbar
       v-model="snackbar"
       :timeout="timeout"
+      :color="level"
   >
     {{ text }}
 
     <template v-slot:actions>
       <v-btn
-          color="pink"
           variant="text"
           @click="snackbar = false"
       >

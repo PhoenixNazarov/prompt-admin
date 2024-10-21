@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Request
 from pydantic import BaseModel
 
-from promptadmin_server.api.exceptions import TypeCheckException
+from promptadmin_server.api.exceptions import TypeCheckException, ApiException
 from promptadmin_server.api.routers.dependency import UserDependsAnnotated
 from promptadmin_server.api.service.user_data import UserData
 from promptadmin_server.api.service.user_manager_service import UserManagerService
