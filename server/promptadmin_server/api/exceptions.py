@@ -24,3 +24,8 @@ class ProjectConnectionException(ApiException):
 class TypeCheckException(ApiException):
     STATUS_CODE = 502
     DETAIL = "Received an object that was not expected"
+
+
+class SQLDBException(ApiException):
+    STATUS_CODE = 503
+    DETAIL = "SQL request throw exception"

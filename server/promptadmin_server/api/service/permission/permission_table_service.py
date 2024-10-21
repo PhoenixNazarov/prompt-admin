@@ -61,7 +61,7 @@ class PermissionTableService(BasePermissionService):
 
     async def item_load(self, project: str, table: str, id_: int, user_data: UserData):
         await self.require_project_permission(project, "project_tables", 1, user_data)
-        return self.table_item_service.load(project, table, id_)
+        return await self.table_item_service.load(project, table, id_)
 
     async def item_update(
         self,
@@ -72,19 +72,19 @@ class PermissionTableService(BasePermissionService):
         user_data: UserData,
     ):
         await self.require_project_permission(project, "project_tables", 2, user_data)
-        return self.table_item_service.update(project, table, id_, columns)
+        return await self.table_item_service.update(project, table, id_, columns)
 
     async def item_create(
         self, project: str, table: str, columns: list[Column], user_data: UserData
     ):
         await self.require_project_permission(project, "project_tables", 2, user_data)
-        return self.table_item_service.create(project, table, columns)
+        return await self.table_item_service.create(project, table, columns)
 
     async def item_delete(
         self, project: str, table: str, id_: int, user_data: UserData
     ):
         await self.require_project_permission(project, "project_tables", 2, user_data)
-        return self.table_item_service.delete(project, table, id_)
+        return await self.table_item_service.delete(project, table, id_)
 
     async def event_get(self, project: str, url: str, user_data: UserData):
         await self.require_project_permission("project_tables", project, 2, user_data)

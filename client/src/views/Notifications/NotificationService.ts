@@ -1,3 +1,5 @@
+import {reactive} from "vue";
+
 type NotificationLevel = 'info' | 'debug' | 'error' | 'warning'
 
 const DEFAULT_TIMEOUT = 10000
@@ -10,7 +12,7 @@ interface Notification {
 }
 
 
-export const notifications = [] as Notification[]
+export const notifications = reactive([] as Notification[])
 
 
 class NotificationService {

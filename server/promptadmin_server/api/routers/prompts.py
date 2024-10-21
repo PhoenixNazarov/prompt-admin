@@ -7,7 +7,7 @@ from promptadmin.types import ModelServiceInfo, Message
 from pydantic import BaseModel
 
 from promptadmin_server.api.dto.prompt import Prompt
-from promptadmin_server.api.exceptions import TypeCheckException
+from promptadmin_server.api.exceptions import TypeCheckException, ApiException
 from promptadmin_server.api.routers.dependency import UserDependsAnnotated
 from promptadmin_server.api.service.permission.permission_prompt_service import (
     PermissionPromptService,
