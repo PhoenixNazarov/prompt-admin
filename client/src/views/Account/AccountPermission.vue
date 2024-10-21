@@ -41,7 +41,7 @@ export default defineComponent({
     },
     getValue(key: string, project: string | undefined = undefined, default_: number | undefined = undefined) {
       const val = this.permissions?.find(el => el.key == key && el.project == project)?.value
-      return val ? val : default_
+      return val != undefined ? val : default_
     },
     setProjectAccess(project: string, value: boolean) {
       this.permissions = this.permissions?.filter(el => el.key != 'project' || el.project != project)
