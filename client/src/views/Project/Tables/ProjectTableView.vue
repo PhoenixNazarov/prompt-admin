@@ -48,7 +48,8 @@ export default defineComponent({
       }
     },
     async loadSchema() {
-      this.schema = await this.tableStore.loadSchema(this.project)
+      // this.schema = await this.tableStore.loadSchema(this.project)
+      this.schema = DefaultSchema
     },
     doLoadHashPath(hash_: string[] | undefined): HistoryInput | undefined {
       if (!hash_) return {

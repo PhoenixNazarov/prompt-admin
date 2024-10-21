@@ -31,7 +31,7 @@ export function abstractStoreFactoryGetters<T extends BaseEntity>() {
     }
 }
 
-export function abstractStoreFactory<T extends BaseEntity>(name: string, prefix='config/') {
+export function abstractStoreFactory<T extends BaseEntity>(name: string, prefix = 'config/') {
     return {
         async loadAll(): Promise<T[]> {
             if (this.loadings.loadAll) return await this.loadings.loadAll
@@ -53,6 +53,16 @@ export function abstractStoreFactory<T extends BaseEntity>(name: string, prefix=
             if (id == undefined) return
             await new BaseRouter<T>(`/api/${prefix}${name}`).remove(id)
             this.entity = this.entity.filter(e => e.id != id)
+        },
+
+        async findByKey(key: string, value: string | number | boolean) {
+            const entities = await new BaseRouter<T>(`/api/${prefix}${name}`).findByKey(key, value)
+
+            entities.forEach(el => {
+                if (this.entity.findIndex(el2 => el2.id == el.id) <= -1) {
+                    this.entity.push(el)
+                }
+            })
         }
     }
 }

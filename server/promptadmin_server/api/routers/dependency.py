@@ -2,13 +2,14 @@ from typing import Annotated
 
 from fastapi import Request, Depends
 
+from promptadmin_server.api.exceptions import TypeCheckException
 from promptadmin_server.api.service.user_data import UserData
 
 
 def get_user_dependency(request: Request):
-    user_data: UserData = request.scope['user_data']
+    user_data: UserData = request.scope["user_data"]
     if user_data.account is None:
-        raise ValueError()
+        raise TypeCheckException()
     return user_data
 
 

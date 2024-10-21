@@ -100,10 +100,12 @@ export class ListItemBuilder {
 
     async buildProjects(): Promise<ListItem[]> {
         const mappingStore = useMappingStore()
+        const promptStore = usePromptStore()
         await mappingStore.loadAll()
 
         const result: ListItem[] = []
         for (let [connection, mappingsTable] of mappingStore.getConnections) {
+            if (!promptStore.connections.includes(connection)) continue
             let [currentTag, tags] = addTag(connection, '', [])
             result.push({
                 type: 'group',

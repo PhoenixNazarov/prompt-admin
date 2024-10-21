@@ -28,7 +28,12 @@ cachetools = "^5.5.0"
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.3"
 pytest-asyncio = "^0.21.1"
+mypy = "^1.12.0"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+
+[mypy]
+exclude = ['promptadmin_server/data', 'promptadmin_server/commons']

@@ -25,7 +25,7 @@ export default defineComponent({
   },
   methods: {},
   mounted() {
-    this.blogPostStore.loadAll()
+    this.blogPostStore.findByKey('project', this.project)
   }
 })
 </script>
