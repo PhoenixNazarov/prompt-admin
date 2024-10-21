@@ -17,18 +17,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add joins for tables in a list component
 - Add save and update images in an item component
 - Add information notifications
-- Add widget for view self-permissions
-- Add widget for moderate users permissions
+- [Add widget for view self-permissions](https://github.com/PhoenixNazarov/prompt-admin/pull/25)
+- [Add widget for moderate users permissions](https://github.com/PhoenixNazarov/prompt-admin/pull/25)
 
 ### Changed
 
 - Change update parameters watcher for a list table component
 - Union requests dto in base dto request with project field
-- Change Vars, Prompts, Projects, Config endpoints with permissions
+- [Change Vars, Prompts, Projects, Config endpoints with permissions](https://github.com/PhoenixNazarov/prompt-admin/pull/25)
 - Unit test no need test complete unit tests
 - Update filtered menu prompts with search
-- Move business logic from tables endpoints to tables services
-- Move all get connections to ConnectionMixin
+- [Move business logic from tables endpoints to tables services](https://github.com/PhoenixNazarov/prompt-admin/pull/25)
+- [Move all get connections to ConnectionMixin](https://github.com/PhoenixNazarov/prompt-admin/pull/25)
+- Change Github actions for development and production
 
 ### Deprecated
 
@@ -36,11 +37,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-- Remove entity_data from abstract def bind_view
-- Remove bind_view and create BaseConfigService
+- [Remove entity_data from abstract def bind_view](https://github.com/PhoenixNazarov/prompt-admin/pull/25)
+- [Remove bind_view and create BaseConfigService](https://github.com/PhoenixNazarov/prompt-admin/pull/25)
 
 ### Fixed
 
 - Fix start loading a list table component without a filter
 - Bugfix load popup tables, back home, ident for test_case
-- Fix /auth/me return user password, now return password: null 
+- [Fix /auth/me return user password, now return password: null](https://github.com/PhoenixNazarov/prompt-admin/pull/25) 
