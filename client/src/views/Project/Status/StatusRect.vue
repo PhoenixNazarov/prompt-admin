@@ -11,6 +11,12 @@ export default defineComponent({
     },
     percentage: {
       type: Number
+    },
+    status: {
+      type: String
+    },
+    description: {
+      type: String
     }
   },
   data() {
@@ -25,8 +31,8 @@ export default defineComponent({
       if (color != 0 && (!color || color == -1)) {
         return 'var(--color-4)'
       }
-      const hue = ((1 - color) * 120).toString(10);
-      return ["hsl(", hue, ",100%,50%)"].join("");
+      const hue = (Math.max(1 - color, 0) * 100).toString(10);
+      return ["hsl(", hue, ",100%,45%)"].join("");
     }
   }
 })
@@ -35,13 +41,21 @@ export default defineComponent({
 <template>
   <VTooltip
       v-model="show"
-      location="top"
+      location="bottom"
   >
     <template v-slot:activator="{ props }">
       <div class="rect pointer" v-bind="props" @click.prevent="$emit('select')"/>
     </template>
-    <div>
-      <span>{{ dateFormat(date) }}</span>
+    <div class="t-window">
+      <div v-if="status">
+        {{ status }}
+      </div>
+      <div v-if="description">
+        {{ description }}
+      </div>
+      <div>
+        {{ dateFormat(date) }}
+      </div>
     </div>
   </VTooltip>
 </template>
@@ -51,5 +65,9 @@ export default defineComponent({
   width: 0.5rem;
   height: 2rem;
   background-color: v-bind(color);
+}
+
+.t-window {
+  min-width: 150px;
 }
 </style>

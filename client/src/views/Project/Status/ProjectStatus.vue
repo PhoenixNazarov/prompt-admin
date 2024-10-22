@@ -105,7 +105,7 @@ export default defineComponent({
           <div>
             <div class="chart">
               <StatusRect
-                  :percentage="showPercentage(d)"
+                  :percentage="showPercentage(d) * 1.2"
                   :date="showDate(d)"
                   @select="doSelectDate(d)"
                   v-for="d in 30"
@@ -141,7 +141,7 @@ export default defineComponent({
 .chart {
   display: flex;
   flex-direction: row-reverse;
-  gap: 0.25rem;
+  gap: 0.2rem;
 }
 
 .chart-external {

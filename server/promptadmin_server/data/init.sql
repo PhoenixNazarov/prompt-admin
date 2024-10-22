@@ -333,4 +333,62 @@ create table pa_permission
 );
 
 create unique index pa_permission__ident_uindex
-    on pa_permission (account_id, key, project)
+    on pa_permission (account_id, key, project);
+
+
+create table pa_health_target
+(
+    id          serial
+        constraint pa_health_target_pk
+            primary key,
+    time_create timestamp default now(),
+    url         varchar(300) not null,
+    title       varchar(300) not null
+);
+
+create unique index pa_health_target__url_uindex
+    on pa_health_target (url);
+
+
+create table pa_health_unit
+(
+    id               serial
+        constraint pa_health_unit_pk
+            primary key,
+    time_create      timestamp          default now(),
+
+    datetime         timestamp not null,
+    status           boolean   not null,
+    response_time    float     not null,
+    collect          boolean   not null default false,
+
+    health_target_id integer
+        constraint pa_health_day_target_fk
+            references pa_health_target
+            on delete cascade  not null
+);
+
+
+create unique index pa_health_unit__datetime_uindex
+    on pa_health_unit (health_target_id, datetime);
+
+create table pa_health_day
+(
+    id                  serial
+        constraint pa_health_day_pk
+            primary key,
+    time_create         timestamp        default now(),
+
+    date                date    not null,
+    count_response_time integer not null default 0,
+    sum_response_time   float   not null default 0.0,
+    fall_times          integer not null default 0,
+
+    health_target_id    integer
+        constraint pa_health_day_target_fk
+            references pa_health_target
+            on delete cascade   not null
+);
+
+create unique index pa_health_day__datetime_uindex
+    on pa_health_day (health_target_id, date);

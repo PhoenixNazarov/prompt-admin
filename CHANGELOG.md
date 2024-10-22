@@ -19,6 +19,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [Add information notifications](https://github.com/PhoenixNazarov/prompt-admin/compare/dev...dev-notifications)
 - [Add widget for view self-permissions](https://github.com/PhoenixNazarov/prompt-admin/pull/25)
 - [Add widget for moderate users permissions](https://github.com/PhoenixNazarov/prompt-admin/pull/25)
+- Create HealthCheck status system
+- Upgrade status time react, add description
 
 ### Changed
 

@@ -8,7 +8,11 @@ __all__ = [
     "AccessPermissionService",
 ]
 
-GLOBAL_DEFAULTS: dict[str, int] = {"config_tables": 1, "config_accounts": 0}
+GLOBAL_DEFAULTS: dict[str, int] = {
+    "config_tables": 1,
+    "config_accounts": 0,
+    "healthcheck": 1,
+}
 
 PROJECT_DEFAULTS: dict[str, int] = {
     "project_prompt": 1,
