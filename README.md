@@ -32,10 +32,11 @@ For all permissions value mapping table
 
 ### Global permissions exclude projects
 
-| Permission key    | Default | Description                                   |
-|-------------------|---------|-----------------------------------------------|
-| _config_tables_   | `1`     | Edit config mappings, mappings entity and etc |
-| _config_accounts_ | `0`     | Edit account permissions configs              |
+| Permission key    | Default | Description                                               |
+|-------------------|---------|-----------------------------------------------------------|
+| _config_tables_   | `1`     | Edit config mappings, mappings entity and etc             |
+| _config_accounts_ | `0`     | Edit account permissions configs                          |
+| _healthcheck_     | `1`     | Access to monitor healthcheck and add new check endpoints |
 
 ### Projects permissions
 

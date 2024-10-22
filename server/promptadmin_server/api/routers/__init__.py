@@ -8,6 +8,7 @@ from .project import router as project_router
 from .vars import router as vars_router
 from .ws import router as ws_router
 from .permission import router as permission_router
+from .healthcheck import router as healthcheck_router
 
 router = APIRouter(prefix="/api")
 
@@ -20,6 +21,7 @@ protect_router.include_router(config_router, prefix="/config")
 protect_router.include_router(project_router, prefix="/project")
 protect_router.include_router(vars_router, prefix="/vars")
 protect_router.include_router(permission_router, prefix="/permission")
+protect_router.include_router(healthcheck_router, prefix="/healthcheck")
 
 router.include_router(protect_router)
 router.include_router(ws_router, prefix="/ws")

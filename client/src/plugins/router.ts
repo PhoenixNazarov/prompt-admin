@@ -290,7 +290,12 @@ const router = createRouter({
                                     ]
                                 }
                             ]
-                        }
+                        },
+                        {
+                            name: 'HealthCheck',
+                            path: '/healthcheck',
+                            component: () => import('../views/HealthCheck/HealthCheckView.vue')
+                        },
                     ]
                 }
             ]
@@ -350,6 +355,10 @@ export class RouterService {
 
     static async goToProjectTableEdit(project: string) {
         await router.push(`/project/${project}/edit_tables`)
+    }
+
+    static async goToHealthCheck() {
+        await router.push(`/healthcheck`)
     }
 }
 

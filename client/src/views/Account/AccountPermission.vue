@@ -77,6 +77,11 @@ export default defineComponent({
           :value="getValue('config_accounts', undefined, 1)"
           hint="Edit account permissions configs"
           @updateModel="el => updateModel('config_accounts', el, undefined)"/>
+      <AccountPermissionValue
+          label="healthcheck"
+          :value="getValue('healthcheck', undefined, 1)"
+          hint="Access to monitor healthcheck and add new check endpoints"
+          @updateModel="el => updateModel('healthcheck', el, undefined)"/>
 
       <div v-for="proj in accountStore.projects">
         <div style="display: flex; align-items: center;">

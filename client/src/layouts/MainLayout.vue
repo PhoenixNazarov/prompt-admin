@@ -62,6 +62,11 @@ export default defineComponent({
         Account
       </a>
 
+      <a href="/healthcheck" class="case" @click.prevent="RouterService.goToHealthCheck()">
+        <FontAwesomeIcon icon="heart-pulse"/>
+        Health Monitor
+      </a>
+
     </div>
     <div class="inner">
       <RouterView/>

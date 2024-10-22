@@ -24,7 +24,10 @@ import {
     faTerminal,
     faTrash,
     faUser,
-    faXmark
+    faXmark,
+    faHeartPulse,
+    faLink,
+    faCircleExclamation
 } from '@fortawesome/free-solid-svg-icons'
 import {faCircle as farCircle} from '@fortawesome/free-regular-svg-icons'
 import {dom, library} from '@fortawesome/fontawesome-svg-core'
@@ -59,6 +62,9 @@ export function installFortAwesome(_: App) {
         faClock,
         faArrowLeft,
         faAngleRight,
-        faTableColumns
+        faTableColumns,
+        faHeartPulse,
+        faLink,
+        faCircleExclamation
     )
 }

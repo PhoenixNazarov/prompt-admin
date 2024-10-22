@@ -15,8 +15,8 @@ class ClientService:
         async with httpx.AsyncClient() as client:
             path = SETTINGS.sync_edpoints[connection]
             secret = SETTINGS.sync_secrets[connection]
-            endpoint = path.removesuffix('/') + '/' + url.removeprefix('/')
-            r = await client.get(endpoint, headers={'Prompt-Admin-Secret': secret})
+            endpoint = path.removesuffix("/") + "/" + url.removeprefix("/")
+            r = await client.get(endpoint, headers={"Prompt-Admin-Secret": secret})
             return r
 
     @staticmethod
@@ -26,9 +26,10 @@ class ClientService:
         async with httpx.AsyncClient() as client:
             path = SETTINGS.sync_edpoints[connection]
             secret = SETTINGS.sync_secrets[connection]
-            endpoint = path.removesuffix('/') + '/' + url.removeprefix('/')
-            print(data)
-            r = await client.post(endpoint, headers={'Prompt-Admin-Secret': secret}, json=data)
+            endpoint = path.removesuffix("/") + "/" + url.removeprefix("/")
+            r = await client.post(
+                endpoint, headers={"Prompt-Admin-Secret": secret}, json=data
+            )
             return r
 
     async def request_json(self, connection: str, url: str) -> dict:
