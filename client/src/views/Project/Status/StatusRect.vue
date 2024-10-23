@@ -50,8 +50,7 @@ export default defineComponent({
       <div v-if="status">
         {{ status }}
       </div>
-      <div v-if="description">
-        {{ description }}
+      <div v-if="description" v-html="description">
       </div>
       <div>
         {{ dateFormat(date) }}

@@ -1,12 +1,15 @@
 <script lang="ts">
 import {defineComponent, PropType} from 'vue'
-import {HealthDay, HealthTarget, useHealthCheckStore} from "../../stores/healthcheck.store.ts";
+import {HealthTarget, useHealthCheckStore} from "../../stores/healthcheck.store.ts";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import StatusRect from "../Project/Status/StatusRect.vue";
+import {HealthDayService} from "./HealthDay.service.ts";
+import {Line} from 'vue-chartjs'
+import moment from "moment";
 
 export default defineComponent({
   name: "HealthTargetView",
-  components: {StatusRect, FontAwesomeIcon},
+  components: {StatusRect, FontAwesomeIcon, Line},
   props: {
     healthTarget: {
       type: Object as PropType<HealthTarget>,
@@ -19,6 +22,44 @@ export default defineComponent({
       healthCheckStore
     }
   },
+  computed: {
+    options() {
+      return {
+        plugins: {
+          tooltip: {
+            mode: 'index',
+            intersect: false
+          },
+          legend: {
+            display: false // это отключает отображение легенды на графике
+          },
+        },
+        elements: {
+          point: {
+            radius: 0.1
+          }
+        },
+        scales: {
+          y: {
+            ticks: {
+              // Include a dollar sign in the ticks
+              callback: function(value, index, ticks) {
+                return value + ' s';
+              }
+            },
+          },
+          x: {
+            type: 'time',
+            grid: {
+              display: false
+            }
+          }
+        },
+        responsive: true,
+        maintainAspectRatio: false,
+      }
+    }
+  },
   methods: {
     getTargetStatus() {
       const lastUnit = this.healthCheckStore.getLastUnit(this.healthTarget)
@@ -27,52 +68,33 @@ export default defineComponent({
       if (timeSpent > 180)
         return;
 
-      return lastUnit.status;
+      return lastUnit.status
     },
-    getStatus(d: number) {
-      const day = this.getDay(d)
-      if (day == undefined) return 'Undefined'
-      const fallTimes = this.getFallTimes(day)
-      if (fallTimes > 0) {
-        return 'Downtime'
-      }
-      return `Operational`
-    },
-    getDescription(d: number) {
-      const day = this.getDay(d)
-      if (day == undefined) return undefined
-      const fallTimes = this.getFallTimes(day)
-      if (fallTimes > 0) {
-        return `Down for ${fallTimes} minutes`
+    getChartData() {
+      const units = this.healthCheckStore.getUnits(this.healthTarget)?.reverse()
+      if (units == undefined) return
+      return {
+        labels: units?.map(el => moment(el.request_datetime)),
+        datasets: [{
+          label: 'Response Time',
+          data: units?.map(el => el.response_time),
+          borderWidth: 1,
+          borderColor: 'rgb(0,83,255)',
+        }]
       }
     },
-    getPercentage(d: number) {
-      const day = this.getDay(d)
-      if (day == undefined) return undefined
-      const fallTimes = this.getFallTimes(day)
-      return (fallTimes / (60 * 24)) * 200
-    },
-    getFallTimes(day: HealthDay) {
-      let maxTimes = 60 * 24
-      if (day.id == this.getDay(1)?.id) {
-        const now = new Date()
-        maxTimes = now.getHours() * 24 + now.getMinutes()
+    buildDayStatuses() {
+      const result = []
+      for (let i = 1; i < 90; i++) {
+        const healthDayService = HealthDayService.fromDay(this.healthTarget, i);
+        result.push({
+          percentage: healthDayService.getPercentage(),
+          date: HealthDayService.showDate(i),
+          status: healthDayService.getStatus(),
+          description: healthDayService.getDescription(),
+        })
       }
-
-      const lostTimes = maxTimes - day.count_response_time
-      return day.fall_times + lostTimes > 5 ? lostTimes : 0
-    },
-    showDate(d: number) {
-      const date = new Date();
-      date.setDate(date.getDate() - d + 1);
-      return date
-    },
-    getDay(d: number) {
-      const date = this.showDate(d)
-      return this.healthCheckStore.getDays(this.healthTarget)?.find(el => {
-        const day = new Date(el.date)
-        return day.getDate() == date.getDate() && day.getMonth() == date.getMonth() && day.getFullYear() == date.getFullYear()
-      })
+      return result
     }
   }
 })
@@ -98,12 +120,18 @@ export default defineComponent({
     <VCardText>
       <div class="chart">
         <StatusRect
-            :percentage="getPercentage(d)"
-            :date="showDate(d)"
-            :status="getStatus(d)"
-            :description="getDescription(d)"
-            v-for="d in 90"
+            :percentage="d.percentage"
+            :date="d.date"
+            :status="d.status"
+            :description="d.description"
+            v-for="d in buildDayStatuses()"
         />
+      </div>
+      <p class="ma-1">
+        Response Times:
+      </p>
+      <div style="height: 10rem" v-if="getChartData()">
+        <Line :data="getChartData()" :options="options"/>
       </div>
     </VCardText>
   </VCard>

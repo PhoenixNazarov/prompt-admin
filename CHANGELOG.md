@@ -21,6 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [Add widget for moderate users permissions](https://github.com/PhoenixNazarov/prompt-admin/pull/25)
 - [Create HealthCheck status system](https://github.com/PhoenixNazarov/prompt-admin/pull/27)
 - [Upgrade status time react, add description](https://github.com/PhoenixNazarov/prompt-admin/pull/27)
+- Update design: Add borders, add resizable
+- Add Charts for healthCheck
 
 ### Changed
 
@@ -47,3 +49,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix start loading a list table component without a filter
 - Bugfix load popup tables, back home, ident for test_case
 - [Fix /auth/me return user password, now return password: null](https://github.com/PhoenixNazarov/prompt-admin/pull/25) 
+- Fix health check, add timezone
