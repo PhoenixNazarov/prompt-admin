@@ -45,15 +45,17 @@ class HealthRequestJob(BackgroundTask):
 
     async def status_target(self, target: HealthTarget):
         t_start = time.time()
-
-        try:
-            async with httpx.AsyncClient() as client:
-                r = await client.get(target.url)
-            status = r.is_success
-            if status is None:
-                print(r.status_code)
-        except Exception as e:
-            status = False
+        status = False
+        for i in range(3):
+            t_start = time.time()
+            try:
+                async with httpx.AsyncClient() as client:
+                    r = await client.get(target.url)
+                status = r.is_success
+                break
+            except Exception as e:
+                status = False
+                continue
 
         health_unit = HealthUnit(
             request_datetime=datetime.datetime.now(pytz.utc),

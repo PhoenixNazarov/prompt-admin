@@ -19,16 +19,18 @@ export default defineComponent({
 </script>
 
 <template>
-  <VContainer>
-    <VCard>
-      <VCardTitle>Health Monitor</VCardTitle>
-      <VCardText>
-        <VSkeletonLoader type="card" v-if="healthCheckStore.loadings.targets"/>
+  <div class="outer-y" style="height: calc(100vh - 3rem)">
+    <VContainer>
+      <VCard>
+        <VCardTitle>Health Monitor</VCardTitle>
+        <VCardText>
+          <VSkeletonLoader type="card" v-if="healthCheckStore.loadings.targets"/>
 
-        <HealthTargetView v-else :health-target="target" v-for="target in healthCheckStore.targets"/>
-      </VCardText>
-    </VCard>
-  </VContainer>
+          <HealthTargetView v-else :health-target="target" v-for="target in healthCheckStore.targets"/>
+        </VCardText>
+      </VCard>
+    </VContainer>
+  </div>
 </template>
 
 <style scoped>
