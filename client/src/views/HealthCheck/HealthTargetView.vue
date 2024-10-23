@@ -72,7 +72,7 @@ export default defineComponent({
     },
     getChartData() {
       const units = this.healthCheckStore.getUnits(this.healthTarget)?.reverse()
-      if (units == undefined) return
+      if (units == undefined) return []
       return {
         labels: units?.map(el => moment(el.request_datetime)),
         datasets: [{
@@ -130,7 +130,7 @@ export default defineComponent({
       <p class="ma-1">
         Response Times:
       </p>
-      <div style="height: 10rem" v-if="getChartData()">
+      <div style="height: 10rem">
         <Line :data="getChartData()" :options="options"/>
       </div>
     </VCardText>
