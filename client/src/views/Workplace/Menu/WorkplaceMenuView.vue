@@ -42,7 +42,7 @@ export default defineComponent({
 
 <template>
   <div>
-    <div style="display: flex;color: var(--color-5); margin-top: 1rem;justify-content: flex-end; margin-right: 1rem; margin-bottom: 1rem; display: flex; align-items: center">
+    <div class="menu-header border-bottom-component">
       <VTextField v-if="!settingsStore.menu_fold"
                   v-model="filter"
                   placeholder="Search"
@@ -54,10 +54,20 @@ export default defineComponent({
         <FontAwesomeIcon icon="caret-right" :rotation="!settingsStore.menu_fold ? 180: undefined"/>
       </VBtn>
     </div>
-
     <MenuPromptList :filter="filter" @selectPrompt="prompt => $emit('selectPrompt', prompt)"/>
   </div>
 </template>
 
 <style scoped>
+.menu-header {
+  display: flex;
+  color: var(--color-5);
+  margin-top: 1rem;
+  justify-content: flex-end;
+  padding-right: 1rem;
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+}
 </style>
