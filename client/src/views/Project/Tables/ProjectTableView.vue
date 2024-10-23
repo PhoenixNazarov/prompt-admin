@@ -11,7 +11,6 @@ import {
 } from "./types";
 import NavigationBuilder from "./Components/Navigation/NavigationBuilder.vue";
 import {useTableStore} from "../../../stores/project/tables/table.store.ts";
-import {DefaultSchema} from "./default.ts";
 
 
 export default defineComponent({
