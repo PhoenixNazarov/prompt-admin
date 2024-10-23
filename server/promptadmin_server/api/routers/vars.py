@@ -51,5 +51,5 @@ async def remove(var_key_dto: VarKeyDto, user_data: UserDependsAnnotated):
 @router.post("/change")
 async def change(var_dto: VarDto, user_data: UserDependsAnnotated):
     return await permission_var_service.change(
-        var_dto.project, var_dto.key, var_dto.project, user_data
+        var_dto.project, var_dto.key, var_dto.value, user_data
     )
