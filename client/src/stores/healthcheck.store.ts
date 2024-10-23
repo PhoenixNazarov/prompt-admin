@@ -1,6 +1,7 @@
 import {defineStore} from "pinia";
 import {BaseEntity} from "./config/abstractStoreFactory.ts";
 import {ApiService} from "../api/ApiService.ts";
+import {chunk} from "../views/Utils.ts";
 
 export interface HealthTarget extends BaseEntity {
     url: string
@@ -66,11 +67,10 @@ export const useHealthCheckStore = defineStore({
                     await Promise.all(
                         [
                             this.loadDays(this.targets),
-                            this.loadUnits(this.targets),
                         ]
                     )
+                    this.loadUnits(this.targets).then()
                 }
-
                 this.loadings.targets = false
             },
             async loadDays(healthTargets: HealthTarget[]) {
@@ -85,15 +85,18 @@ export const useHealthCheckStore = defineStore({
                 )
             },
             async loadUnits(healthTargets: HealthTarget[]) {
-                const units = await ApiService.post<HealthUnit[]>(`/api/healthcheck/units/load`, {targets_ids: healthTargets.map(el => el.id)})
-                if (units == undefined) return
-                units.forEach(
-                    el => {
-                        const hDays = this.units.get(el.health_target_id) || []
-                        hDays.push(el)
-                        this.units.set(el.health_target_id, hDays)
-                    }
-                )
+                for (const targets of chunk(healthTargets, 1)) {
+                    console.log(targets)
+                    const units = await ApiService.post<HealthUnit[]>(`/api/healthcheck/units/load`, {targets_ids: targets.map(el => el.id)})
+                    if (units == undefined) continue;
+                    units.forEach(
+                        el => {
+                            const hDays = this.units.get(el.health_target_id) || []
+                            hDays.push(el)
+                            this.units.set(el.health_target_id, hDays)
+                        }
+                    )
+                }
             }
         }
     }

@@ -130,9 +130,11 @@ export default defineComponent({
       <p class="ma-1">
         Response Times:
       </p>
-      <div style="height: 10rem">
+      <div v-if="healthCheckStore.getUnits(healthTarget)" style="height: 10rem">
         <Line :data="getChartData()" :options="options"/>
       </div>
+      <VSkeletonLoader type="article" v-else/>
+
     </VCardText>
   </VCard>
 </template>
