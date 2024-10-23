@@ -48,7 +48,7 @@ class HealthCheckService:
         )
         return await self.health_day_service.find_by_view_params(view_params)
 
-    async def load_units(self, target_ids: list[int]):
+    async def load_units(self, target_id: int) -> list[tuple[float, bool, float]]:
         old_date = datetime.datetime.now() - datetime.timedelta(hours=12)
         view_params = (
             ViewParamsBuilder()
@@ -60,11 +60,14 @@ class HealthCheckService:
                 )
             )
             .filter(
-                ViewParamsFilter(field=HealthUnit.health_target_id, value=target_ids)
+                ViewParamsFilter(field=HealthUnit.health_target_id, value=target_id)
             )
             .build()
         )
-        return await self.health_unit_service.find_by_view_params(view_params)
+        return [
+            (i.response_time, i.status, i.request_datetime.timestamp())
+            for i in await self.health_unit_service.find_by_view_params(view_params)
+        ]
 
     async def create_target(self, url: str, label: str) -> HealthTarget:
         pass

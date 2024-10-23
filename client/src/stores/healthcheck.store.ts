@@ -1,7 +1,6 @@
 import {defineStore} from "pinia";
 import {BaseEntity} from "./config/abstractStoreFactory.ts";
 import {ApiService} from "../api/ApiService.ts";
-import {chunk} from "../views/Utils.ts";
 
 export interface HealthTarget extends BaseEntity {
     url: string
@@ -18,12 +17,9 @@ export interface HealthDay extends BaseEntity {
 }
 
 export interface HealthUnit extends BaseEntity {
-    request_datetime: string
+    request_datetime: number
     status: boolean
     response_time: number
-
-    health_target_id: number
-    collect: boolean
 }
 
 export const useHealthCheckStore = defineStore({
@@ -69,7 +65,9 @@ export const useHealthCheckStore = defineStore({
                             this.loadDays(this.targets),
                         ]
                     )
-                    this.loadUnits(this.targets).then()
+                    this.targets.forEach(
+                        t => this.loadUnits(t).then()
+                    )
                 }
                 this.loadings.targets = false
             },
@@ -84,19 +82,24 @@ export const useHealthCheckStore = defineStore({
                     }
                 )
             },
-            async loadUnits(healthTargets: HealthTarget[]) {
-                for (const targets of chunk(healthTargets, 1)) {
-                    console.log(targets)
-                    const units = await ApiService.post<HealthUnit[]>(`/api/healthcheck/units/load`, {targets_ids: targets.map(el => el.id)})
-                    if (units == undefined) continue;
-                    units.forEach(
-                        el => {
-                            const hDays = this.units.get(el.health_target_id) || []
-                            hDays.push(el)
-                            this.units.set(el.health_target_id, hDays)
-                        }
-                    )
-                }
+            async loadUnits(healthTarget: HealthTarget) {
+                if (healthTarget.id == undefined) return
+                const units = await ApiService.post<[number, boolean, number][]>(`/api/healthcheck/units/load`, {targets_id: healthTarget.id})
+                if (units == undefined) return
+                const hDays = this.units.get(healthTarget.id) || []
+                units.forEach(
+                    el => {
+                        hDays.push(
+                            {
+                                request_datetime: el[2],
+                                status: el[1],
+                                response_time: el[0],
+                            }
+                        )
+                    }
+                )
+                this.units.set(healthTarget.id, hDays)
+
             }
         }
     }
