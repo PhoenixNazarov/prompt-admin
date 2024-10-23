@@ -26,7 +26,7 @@ export default defineComponent({
 
 <template>
   <div>
-    <div class="header">
+    <div class="header border-bottom-component">
       <a href="/workplace" class="name" @click.prevent="RouterService.goToWorkplace()">Prompt Admin</a>
       <a href="/workplace" class="case" @click.prevent="RouterService.goToWorkplace()">
         <FontAwesomeIcon icon="pen"/>

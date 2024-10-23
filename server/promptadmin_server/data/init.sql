@@ -355,17 +355,17 @@ create table pa_health_unit
     id               serial
         constraint pa_health_unit_pk
             primary key,
-    time_create      timestamp          default now(),
+    time_create      timestamp                         default now(),
 
-    datetime         timestamp not null,
-    status           boolean   not null,
-    response_time    float     not null,
-    collect          boolean   not null default false,
+    datetime         timestamp with time zone not null,
+    status           boolean                  not null,
+    response_time    float                    not null,
+    collect          boolean                  not null default false,
 
     health_target_id integer
         constraint pa_health_day_target_fk
             references pa_health_target
-            on delete cascade  not null
+            on delete cascade                 not null
 );
 
 

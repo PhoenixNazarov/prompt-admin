@@ -1,5 +1,6 @@
 import asyncio
 import datetime
+import pytz
 import logging
 import time
 
@@ -55,7 +56,7 @@ class HealthRequestJob(BackgroundTask):
             status = False
 
         health_unit = HealthUnit(
-            datetime=datetime.datetime.now(),
+            datetime=datetime.datetime.now(pytz.utc),
             status=status,
             response_time=time.time() - t_start,
             health_target_id=target.id,

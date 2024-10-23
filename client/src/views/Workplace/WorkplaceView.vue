@@ -227,18 +227,20 @@ export default defineComponent({
         </VTab>
       </VTabs>
       <div>
-        <CompareView :prompt='selectedPrompt' v-if="selectedPrompt && selectedPrompt.auditData"/>
-        <PreviewView :prompt='selectedPrompt' v-else-if="selectedPrompt && selectedPrompt.previewData"/>
-        <UnitTestView :prompt="selectedPrompt" v-else-if="selectedPrompt && selectedPrompt.unitTestData"/>
-        <EditorView :prompt='selectedPrompt' v-else-if="selectedPrompt"/>
-        <div style="color: var(--color-5); padding: 1rem; height: calc(100vh - 8rem);" v-else>
-          Select need prompt...
+        <div class="border-bottom-component">
+          <CompareView :prompt='selectedPrompt' v-if="selectedPrompt && selectedPrompt.auditData"/>
+          <PreviewView :prompt='selectedPrompt' v-else-if="selectedPrompt && selectedPrompt.previewData"/>
+          <UnitTestView :prompt="selectedPrompt" v-else-if="selectedPrompt && selectedPrompt.unitTestData"/>
+          <EditorView :prompt='selectedPrompt' v-else-if="selectedPrompt"/>
+          <div style="color: var(--color-5); padding: 1rem; height: calc(100vh - 8rem);" v-else>
+            Select need prompt...
+          </div>
         </div>
         <div class="breadcrumb-status">
           <Breadcrumb
               v-if="breadcrumbItems().length > 0" :model="breadcrumbItems()"
               class="breadcrumb"
-              style="background-color: white; padding: 0.2rem 1rem; height: 2rem"
+              style="background-color: white; padding: 0.2rem 1rem; height: calc(2rem - 1px)"
           />
           <div class="mr-2">
             <FontAwesomeIcon :spin="true" v-if="validate.needUpdate || validate.iteration || !selectedPrompt?.validate"
