@@ -15,6 +15,10 @@ class TargetIdsRequest(BaseModel):
     targets_ids: list[int]
 
 
+class TargetIdRequest(BaseModel):
+    targets_id: int
+
+
 class TargetRequest(BaseModel):
     url: str
     label: str
@@ -35,10 +39,10 @@ async def days_load(request: Request, target_request: TargetIdsRequest):
 
 
 @router.post("/units/load")
-async def units_load(request: Request, target_request: TargetIdsRequest):
+async def units_load(request: Request, target_request: TargetIdRequest):
     user_data: UserData = request.scope["user_data"]
     return await permission_healthcheck_service.load_units(
-        target_request.targets_ids, user_data
+        target_request.targets_id, user_data
     )
 
 

@@ -24,9 +24,9 @@ class PermissionHealthCheckService(BasePermissionService):
         await self.require_permission("healthcheck", 1, user_data)
         return await self.healthcheck_service.load_last_days(targets_ids, days)
 
-    async def load_units(self, target_ids: list[int], user_data: UserData):
+    async def load_units(self, target_id: int, user_data: UserData):
         await self.require_permission("healthcheck", 1, user_data)
-        return await self.healthcheck_service.load_units(target_ids)
+        return await self.healthcheck_service.load_units(target_id)
 
     async def create_target(
         self, url: str, label: str, user_data: UserData
