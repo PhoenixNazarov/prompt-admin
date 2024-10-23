@@ -17,7 +17,7 @@ export interface HealthDay extends BaseEntity {
 }
 
 export interface HealthUnit extends BaseEntity {
-    datetime: string
+    request_datetime: string
     status: boolean
     response_time: number
 
@@ -51,7 +51,7 @@ export const useHealthCheckStore = defineStore({
             getLastUnit: state => {
                 return (healthTarget: HealthTarget) => {
                     if (healthTarget.id == undefined) return undefined
-                    const sorted = state.units.get(healthTarget.id)?.sort((a, b) => (new Date(b.datetime)).getTime() - (new Date(a.datetime)).getTime())
+                    const sorted = state.units.get(healthTarget.id)?.sort((a, b) => (new Date(b.request_datetime)).getTime() - (new Date(a.request_datetime)).getTime())
                     if (sorted)
                         return sorted[0]
                 }
