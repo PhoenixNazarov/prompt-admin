@@ -47,15 +47,15 @@ export class HealthDayService {
     }
 
     getPercentage() {
+        if (this.healthDay == undefined) return
         const fallTimes = this.getFallTimes()
         const lostTimes = this.getLostTimes()
         if (!fallTimes) return undefined
-        return (fallTimes / (60 * 24)) * 100 + (lostTimes / (60 * 24)) * 30
+        return (fallTimes / this.healthDay.count_response_time) * 100 + (lostTimes / (60 * 24)) * 30
     }
 
     getFallTimes() {
-        const lostTimes = this.getLostTimes()
-        if (!this.healthDay || lostTimes == undefined) return
+        if (!this.healthDay) return
         return this.healthDay.fall_times
     }
 
