@@ -54,7 +54,7 @@ class HealthCheckService:
             ViewParamsBuilder()
             .comparison(
                 ViewParamsComparison(
-                    field=HealthUnit.datetime,
+                    field=HealthUnit.request_datetime,
                     value=old_date,
                     comparison=ComparisonType.GT,
                 )

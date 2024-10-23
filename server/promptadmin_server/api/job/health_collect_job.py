@@ -2,6 +2,8 @@ import asyncio
 import datetime
 import logging
 
+import pytz
+
 from promptadmin_server.commons.dto import (
     ViewParamsBuilder,
     ViewParamsFilter,
@@ -84,7 +86,7 @@ class HealthCollectJob(BackgroundTask):
         return await self.health_unit_service.find_by_view_params(view_params)
 
     async def find_old_units(self, health_target: HealthTarget):
-        old_date = datetime.datetime.now() - datetime.timedelta(hours=12)
+        old_date = datetime.datetime.now(pytz.utc) - datetime.timedelta(hours=12)
         view_params = (
             ViewParamsBuilder()
             .filter(ViewParamsFilter(field=HealthUnit.collect, value=True))
@@ -113,7 +115,7 @@ class HealthCollectJob(BackgroundTask):
         health_units = await self.find_units(health_target)
         health_units_by_dates: dict[datetime.date, list[HealthUnit]] = {}
         for unit in health_units:
-            date = unit.datetime.date()
+            date = unit.request_datetime.date()
             group = health_units_by_dates.get(date)
             if group is None:
                 new_group: list[HealthUnit] = []

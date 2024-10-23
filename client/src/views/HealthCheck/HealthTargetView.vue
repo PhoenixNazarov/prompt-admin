@@ -23,7 +23,7 @@ export default defineComponent({
     getTargetStatus() {
       const lastUnit = this.healthCheckStore.getLastUnit(this.healthTarget)
       if (lastUnit == undefined) return
-      const timeSpent = ((new Date()).getTime() - (new Date(lastUnit.datetime)).getTime()) / 1000
+      const timeSpent = ((new Date()).getTime() - (new Date(lastUnit.request_datetime)).getTime()) / 1000
       if (timeSpent > 180)
         return;
 
