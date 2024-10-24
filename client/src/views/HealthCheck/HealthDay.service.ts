@@ -2,7 +2,7 @@ import {HealthDay, HealthTarget, useHealthCheckStore} from "../../stores/healthc
 import {equalDate} from "../Utils.ts";
 
 export class HealthDayService {
-    private healthDay: HealthDay | undefined
+    private readonly healthDay: HealthDay | undefined
 
     constructor(healthDay: HealthDay | undefined) {
         this.healthDay = healthDay
@@ -50,8 +50,8 @@ export class HealthDayService {
         if (this.healthDay == undefined) return
         const fallTimes = this.getFallTimes()
         const lostTimes = this.getLostTimes()
-        if (!fallTimes) return undefined
-        return (fallTimes / this.healthDay.count_response_time) * 100 + (lostTimes / (60 * 24)) * 30
+        if (fallTimes == undefined) return undefined
+        return (fallTimes / (60 * 24)) * 100 + (lostTimes / (60 * 24)) * 30
     }
 
     getFallTimes() {

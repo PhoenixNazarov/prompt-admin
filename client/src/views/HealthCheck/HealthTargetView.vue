@@ -1,6 +1,6 @@
 <script lang="ts">
 import {defineComponent, PropType} from 'vue'
-import {HealthTarget, useHealthCheckStore} from "../../stores/healthcheck.store.ts";
+import {HealthTarget, HealthUnit, useHealthCheckStore} from "../../stores/healthcheck.store.ts";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import StatusRect from "../Project/Status/StatusRect.vue";
 import {HealthDayService} from "./HealthDay.service.ts";
@@ -43,7 +43,7 @@ export default defineComponent({
           y: {
             ticks: {
               // Include a dollar sign in the ticks
-              callback: function(value, index, ticks) {
+              callback: function (value, index, ticks) {
                 return value + ' s';
               }
             },
@@ -60,6 +60,11 @@ export default defineComponent({
       }
     }
   },
+  data() {
+    return {
+      units: undefined as HealthUnit[] | undefined
+    }
+  },
   methods: {
     getTargetStatus() {
       const lastUnit = this.healthCheckStore.getLastUnit(this.healthTarget)
@@ -71,13 +76,12 @@ export default defineComponent({
       return lastUnit.status
     },
     getChartData() {
-      const units = this.healthCheckStore.getUnits(this.healthTarget)?.reverse()
-      if (units == undefined) return []
+      if (this.units == undefined) return []
       return {
-        labels: units?.map(el => moment(el.request_datetime)),
+        labels: this.units.map(el => moment(el.request_datetime)),
         datasets: [{
           label: 'Response Time',
-          data: units?.map(el => el.response_time),
+          data: this.units.map(el => el.response_time),
           borderWidth: 1,
           borderColor: 'rgb(0,83,255)',
         }]
@@ -96,6 +100,9 @@ export default defineComponent({
       }
       return result
     }
+  },
+  async mounted() {
+    this.units = await this.healthCheckStore.loadUnits(this.healthTarget)
   }
 })
 </script>
@@ -104,16 +111,14 @@ export default defineComponent({
   <VCard variant="outlined">
     <VCardTitle style="font-size: 1rem">
       <div>
-        <div>
-          <FontAwesomeIcon icon="circle-info" v-if="getTargetStatus() == undefined" color="gray"/>
-          <FontAwesomeIcon icon="circle-exclamation" v-else-if="getTargetStatus() == false" color="red"/>
-          <FontAwesomeIcon icon="circle-plus" v-else color="green"/>
+        <FontAwesomeIcon icon="circle-plus" v-if="getTargetStatus() == true" color="green"/>
+        <FontAwesomeIcon icon="circle-exclamation" v-else-if="getTargetStatus() == false" color="red"/>
+        <FontAwesomeIcon icon="circle-info" v-else color="gray"/>
 
-          {{ healthTarget.title }}
-          <a :href="healthTarget.url">
-            <FontAwesomeIcon icon="link"/>
-          </a>
-        </div>
+        {{ healthTarget.title }}
+        <a :href="healthTarget.url">
+          <FontAwesomeIcon icon="link"/>
+        </a>
       </div>
 
     </VCardTitle>
@@ -130,7 +135,7 @@ export default defineComponent({
       <p class="ma-1">
         Response Times:
       </p>
-      <div v-if="healthCheckStore.getUnits(healthTarget)" style="height: 10rem">
+      <div v-if="units != undefined" style="height: 10rem">
         <Line :data="getChartData()" :options="options"/>
       </div>
       <VSkeletonLoader type="article" v-else/>

@@ -16,7 +16,7 @@ export interface HealthDay extends BaseEntity {
     health_target_id: number
 }
 
-export interface HealthUnit extends BaseEntity {
+export interface HealthUnit {
     request_datetime: number
     status: boolean
     response_time: number
@@ -65,9 +65,6 @@ export const useHealthCheckStore = defineStore({
                             this.loadDays(this.targets),
                         ]
                     )
-                    this.targets.forEach(
-                        t => this.loadUnits(t).then()
-                    )
                 }
                 this.loadings.targets = false
             },
@@ -91,7 +88,7 @@ export const useHealthCheckStore = defineStore({
                     el => {
                         hDays.push(
                             {
-                                request_datetime: el[2],
+                                request_datetime: el[2] * 1000,
                                 status: el[1],
                                 response_time: el[0],
                             }
@@ -99,7 +96,7 @@ export const useHealthCheckStore = defineStore({
                     }
                 )
                 this.units.set(healthTarget.id, hDays)
-
+                return hDays
             }
         }
     }
