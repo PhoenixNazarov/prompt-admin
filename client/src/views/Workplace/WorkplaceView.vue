@@ -47,6 +47,7 @@ export default defineComponent({
     const accountStore = useAccountStore()
     const syncDataStore = useSyncDataStore()
     const unitTestStore = useUnitTestStore()
+    const settingsStore = useSettingsStore()
     return {
       promptStore,
       mappingStore,
@@ -57,7 +58,8 @@ export default defineComponent({
       promptAuditStore,
       accountStore,
       syncDataStore,
-      unitTestStore
+      unitTestStore,
+      settingsStore
     }
   },
   data() {
@@ -73,7 +75,9 @@ export default defineComponent({
       },
 
       widthMenu: settingsStore.menu_fold ? '4rem' : '25rem',
+      widthMenuOffset: settingsStore.menu_fold ? 0 : settingsStore.menuOffset,
       widthHint: settingsStore.hint_fold ? '4rem' : '25rem',
+      widthHintOffset: settingsStore.hint_fold ? 0 : settingsStore.hintOffset,
     }
   },
   methods: {
@@ -131,15 +135,19 @@ export default defineComponent({
     toggleHint() {
       if (this.widthHint == '25rem') {
         this.widthHint = '4rem'
+        this.widthHintOffset = 0
       } else {
         this.widthHint = '25rem'
+        this.widthHintOffset = this.settingsStore.hintOffset
       }
     },
     toggleMenu() {
       if (this.widthMenu == '25rem') {
         this.widthMenu = '4rem'
+        this.widthMenuOffset = 0
       } else {
         this.widthMenu = '25rem'
+        this.widthMenuOffset = this.settingsStore.menuOffset
       }
     },
     hashPrompt() {
@@ -170,6 +178,39 @@ export default defineComponent({
         return
       }
       this.selectPrompt(prompt)
+    },
+    changeWidthMouseStart(target: 'menu' | 'hint') {
+      console.log('start')
+
+      let startPosition = undefined as undefined | number
+
+      function upper() {
+        window.removeEventListener('mouseup', upper)
+        window.removeEventListener('mousemove', mover)
+      }
+
+      const currentOffset = target == 'menu' ? this.widthMenuOffset : this.widthHintOffset
+      const change = (setup: number) => {
+        if (target == 'menu') {
+          this.widthMenuOffset = currentOffset + setup
+          this.settingsStore.menuOffset = this.widthMenuOffset
+        } else if (target == 'hint') {
+          this.widthHintOffset = currentOffset - setup
+          this.settingsStore.hintOffset = this.widthHintOffset
+        }
+      }
+
+      function mover(event: any) {
+        if (startPosition == undefined) {
+          startPosition = event.clientX
+          console.log(startPosition)
+        } else {
+          change(startPosition - event.clientX)
+        }
+      }
+
+      window.addEventListener('mousemove', mover)
+      window.addEventListener('mouseup', upper)
     }
   },
   mounted() {
@@ -209,6 +250,11 @@ export default defineComponent({
   <div class="workplace">
     <div class="menu outer-y">
       <WorkplaceMenuView @selectPrompt="selectPrompt" @toggleFold="toggleMenu"/>
+    </div>
+    <div class="border-right-component toggle">
+      <div v-if="!settingsStore.menu_fold"
+           class="toggle-inner"
+           @mousedown="changeWidthMouseStart('menu')"></div>
     </div>
     <div class="editor">
       <VTabs
@@ -253,6 +299,12 @@ export default defineComponent({
         </div>
       </div>
     </div>
+    <div class="border-right-component toggle">
+      <div
+          v-if="!settingsStore.hint_fold"
+          class="toggle-inner"
+          @mousedown="changeWidthMouseStart('hint')"></div>
+    </div>
     <div class="hint outer-y">
       <MainHintView
           :prompt="selectedPrompt"
@@ -267,29 +319,28 @@ export default defineComponent({
 <style scoped>
 .workplace {
   --menu-width: v-bind(widthMenu);
+  --menu-offset: calc(v-bind(widthMenuOffset) * 1px);
   --hint-width: v-bind(widthHint);
+  --hint-offset: calc(v-bind(widthHintOffset) * 1px);
 
   display: flex;
   height: 100%;
 }
 
 .menu {
-  width: var(--menu-width);
+  width: calc(var(--menu-width) - var(--menu-offset));
   background-color: var(--color-4);
   overflow-x: hidden;
-  transition: 200ms;
 }
 
 .editor {
-  width: calc(100vw - var(--menu-width) - var(--hint-width));
-  transition: 200ms;
+  width: calc(100vw - var(--menu-width) - var(--hint-width) + var(--menu-offset) + var(--hint-offset));
 }
 
 .hint {
-  width: var(--hint-width);
+  width: calc(var(--hint-width) - var(--hint-offset));
   background-color: var(--color-4);
   overflow-x: hidden;
-  transition: 200ms;
 }
 
 .breadcrumb-status {
@@ -298,6 +349,19 @@ export default defineComponent({
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.toggle {
+  height: 100%;
+  width: 1px;
+}
+
+.toggle-inner {
+  height: calc(100% - 3rem);
+  position: absolute;
+  width: 5px;
+  z-index: 3;
+  cursor: col-resize;
 }
 
 </style>

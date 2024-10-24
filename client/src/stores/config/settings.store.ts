@@ -10,7 +10,9 @@ export const useSettingsStore = defineStore({
         menuOpenedItems: [] as string[],
         editor_line_wrapping: true,
         hint_fold: false,
+        hintOffset: 0,
         menu_fold: false,
+        menuOffset: 0,
         menu_search: ''
     }),
     getters: {},

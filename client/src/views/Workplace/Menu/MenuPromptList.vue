@@ -118,11 +118,12 @@ export default defineComponent({
     </VContainer>
   </VDialog>
 
-  <VVirtualScroll :items="items" :renderless="true">
+  <VVirtualScroll :items="items" :renderless="true" >
     <template v-slot:default="{ item }">
       <div
           class="main-button"
-          :style="{'--tab': item.tab, '--filter-display': isFilter(item) ? 'none': ''}">
+          :style="{'--tab': item.tab, '--filter-display': isFilter(item) ? 'none': ''}"
+          :class="[settingsStore.menu_fold ? 'hide' : '']">
         <button @click.prevent="onClick(item)" class="button text-none">
           <FontAwesomeIcon
               v-if="item.type == 'group' && item.caret && item.tag && (filter == undefined || filter == '')"
@@ -171,6 +172,10 @@ export default defineComponent({
 
 .button:hover {
   background-color: rgba(0, 0, 0, 0.05);
+}
+
+.hide {
+  display: none;
 }
 
 </style>

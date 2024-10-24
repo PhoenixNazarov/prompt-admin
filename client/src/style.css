@@ -83,3 +83,7 @@ body {
 .border-bottom-component {
     border-bottom: thin solid #494d71;
 }
+
+.border-right-component {
+    border-right: thin solid #494d71;
+}

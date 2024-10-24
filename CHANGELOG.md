@@ -34,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [Move business logic from tables endpoints to tables services](https://github.com/PhoenixNazarov/prompt-admin/pull/25)
 - [Move all get connections to ConnectionMixin](https://github.com/PhoenixNazarov/prompt-admin/pull/25)
 - [Change Github actions for development and production](https://github.com/PhoenixNazarov/prompt-admin/compare/dev...dev-notifications)
+- Attach menu and hint to resizable 
 
 ### Deprecated
 

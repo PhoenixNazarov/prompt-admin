@@ -54,7 +54,10 @@ export default defineComponent({
         <FontAwesomeIcon icon="caret-right" :rotation="!settingsStore.menu_fold ? 180: undefined"/>
       </VBtn>
     </div>
-    <MenuPromptList :filter="filter" @selectPrompt="prompt => $emit('selectPrompt', prompt)"/>
+    <MenuPromptList
+        :filter="filter" @selectPrompt="prompt => $emit('selectPrompt', prompt)"
+
+    />
   </div>
 </template>
 
