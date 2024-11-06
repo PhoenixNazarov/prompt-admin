@@ -54,7 +54,10 @@ export interface Column {
     columnDbms?: string
 
     display?: 'text' | 'image' | 'none'
-    imageSize?: 's' | 'm' | 'l'
+    image?: {
+        size?: 's' | 'm' | 'l'
+        formatColumn?: string
+    }
     ident?: {
         name: string,
         table?: string

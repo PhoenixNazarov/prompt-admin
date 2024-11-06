@@ -68,6 +68,7 @@ export interface ImageSchema extends DataElementComponentSchema {
     type: 'image'
 
     size: 's' | 'm' | 'l'
+    formatReference?: string
 }
 
 export interface DateSchema extends DataElementComponentSchema {

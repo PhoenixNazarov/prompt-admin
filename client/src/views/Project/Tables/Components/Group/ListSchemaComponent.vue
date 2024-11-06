@@ -150,7 +150,19 @@ export default defineComponent({
       this.columns = await this.tableStore.fetchColumns(this.PROJECT, this.componentSchema.table)
     },
     getColumns(base: any = undefined) {
-      return (base || this._lastSearch.additionalHeaders).map((i: any) => {
+      const additionalColumns = [] as string[]
+
+      // image
+      (base || this._lastSearch.additionalHeaders).forEach((i: any) => {
+        const columnDb = this.componentSchema.columns.find(el => {
+          return el.title == i.title
+        })
+        if (columnDb?.image?.formatColumn) {
+          additionalColumns.push(columnDb?.image?.formatColumn)
+        }
+      })
+
+      return [...(base || this._lastSearch.additionalHeaders).map((i: any) => {
         const columnDb = this.componentSchema.columns.find(el => {
           return el.title == i.title
         })
@@ -158,7 +170,7 @@ export default defineComponent({
           return columnDb?.columnDbms
         }
         return i.key
-      })
+      }), ...additionalColumns]
     },
     getFilters(base: any = undefined) {
       return (base || this._lastSearch.filters).filter((el: any) => el.key && el.operator) as {
@@ -336,7 +348,7 @@ export default defineComponent({
               v-for="column in componentSchema.columns.filter(el => el.display == 'image')">
       <img
           :src="'data:image/png;base64,'+ item[column.column]"
-          :height="column.imageSize ? CONST_SCHEMA_COMPONENT.image_size[column.imageSize] : CONST_SCHEMA_COMPONENT.image_size_default"
+          :height="column.image?.size ? CONST_SCHEMA_COMPONENT.image_size[column.image?.size] : CONST_SCHEMA_COMPONENT.image_size_default"
       />
     </template>
   </VDataTableServer>
@@ -379,8 +391,8 @@ export default defineComponent({
     <template v-slot:[`item.${column.column}`]="{ item }"
               v-for="column in componentSchema.columns.filter(el => el.display == 'image')">
       <img
-          :src="'data:image/png;base64,'+ item[column.column]"
-          :height="column.imageSize ? CONST_SCHEMA_COMPONENT.image_size[column.imageSize] : CONST_SCHEMA_COMPONENT.image_size_default"
+          :src="`data:${column.image?.formatColumn && item[column.image?.formatColumn] ? item[column.image?.formatColumn] :'image/png'};base64,`+ item[column.column]"
+          :height="column.image?.size ? CONST_SCHEMA_COMPONENT.image_size[column.image?.size] : CONST_SCHEMA_COMPONENT.image_size_default"
       />
     </template>
     <template v-slot:item.actions="{ item }">
